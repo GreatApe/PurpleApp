@@ -20,11 +20,14 @@ class TableX: Object {
 //    dynamic var elementFunction: Function?
     
     let elements = List<ElementX>()
+    
+    var objectType: String { return elements._rlmArray.objectClassName }
 }
 
 class ElementX: Object {
-    let hiddenFieldIds = List<RealmString>()
+//    let hiddenFieldIds = List<RealmString>()
     
+    dynamic var index = ""
     dynamic var d0: Double = 0.0
     dynamic var d1: Double = 0.0
 //    dynamic var d2: Double = 0.0
