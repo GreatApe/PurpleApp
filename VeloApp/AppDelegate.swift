@@ -14,12 +14,39 @@ func realmPath(name: String) -> String {
     return path.stringByAppendingPathComponent(name)
 }
 
+
+func addProperty(property: RLMProperty, to className: String, inRealm realm: RLMRealm, defaultValue: AnyObject? = nil) {
+    let objectSchema = realm.schema[className]
+    objectSchema.properties += [property]
+    
+    let config = realm.configuration
+    config.schemaVersion += 1
+    config.migrationBlock = { migration, oldVersion in
+        
+        print("Running migration block \(oldVersion) (new: \(config.schemaVersion))")
+    
+    //        let newVersion = config.schemaVersion
+    //        if let defaultValue = defaultValue {
+    //            config.migrationBlock = { migration, oldVersion in
+    //                if oldVersion < newVersion {
+    //                    migration.enumerateObjects(className) { oldObject, newObject in
+    //                        newObject?[property.name] = defaultValue
+    //                    }
+    //                }
+    //
+    //            }
+    //        }
+    
+    RLMRealm.migrateRealm(config)
+    }
+}
+
+
 extension RLMRealm {
     func addProperty(property: RLMProperty, to className: String, defaultValue: AnyObject? = nil) {
         let objectSchema = schema[className]
-        objectSchema.properties.append(property)
-        schema[className] = objectSchema
-        
+        objectSchema.properties += [property]
+
         let config = configuration
         config.schemaVersion += 1
 //        let newVersion = config.schemaVersion
@@ -40,7 +67,6 @@ extension RLMRealm {
     class func dynamicRealm(path: String, schema: RLMSchema? = nil) throws -> RLMRealm {
         return try RLMRealm(path: path, key: nil, readOnly: false, inMemory: false, dynamic: true, schema: schema)
     }
-    
 }
 
 class MyVC: UIViewController {
@@ -62,7 +88,7 @@ class MyVC: UIViewController {
         
         realm.beginWriteTransaction()
         
-        print("SCHEMA: \(realm.configuration.schemaVersion)")
+        print("SCHEMA new: \(realm.configuration.schemaVersion)")
 
         let obj = realm.createObject("MyClass", withValue: ["tolv", 12])
         realm.addObject(obj)
@@ -74,42 +100,46 @@ class MyVC: UIViewController {
     
     func change() {
         let realm = try! RLMRealm.dynamicRealm(realmPath("test.realm"))
+        print("SCHEMA open: \(realm.configuration.schemaVersion)")
 
-        print("MIGRATED 1 ------------")
+        print("MIGRATE 1 ------------")
 
         let prop = RLMProperty(name: "anotherString", type: .String, objectClassName: nil, indexed: false, optional: false)
-        realm.addProperty(prop, to: "MyClass", defaultValue: "hejsan")
+        addProperty(prop, to: "MyClass", inRealm: realm, defaultValue: "hejsan")
         
-        print("SCHEMA: \(realm.configuration.schemaVersion)")
-
         realm.beginWriteTransaction()
-        let obj = realm.createObject("MyClass", withValue: ["femton", 16, "sjutton"])
+        let obj = realm.createObject("MyClass", withValue: ["aString" : "femton", "aDouble" : 16, "anotherString" : "sjutton"])
+        print("creating: \(obj)")
+
         realm.addObject(obj)
         try! realm.commitWriteTransaction()
 
+        print("SCHEMA after: \(realm.configuration.schemaVersion)")
         print(realm.schema)
         print(realm.allObjects("MyClass"))
     }
     
     func changeAgain() {
         let realm = try! RLMRealm.dynamicRealm(realmPath("test.realm"))
+        print(realm.schema)
+
+        print("MIGRATE 2 ------------")
         
-        print("MIGRATED 2 ------------")
-        
-        let prop = RLMProperty(name: "anotherDouble", type: .String, objectClassName: nil, indexed: false, optional: false)
-        realm.addProperty(prop, to: "MyClass", defaultValue: 100 as Double)
-        
+        let prop = RLMProperty(name: "anotherDouble", type: .Double, objectClassName: nil, indexed: false, optional: false)
+//        realm.addProperty(prop, to: "MyClass", defaultValue: 100 as Double)
+        addProperty(prop, to: "MyClass", inRealm: realm, defaultValue: 100 as Double)
+
         print("SCHEMA: \(realm.configuration.schemaVersion)")
+        print(realm.schema)
 
         realm.beginWriteTransaction()
-        let obj = realm.createObject("MyClass", withValue: ["arton", 18, "nitton", 22])
+        let obj = realm.createObject("MyClass", withValue: ["aString" : "arton", "aDouble" : 18, "anotherString" : "nitton", "anotherDouble" : 22])
+        print("creating: \(obj)")
         realm.addObject(obj)
         try! realm.commitWriteTransaction()
         
-        print(realm.schema)
         print(realm.allObjects("MyClass"))
     }
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
