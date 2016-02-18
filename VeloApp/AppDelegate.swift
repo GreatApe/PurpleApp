@@ -7,15 +7,126 @@
 //
 
 import UIKit
+import Realm
+
+func realmPath(name: String) -> String {
+    let path: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+    return path.stringByAppendingPathComponent(name)
+}
+
+extension RLMRealm {
+    func addProperty(property: RLMProperty, to className: String, defaultValue: AnyObject? = nil) {
+        let objectSchema = schema[className]
+        objectSchema.properties.append(property)
+        schema[className] = objectSchema
+        
+        let config = configuration
+        config.schemaVersion += 1
+//        let newVersion = config.schemaVersion
+//        if let defaultValue = defaultValue {
+//            config.migrationBlock = { migration, oldVersion in
+//                if oldVersion < newVersion {
+//                    migration.enumerateObjects(className) { oldObject, newObject in
+//                        newObject?[property.name] = defaultValue
+//                    }
+//                }
+//                
+//            }
+//        }
+        
+        RLMRealm.migrateRealm(config)
+    }
+    
+    class func dynamicRealm(path: String, schema: RLMSchema? = nil) throws -> RLMRealm {
+        return try RLMRealm(path: path, key: nil, readOnly: false, inMemory: false, dynamic: true, schema: schema)
+    }
+    
+}
+
+class MyVC: UIViewController {
+    var mySchema: RLMSchema {
+        let prop1 = RLMProperty(name: "aString", type: .String, objectClassName: nil, indexed: false, optional: false)
+        let prop2 = RLMProperty(name: "aDouble", type: .Double, objectClassName: nil, indexed: false, optional: false)
+        
+        let objectSchema = RLMObjectSchema(className: "MyClass", objectClass: RLMObject.self, properties: [prop1, prop2])
+        let schema = RLMSchema()
+        schema.objectSchema = [objectSchema]
+
+        return schema
+    }
+    
+    func create() {
+        let realm = try! RLMRealm.dynamicRealm(realmPath("test.realm"), schema: mySchema)
+        
+        print("NEW ------------")
+        
+        realm.beginWriteTransaction()
+        
+        print("SCHEMA: \(realm.configuration.schemaVersion)")
+
+        let obj = realm.createObject("MyClass", withValue: ["tolv", 12])
+        realm.addObject(obj)
+        try! realm.commitWriteTransaction()
+
+        print(realm.schema)
+        print(realm.allObjects("MyClass"))
+    }
+    
+    func change() {
+        let realm = try! RLMRealm.dynamicRealm(realmPath("test.realm"))
+
+        print("MIGRATED 1 ------------")
+
+        let prop = RLMProperty(name: "anotherString", type: .String, objectClassName: nil, indexed: false, optional: false)
+        realm.addProperty(prop, to: "MyClass", defaultValue: "hejsan")
+        
+        print("SCHEMA: \(realm.configuration.schemaVersion)")
+
+        realm.beginWriteTransaction()
+        let obj = realm.createObject("MyClass", withValue: ["femton", 16, "sjutton"])
+        realm.addObject(obj)
+        try! realm.commitWriteTransaction()
+
+        print(realm.schema)
+        print(realm.allObjects("MyClass"))
+    }
+    
+    func changeAgain() {
+        let realm = try! RLMRealm.dynamicRealm(realmPath("test.realm"))
+        
+        print("MIGRATED 2 ------------")
+        
+        let prop = RLMProperty(name: "anotherDouble", type: .String, objectClassName: nil, indexed: false, optional: false)
+        realm.addProperty(prop, to: "MyClass", defaultValue: 100 as Double)
+        
+        print("SCHEMA: \(realm.configuration.schemaVersion)")
+
+        realm.beginWriteTransaction()
+        let obj = realm.createObject("MyClass", withValue: ["arton", 18, "nitton", 22])
+        realm.addObject(obj)
+        try! realm.commitWriteTransaction()
+        
+        print(realm.schema)
+        print(realm.allObjects("MyClass"))
+    }
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        create()
+        change()
+        changeAgain()
+    }
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
         return true
     }
 
