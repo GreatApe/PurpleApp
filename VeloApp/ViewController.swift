@@ -9,93 +9,28 @@
 import UIKit
 import Realm
 
-struct Platform {
-    static let isSimulator: Bool = {
-        var isSim = false
-        #if arch(i386) || arch(x86_64)
-            isSim = true
-        #endif
-        return isSim
-    }()
-}
-
-class Engine {
-    static var shared = Engine()
-    
-    private let realm: RLMRealm
-    
-    private init() {
-        realm = try! RLMRealm.dynamicRealm("test", schema: RLMRealm.defaultRealm().schema)
-        
-        realm.beginWriteTransaction()
-        realm.deleteAllObjects()
-        
-        let t = createTable("TableBase", id: "abcdef")
-        addRandomRowToTable(t)
-        addRandomRowToTable(t)
-        addRandomRowToTable(t)
-        addRandomRowToTable(t)
-
-        try! realm.commitWriteTransaction()
-        
-        for className in realm.schema.objectSchema.map({ $0.className }) {
-            print("---- \(className) ----")
-            print(realm.allObjects(className))
-        }
-    }
-    
-    func createRandomRow(className: String) -> RLMObject? {
-        guard let objectSchema = realm.schema.schemaForClassName(className) else {
-            return nil
-        }
-        
-        var value = [String : AnyObject]()
-        
-        for prop in objectSchema.properties {
-            if prop.name == "id" {
-                value[prop.name] = NSUUID().UUIDString
-            }
-            else {
-                switch prop.type {
-                case .Double: value[prop.name] = Double(arc4random() % 100)
-                case .String: value[prop.name] = "str" + String(Int(arc4random() % 100))
-                default: break
-                }
-            }
-        }
-        
-        return realm.createObject(className, withValue: value)
-    }
-    
-    func createTable(tableClassName: String, id: String) -> TableBase {
-        return realm.createObject(tableClassName, withValue: ["id" : id]) as! TableBase
-    }
-    
-    func addRandomRowToTable(table: TableBase) {
-        if let row = createRandomRow(table.rows.objectClassName) {
-            print("Created row: \(row)")
-            table.rows.addObject(row)
-        }
-    }
-    
-    //    func data(address: [String]) -> [AnyObject] {
-    //        return [1, 2]
-    //    }
-    
-    func tableHeader(table: TableBase) -> [String] {
-        return realm.schema.schemaForClassName(table.rows.objectClassName)!.properties.map { $0.name }.filter { $0 != "index" }
-    }
-    
-    func table(className: String, id: String) -> TableBase {
-        return realm.objectWithClassName(className, forPrimaryKey: id) as! TableBase
-    }
-
-    func tableRow(id: String, index: Int) -> ElementBase {
-        fatalError()
-    }
-}
-
 class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+//        Engine.shared.newTableClass("XXX")
+        
+//        Engine.shared.createRandomTable("TableXXX", name: "xyz")
+
+//        Engine.shared.describe()
+
+//        Engine.shared.addProperty(.Double, to: "TableBase")
+        Engine.shared.addProperty(.Double, to: "RowBase")
+//
+        Engine.shared.describe()
+
+        Engine.shared.createRandomTable("TableBase", name: "xyz")
+
+//        Engine.shared.createRandomTable("TableXXX", name: "xyz")
+
+        Engine.shared.describe()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -106,6 +41,9 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if let veloTable = segue.destinationViewController as? VeloTableViewController {
             veloTables.append(veloTable)
+            
+            veloTable.tableClassName = "TableBase"
+            veloTable.tableId = "xyz"
         }
     }
     
@@ -137,7 +75,7 @@ func clamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
 //        return computation.function(values)
 //    }
 //}
-//
+
 //struct Computation {
 //    let signature: [String]
 //    let function: [AnyObject] -> AnyObject
@@ -161,30 +99,29 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     let coreTableDataSource = CoreDataSource()
     let computedColumnsDataSource = ComputedColumnsDataSource()
     
-    var tableId: String = "abcdef"
-    var tableClassName: String = "TableBase"
+    var tableId: String!
+    var tableClassName: String!
     
-    var table: TableBase!
+    var table: RLMObject!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         table = Engine.shared.table(tableClassName, id: tableId)
         
-        print("Header: \(Engine.shared.tableHeader(table))")
-        
         coreHeaderRow.setupFields(Engine.shared.tableHeader(table))
         
         leftIndexTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        leftIndexDataSource.data = table.rows
+        leftIndexDataSource.data = table["rows"] as! RLMArray
         leftIndexTableView.dataSource = leftIndexDataSource
         
         coreTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        coreTableDataSource.data = table.rows
+        coreTableDataSource.data = table["rows"] as! RLMArray
         coreTableView.dataSource = coreTableDataSource
 
         computedColumnsTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        computedColumnsDataSource.data = table.rows
+        computedColumnsDataSource.data = table["rows"] as! RLMArray
+        
         
 //        let valueCompDiff = Computation(signature: ["Double", "Double"]) { values in
 //            return (values[0] as! Double) - (values[1] as! Double)
@@ -319,7 +256,7 @@ class CoreDataSource: NSObject, UITableViewDataSource {
         let cell = tableView.dequeueReusableCellWithIdentifier(VeloCell.identifier, forIndexPath: indexPath) as! VeloCell
         
         let row = data[indexPath.row]
-        cell.setupFields(row.objectSchema.properties.filter { $0.name != "index" }.map { "\(row[$0.name]!)" })
+//        cell.setupFields(row.objectSchema.properties.filter { $0.name != "index" }.map { "\(row[$0.name]!)" })
         
         return cell
     }

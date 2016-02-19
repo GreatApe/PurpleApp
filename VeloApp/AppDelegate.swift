@@ -9,6 +9,28 @@
 import UIKit
 import Realm
 
+extension RLMRealm {
+    func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
+//        let objectSchema = schema[className]
+//        objectSchema.properties += [property]
+//        
+//        let config = configuration
+//        config.schemaVersion += 1
+//        let newVersion = config.schemaVersion
+//        config.migrationBlock = { migration, oldVersion in
+//            print("Migrating from \(oldVersion) to \(newVersion)")
+//            guard let value = value else { return }
+//            
+//            if oldVersion < newVersion {
+//                migration.enumerateObjects(className) { oldObject, newObject in
+//                    newObject?[property.name] = value
+//                }
+//            }
+//        }
+//        
+//        RLMRealm.migrateRealm(config)
+    }
+}
 
 class MyVC: UIViewController {
     var mySchema: RLMSchema {

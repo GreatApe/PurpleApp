@@ -11,40 +11,40 @@ import Realm
 
 // MARK: Dynamic models
 
-//class CollectionBase: RLMObject {
-//    dynamic var id = ""
-//    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
-//    dynamic var rows = RLMArray(objectClassName: "TableBase")
-//}
-//
-//class TaggedTableBase: RLMObject {
-//    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
-//    dynamic var table: TableBase?
-//}
+class Collection: RLMObject {
+    dynamic var id = ""
+    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
+    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
+}
+
+class TaggedTable: RLMObject {
+    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
+    dynamic var tableId = ""
+    
+    override class func indexedProperties() -> [String] {
+        return ["tableId"]
+    }
+}
 
 class TableBase: RLMObject {
     dynamic var id: String = ""
-    //    var elementTypeId: String { return rows.objectClassName }
     
     //        dynamic var sourceTable: TableX?
     //        dynamic var tableFunction: Function?
     //        dynamic var elementFunction: Function?
     
-    dynamic var rows = RLMArray(objectClassName: "ElementBase")
+    dynamic var rows = RLMArray(objectClassName: "RowBase")
     
     //    let computedColumns = List<ComputedColumn>()
     //    let computedRows = List<ComputedRow>()
-    
     
     override class func primaryKey() -> String {
         return "id"
     }
 }
 
-class ElementBase: RLMObject {
+class RowBase: RLMObject {
     dynamic var index = ""
-    dynamic var something = ""
-    // Add properties dynamically
     
     override class func primaryKey() -> String {
         return "index"
@@ -107,7 +107,7 @@ class TableType: RLMObject {
 //    let height = RealmOptional<Int>()
 //    let width = RealmOptional<Int>()
 //}
-//
+
 //class Category: Object {
 //    dynamic var id = ""
 //    let values = List<RealmString>()
@@ -132,35 +132,11 @@ func realmPath(name: String) -> String {
     return path.stringByAppendingPathComponent(name)
 }
 
-extension RLMRealm {
-    func newElementClass(name: String) {
-        RLMObjectSchema(className: name, objectClass: RLMObject.self, properties: schema["TableBase"].properties)
-        
-        //        schema.obj
-        //            = objectSchema
-    }
-    
-    func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
-        let objectSchema = schema[className]
-        objectSchema.properties += [property]
-        
-        let config = configuration
-        config.schemaVersion += 1
-        let newVersion = config.schemaVersion
-        config.migrationBlock = { migration, oldVersion in
-            print("Migrating from \(oldVersion) to \(newVersion)")
-            guard let value = value else { return }
-            
-            if oldVersion < newVersion {
-                migration.enumerateObjects(className) { oldObject, newObject in
-                    newObject?[property.name] = value
-                }
-            }
-        }
-        
-        RLMRealm.migrateRealm(config)
-    }
-    
+func realmExists(name: String) -> Bool {
+    return NSFileManager.defaultManager().fileExistsAtPath(realmPath(name) + ".realm")
+}
+
+extension RLMRealm {    
     class func dynamicRealm(name: String, schema: RLMSchema? = nil) throws -> RLMRealm {
         return try RLMRealm(path: realmPath(name) + ".realm", key: nil, readOnly: false, inMemory: false, dynamic: true, schema: schema)
     }
