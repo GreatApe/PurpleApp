@@ -9,12 +9,65 @@
 import UIKit
 import Realm
 
+// Version 1
+//class MyObject: RLMObject {
+//    var aString: String = ""
+//    var anotherString: String = ""
+//    var aThirdString: String = ""
+//    var more: String = ""
+//    var lots: String = ""
+//    var afdsafs: String = ""
+//}
+
 func realmPath(name: String) -> String {
     let path: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
     return path.stringByAppendingPathComponent(name)
 }
 
+//class CollectionBase: RLMObject {
+//    dynamic var id = ""
+//    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var rows = RLMArray(objectClassName: "TableBase")
+//}
+//
+//class TaggedTableBase: RLMObject {
+//    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var table: TableBase?
+//}
+
+class TableBase: RLMObject {
+    dynamic var id: String = ""
+    dynamic var elementTypeId: String = ""
+
+//        dynamic var sourceTable: TableX?
+//        dynamic var tableFunction: Function?
+//        dynamic var elementFunction: Function?
+
+    dynamic var rows = RLMArray(objectClassName: "ElementBase")
+    
+    //    let computedColumns = List<ComputedColumn>()
+    //    let computedRows = List<ComputedRow>()
+}
+
+class ElementBase: RLMObject {
+//    let hiddenFieldIds = List<RealmString>()
+
+    dynamic var index = ""
+}
+
+class TableType: RLMObject {
+    dynamic var id: String = ""
+}
+
+
 extension RLMRealm {
+    func newElementClass(name: String) {
+        RLMObjectSchema(className: name, objectClass: RLMObject.self, properties: schema["TableBase"].properties)
+
+        //        schema.obj
+//            = objectSchema
+    }
+    
     func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
         let objectSchema = schema[className]
         objectSchema.properties += [property]
@@ -53,6 +106,33 @@ class MyVC: UIViewController {
         return schema
     }
     
+//    func testCreate() {
+//        let obj = MyObject(value: ["string value"])
+//        
+//        let realm = RLMRealm.defaultRealm()
+//        try! realm.transactionWithBlock {
+//            realm.addObject(obj)
+//        }
+//    }
+//    
+//    func testFetch() {
+//        let realm = RLMRealm.defaultRealm()
+//        print("Schema #\(realm.configuration.schemaVersion): \(realm.schema)")
+//        print(MyObject.allObjects())
+//    }
+//    
+//    func testMigrate() {
+//        let config = RLMRealmConfiguration.defaultConfiguration()
+//        
+//        config.schemaVersion += 1
+//        let newVersion = config.schemaVersion
+//        config.migrationBlock = { migration, oldVersion in
+//            print("Migrating from \(oldVersion) to \(newVersion)")
+//        }
+//        
+//        RLMRealmConfiguration.setDefaultConfiguration(config)
+//    }
+    
     func create() {
         let realm = try! RLMRealm.dynamicRealm("test", schema: mySchema)
 
@@ -64,21 +144,15 @@ class MyVC: UIViewController {
     
     func migrate() {
         // Create new properties
-        let prop3 = RLMProperty(name: "anotherString", type: .String, objectClassName: nil, indexed: false, optional: false)
-        try! RLMRealm.dynamicRealm("test").addProperty(prop3, to: "MyClass", value: "palle klanka")
-
-        let prop4 = RLMProperty(name: "anotherDouble", type: .Double, objectClassName: nil, indexed: false, optional: false)
-        try! RLMRealm.dynamicRealm("test").addProperty(prop4, to: "MyClass", value: 99)
-        
-        let prop5 = RLMProperty(name: "aDate", type: .Date, objectClassName: nil, indexed: false, optional: false)
-        try! RLMRealm.dynamicRealm("test").addProperty(prop5, to: "MyClass")
+        let prop = RLMProperty(name: "anotherString", type: .String, objectClassName: nil, indexed: false, optional: false)
+        try! RLMRealm.dynamicRealm("test").addProperty(prop, to: "MyClass", value: "palle klanka")
     }
     
     func addNewObject() {
         let realm = try! RLMRealm.dynamicRealm("test")
 
         realm.beginWriteTransaction()
-        let obj = realm.createObject("MyClass", withValue: ["femton", 161, "sjutton", 181, NSDate()])
+        let obj = realm.createObject("MyClass", withValue: ["femton", 161, "sjutton"])
         realm.addObject(obj)
         try! realm.commitWriteTransaction()
         
@@ -91,6 +165,11 @@ class MyVC: UIViewController {
         create()
         migrate()
         addNewObject()
+
+//        testCreate()
+//        testFetch()
+//        testMigrate()
+//        testFetch()
     }
 }
 

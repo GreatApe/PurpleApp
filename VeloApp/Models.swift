@@ -11,9 +11,6 @@ import Realm
 
 // MARK: Dynamic models
 
-
-
-
 //class TableX: Object {
 //    dynamic var id = ""
 //    dynamic var tableType: TableType?
