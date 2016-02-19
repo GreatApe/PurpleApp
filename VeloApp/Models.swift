@@ -11,49 +11,56 @@ import Realm
 
 // MARK: Dynamic models
 
-//class TableX: Object {
+//class CollectionBase: RLMObject {
 //    dynamic var id = ""
-//    dynamic var tableType: TableType?
-//    
-////    dynamic var sourceTable: TableX?
-////    dynamic var tableFunction: Function?
-////    dynamic var elementFunction: Function?
-//    
-//    let elements = List<ElementX>()
-//    
-//    var objectType: String { return elements._rlmArray.objectClassName }
+//    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var rows = RLMArray(objectClassName: "TableBase")
 //}
 //
-//class ElementX: Object {
-////    let hiddenFieldIds = List<RealmString>()
-//    
-//    dynamic var index = ""
-//    dynamic var d0: Double = 0.0
-//    dynamic var d1: Double = 0.0
-////    dynamic var d2: Double = 0.0
-////    dynamic var d3: Double = 0.0
-//    
-//    dynamic var s0 = ""
-//    dynamic var s1 = ""
-////    dynamic var s2 = ""
-////    dynamic var s3 = ""
-//
-////    dynamic var t0 = NSDate.distantPast()
-////    dynamic var t1 = NSDate.distantPast()
-////    dynamic var t2 = NSDate.distantPast()
-////    dynamic var t3 = NSDate.distantPast()
+//class TaggedTableBase: RLMObject {
+//    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var table: TableBase?
 //}
-//
-//// MARK: Fixed models
-//
-//class TableType: Object {
-//    dynamic var id = ""
-//    dynamic var elementTypeId = ""
-//    
-//    let computedColumns = List<ComputedColumn>()
-//    let computedRows = List<ComputedRow>()
-//}
-//
+
+class TableBase: RLMObject {
+    dynamic var id: String = ""
+    //    var elementTypeId: String { return rows.objectClassName }
+    
+    //        dynamic var sourceTable: TableX?
+    //        dynamic var tableFunction: Function?
+    //        dynamic var elementFunction: Function?
+    
+    dynamic var rows = RLMArray(objectClassName: "ElementBase")
+    
+    //    let computedColumns = List<ComputedColumn>()
+    //    let computedRows = List<ComputedRow>()
+    
+    
+    override class func primaryKey() -> String {
+        return "id"
+    }
+}
+
+class ElementBase: RLMObject {
+    dynamic var index = ""
+    dynamic var something = ""
+    // Add properties dynamically
+    
+    override class func primaryKey() -> String {
+        return "index"
+    }
+}
+
+// MARK: Fixed models
+
+class TableType: RLMObject {
+    dynamic var id: String = ""
+    //    dynamic var elementTypeId = ""
+    //
+    //    let computedColumns = List<ComputedColumn>()
+    //    let computedRows = List<ComputedRow>()
+}
+
 //class ComputedColumn: Object {
 //    dynamic var id = ""
 //    dynamic var function: Function?
@@ -83,14 +90,6 @@ import Realm
 //    let mappings = List<Mapping>()
 //}
 //
-//class Collection: Object {
-//    dynamic var id = ""
-//    let categoryValueIds = List<RealmString>()
-//    
-//    let categoryIds = List<RealmString>()
-//    let groups = List<Group>()
-//}
-//
 //class Group: Object {
 //    dynamic var id = ""
 //    
@@ -113,11 +112,11 @@ import Realm
 //    dynamic var id = ""
 //    let values = List<RealmString>()
 //}
-//
-//class RealmString: Object {
-//    dynamic var value = ""
-//}
-//
+
+class RealmString: RLMObject {
+    dynamic var value = ""
+}
+
 //class Mapping: Object {
 //    dynamic var id = ""
 //    let values = List<Correspondence>()
@@ -127,6 +126,45 @@ import Realm
 //    dynamic var id = ""
 //    dynamic var label = ""
 //}
+
+func realmPath(name: String) -> String {
+    let path: NSString = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+    return path.stringByAppendingPathComponent(name)
+}
+
+extension RLMRealm {
+    func newElementClass(name: String) {
+        RLMObjectSchema(className: name, objectClass: RLMObject.self, properties: schema["TableBase"].properties)
+        
+        //        schema.obj
+        //            = objectSchema
+    }
+    
+    func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
+        let objectSchema = schema[className]
+        objectSchema.properties += [property]
+        
+        let config = configuration
+        config.schemaVersion += 1
+        let newVersion = config.schemaVersion
+        config.migrationBlock = { migration, oldVersion in
+            print("Migrating from \(oldVersion) to \(newVersion)")
+            guard let value = value else { return }
+            
+            if oldVersion < newVersion {
+                migration.enumerateObjects(className) { oldObject, newObject in
+                    newObject?[property.name] = value
+                }
+            }
+        }
+        
+        RLMRealm.migrateRealm(config)
+    }
+    
+    class func dynamicRealm(name: String, schema: RLMSchema? = nil) throws -> RLMRealm {
+        return try RLMRealm(path: realmPath(name) + ".realm", key: nil, readOnly: false, inMemory: false, dynamic: true, schema: schema)
+    }
+}
 
 // Meta
 // Elk, Elque
