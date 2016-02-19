@@ -15,19 +15,20 @@ func realmPath(name: String) -> String {
 }
 
 extension RLMRealm {
-    func addProperty(property: RLMProperty, to className: String, defaultValue: AnyObject? = nil) {
+    func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
         let objectSchema = schema[className]
         objectSchema.properties += [property]
         
         let config = configuration
         config.schemaVersion += 1
         let newVersion = config.schemaVersion
-        if let defaultValue = defaultValue {
-            config.migrationBlock = { migration, oldVersion in
-                if oldVersion < newVersion {
-                    migration.enumerateObjects(className) { oldObject, newObject in
-                        newObject?[property.name] = defaultValue
-                    }
+        config.migrationBlock = { migration, oldVersion in
+            print("Migrating from \(oldVersion) to \(newVersion)")
+            guard let value = value else { return }
+            
+            if oldVersion < newVersion {
+                migration.enumerateObjects(className) { oldObject, newObject in
+                    newObject?[property.name] = value
                 }
             }
         }
@@ -52,7 +53,7 @@ class MyVC: UIViewController {
         return schema
     }
     
-    func ggg1() {
+    func create() {
         let realm = try! RLMRealm.dynamicRealm("test", schema: mySchema)
 
         realm.beginWriteTransaction()
@@ -61,21 +62,21 @@ class MyVC: UIViewController {
         try! realm.commitWriteTransaction()
     }
     
-    func ggg2() {
+    func migrate() {
         // Create new properties
         let prop3 = RLMProperty(name: "anotherString", type: .String, objectClassName: nil, indexed: false, optional: false)
+        try! RLMRealm.dynamicRealm("test").addProperty(prop3, to: "MyClass", value: "palle klanka")
+
         let prop4 = RLMProperty(name: "anotherDouble", type: .Double, objectClassName: nil, indexed: false, optional: false)
-        let prop5 = RLMProperty(name: "aDate", type: .Date, objectClassName: nil, indexed: false, optional: false)
+        try! RLMRealm.dynamicRealm("test").addProperty(prop4, to: "MyClass", value: 99)
         
-        // Bump schema version
-        try! RLMRealm.dynamicRealm("test").addProperty(prop3, to: "MyClass", defaultValue: "palle klanka")
-        try! RLMRealm.dynamicRealm("test").addProperty(prop4, to: "MyClass", defaultValue: 99)
-        try! RLMRealm.dynamicRealm("test").addProperty(prop5, to: "MyClass", defaultValue: NSDate())
+        let prop5 = RLMProperty(name: "aDate", type: .Date, objectClassName: nil, indexed: false, optional: false)
+        try! RLMRealm.dynamicRealm("test").addProperty(prop5, to: "MyClass")
     }
     
-    func ggg3() {
+    func addNewObject() {
         let realm = try! RLMRealm.dynamicRealm("test")
-        
+
         realm.beginWriteTransaction()
         let obj = realm.createObject("MyClass", withValue: ["femton", 161, "sjutton", 181, NSDate()])
         realm.addObject(obj)
@@ -87,9 +88,9 @@ class MyVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        ggg1()
-        ggg2()
-        ggg3()
+        create()
+        migrate()
+        addNewObject()
     }
 }
 
