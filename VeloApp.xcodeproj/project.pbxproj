@@ -10,6 +10,7 @@
 		22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B3D1C76A67800F58A86 /* RLMSupport.swift */; };
 		22236B461C77336D00F58A86 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22236B451C77336D00F58A86 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22236B481C77AF4E00F58A86 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B471C77AF4E00F58A86 /* Engine.swift */; };
+		22335C021C78E10300E5CE68 /* DataSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C011C78E10300E5CE68 /* DataSources.swift */; };
 		22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223CA1C6CB54500F74F81 /* AppDelegate.swift */; };
 		22A223CD1C6CB54500F74F81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223CC1C6CB54500F74F81 /* ViewController.swift */; };
 		22A223D01C6CB54500F74F81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22A223CE1C6CB54500F74F81 /* Main.storyboard */; };
@@ -55,6 +56,7 @@
 		22236B3D1C76A67800F58A86 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		22236B451C77336D00F58A86 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		22236B471C77AF4E00F58A86 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Engine.swift; path = VeloApp/Engine.swift; sourceTree = "<group>"; };
+		22335C011C78E10300E5CE68 /* DataSources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSources.swift; sourceTree = "<group>"; };
 		22A223C71C6CB54500F74F81 /* VeloApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VeloApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22A223CA1C6CB54500F74F81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22A223CC1C6CB54500F74F81 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				22A223CC1C6CB54500F74F81 /* ViewController.swift */,
 				22A224001C6D304A00F74F81 /* Models.swift */,
 				22A223CE1C6CB54500F74F81 /* Main.storyboard */,
+				22335C011C78E10300E5CE68 /* DataSources.swift */,
 				22A223D11C6CB54500F74F81 /* Assets.xcassets */,
 				22A223D31C6CB54500F74F81 /* LaunchScreen.storyboard */,
 				22A223D61C6CB54500F74F81 /* Info.plist */,
@@ -304,6 +307,7 @@
 				22A223CD1C6CB54500F74F81 /* ViewController.swift in Sources */,
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
+				22335C021C78E10300E5CE68 /* DataSources.swift in Sources */,
 				22236B481C77AF4E00F58A86 /* Engine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

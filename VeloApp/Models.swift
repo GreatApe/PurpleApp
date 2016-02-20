@@ -142,6 +142,30 @@ extension RLMRealm {
     }
 }
 
+extension RLMCollection {
+    subscript(i: Int) -> RLMObject {
+        return self[UInt(i)] as! RLMObject
+    }
+    
+    var count: Int { return Int(count) }
+}
+
+extension RLMObject {
+    var array: [AnyObject] {
+        return objectSchema.properties.map { prop in self[prop.name]! }
+    }
+    
+    var dict: [String : AnyObject] {
+        var result = [String : AnyObject]()
+        for propName in objectSchema.properties.map({ $0.name }) {
+            result[propName] = self[propName]
+        }
+        
+        return result
+    }
+}
+
+
 // Meta
 // Elk, Elque
 // Moose

@@ -22,22 +22,79 @@ struct Platform {
 class Engine {
     static var shared = Engine()
     
-    var realm: RLMRealm
+    private var realm: RLMRealm    
+    private var tableClassForId = [String : String]()
     
     private init() {
         let schema: RLMSchema? = realmExists("store") ? nil : RLMRealm.defaultRealm().schema
         realm = try! RLMRealm.dynamicRealm("store", schema: schema)
     }
     
-    func newTableClass(id: String) {
-        let rowName = "Row" + id
+    // MARK: Access methods
+
+    func tableHeader(tableId: String) -> [String] {
+        return tableProperties(tableId).map { $0.name }.filter { $0 != "index" }
+    }
+
+    func tableRowCount(tableId: String) -> Int {
+        return tableRowsArray(tableId).count
+    }
+
+    func tableCell(tableId: String, rowIndex: Int, propertyId: String) -> AnyObject {
+        return tableRowObject(tableId, rowIndex: rowIndex)[propertyId]!
+    }
+
+    func tableRow(tableId: String, rowIndex: Int) -> [String : AnyObject] {
+        return tableRowObject(tableId, rowIndex: rowIndex).dict
+    }
+    
+    func tableColumn(tableId: String, propertyId: String) -> (type: RLMPropertyType, values: [AnyObject]) {
+        let props = tableProperties(tableId)
+        let columnIndex = props.map { $0.name }.indexOf(propertyId)!
+        let type = props[columnIndex].type
+        let values = tableColumn(tableId, columnIndex: columnIndex)
+
+        return (type, values)
+    }
+
+    func tableColumn(tableId: String, columnIndex: Int) -> [AnyObject] {
+        return tableRows(tableId).map { row in row[columnIndex] }
+    }
+    
+    func tableRows(tableId: String) -> [[AnyObject]] {
+        let tableClass = tableClassForId[tableId]!
+        let rows = realm.objectWithClassName(tableClass, forPrimaryKey: tableId)["rows"] as! RLMArray
+
+        return rows.map { row in row.array }
+    }
+    
+    // Internal
+    
+    func tableRowObject(tableId: String, rowIndex: Int) -> RLMObject {
+        return tableRowsArray(tableId)[rowIndex]
+    }
+    
+    func tableRowsArray(tableId: String) -> RLMArray {
+        let tableClass = tableClassForId[tableId]!
+        return realm.objectWithClassName(tableClass, forPrimaryKey: tableId)["rows"] as! RLMArray
+    }
+    
+    func tableProperties(tableId: String) -> [RLMProperty] {
+        let rowClass = "Row" + tableClassForId[tableId]!
+        return realm.schema.schemaForClassName(rowClass)!.properties
+    }
+    
+    // MARK: Schema editing methods
+    
+    func newTableClass(tableClass: String) {
+        let rowClass = "Row" + tableClass
         let rowProps = realm.schema["RowBase"].properties
-        let rowSchema = RLMObjectSchema(className: rowName, objectClass: RowBase.self, properties: rowProps)
+        let rowSchema = RLMObjectSchema(className: rowClass, objectClass: RowBase.self, properties: rowProps)
 
         let tableBaseProps = realm.schema["TableBase"].properties
-        let rowProp = RLMProperty(name: "rows", type: .Array, objectClassName: rowName, indexed: false, optional: false)
+        let rowProp = RLMProperty(name: "rows", type: .Array, objectClassName: rowClass, indexed: false, optional: false)
         let tableProps = tableBaseProps.filter { prop in prop.name != "rows" } + [rowProp]
-        let tableSchema = RLMObjectSchema(className: "Table" + id, objectClass: TableBase.self, properties: tableProps)
+        let tableSchema = RLMObjectSchema(className: tableClass, objectClass: TableBase.self, properties: tableProps)
 
         realm.schema.objectSchema += [tableSchema, rowSchema]
 
@@ -56,6 +113,10 @@ class Engine {
         realm = try! RLMRealm.dynamicRealm("store")
     }
     
+    func addProperty(type: RLMPropertyType, toTable tableId: String, value: AnyObject? = nil) -> String {
+        return addProperty(type, to: tableClassForId[tableId]!, value: value)
+    }
+    
     func addProperty(type: RLMPropertyType, to className: String, value: AnyObject? = nil) -> String {
         let name = "prop-" + String(Int(arc4random() % 1000))
         let prop = RLMProperty(name: name, type: type, objectClassName: nil, indexed: false, optional: false)
@@ -66,7 +127,8 @@ class Engine {
     }
     
     func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
-        let objectSchema = realm.schema[className]
+        let rowClassName = "Row" + className
+        let objectSchema = realm.schema[rowClassName]
         objectSchema.properties += [property]
         
         let config = realm.configuration
@@ -77,32 +139,37 @@ class Engine {
             guard let value = value else { return }
             
             if oldVersion < newVersion {
-                migration.enumerateObjects(className) { oldObject, newObject in
+                migration.enumerateObjects(rowClassName) { oldObject, newObject in
                     newObject?[property.name] = value
                 }
             }
         }
         
         RLMRealm.migrateRealm(config)
+        realm = try! RLMRealm.dynamicRealm("store")
     }
     
-    func createTable(tableClassName: String, id: String) -> RLMObject {
-        return realm.createObject(tableClassName, withValue: ["id" : id])
+    // MARK: Creation methods
+    
+    func makeTable() -> String {
+        let tableId = "tableId" + String(Int(arc4random() % 1000))
+        let tableClass = "TableClass" + String(Int(arc4random() % 100))
+        
+        newTableClass(tableClass)
+        realm.beginWriteTransaction()
+        createTable(tableClass, tableId: tableId)
+        try! realm.commitWriteTransaction()
+        
+        return tableId
     }
     
-    func tableHeader(table: RLMObject) -> [String] {
-        let rows = table["rows"] as! RLMArray
-        return realm.schema.schemaForClassName(rows.objectClassName)!.properties.map { $0.name }.filter { $0 != "index" }
+    // Internal
+    
+    func createTable(tableClassName: String, tableId: String) -> RLMObject {
+        tableClassForId[tableId] = tableClassName
+        return realm.createObject(tableClassName, withValue: ["id" : tableId])
     }
     
-    func table(className: String, id: String) -> RLMObject {
-        return realm.objectWithClassName(className, forPrimaryKey: id)
-    }
-    
-    func tableRows(tableId: String) -> RLMArray {
-        fatalError()
-    }
-
     // Helper methods
     
     // Debugging methods
@@ -121,26 +188,28 @@ class Engine {
     func createRandomTable(className: String, name: String? = nil) -> RLMObject {
         realm.beginWriteTransaction()
         
-        let t = createTable(className, id: name ?? "abcd" + String(Int(arc4random() % 1000)))
-        print("Created table: \(t)")
+        let t = createTable(className, tableId: name ?? "abcd" + String(Int(arc4random() % 10000)))
         
-        for _ in 0..<3 {
+        for _ in 0..<30 {
             addRandomRowToTable(t)
         }
         
-        print("Added rows table: \(t)")
-
         try! realm.commitWriteTransaction()
         
         return t
     }
     
+    func addRandomRowToTable(tableId: String) {
+        realm.beginWriteTransaction()
+        let table = realm.objectWithClassName(tableClassForId[tableId]!, forPrimaryKey: tableId)
+        addRandomRowToTable(table)
+        try! realm.commitWriteTransaction()
+    }
+
     func addRandomRowToTable(table: RLMObject) {
         let rows = table["rows"] as! RLMArray
         
         if let row = createRandomRow(rows.objectClassName) {
-            print("Adding object row: \(row)")
-
             rows.addObject(row)
         }
     }
@@ -153,8 +222,9 @@ class Engine {
         var value = [String : AnyObject]()
         
         for prop in objectSchema.properties {
-            if prop.name == "id" {
-                value[prop.name] = NSUUID().UUIDString
+            if prop.name == "index" {
+//                value[prop.name] = NSUUID().UUIDString
+                value[prop.name] = "ndx" + String(Int(arc4random() % 10000))
             }
             else {
                 switch prop.type {
@@ -164,8 +234,7 @@ class Engine {
                 }
             }
         }
-        print("Creating random row: \(value)")
-
+        
         return realm.createObject(className, withValue: value)
     }
 }

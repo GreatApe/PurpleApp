@@ -10,41 +10,58 @@ import UIKit
 import Realm
 
 class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        
-//        Engine.shared.newTableClass("XXX")
-        
-//        Engine.shared.createRandomTable("TableXXX", name: "xyz")
-
-//        Engine.shared.describe()
-
-//        Engine.shared.addProperty(.Double, to: "TableBase")
-        Engine.shared.addProperty(.Double, to: "RowBase")
-//
-        Engine.shared.describe()
-
-        Engine.shared.createRandomTable("TableBase", name: "xyz")
-
-//        Engine.shared.createRandomTable("TableXXX", name: "xyz")
-
-        Engine.shared.describe()
-    }
     
+    @IBOutlet weak var canvas: UIScrollView!
+    
+    private var veloTables = [VeloTableViewController]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        canvas.contentSize = CGSize(width: 2000, height: 2000)
+    }
+
+    // MARK: User actions
+    
+    @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
+        if sender.state == .Began {
+            newTable(sender.locationInView(canvas))
+        }
+    }
+
+    func newTable(point: CGPoint) {
+        if let tvc = storyboard?.instantiateViewControllerWithIdentifier("VeloTable") as? VeloTableViewController {
+            let tableId = Engine.shared.makeTable()
+            Engine.shared.addProperty(.Double, toTable: tableId)
+            Engine.shared.addRandomRowToTable(tableId)
+            
+            tvc.tableId = tableId
+            let size = CGSize(width: 500, height: 300)
+            tvc.view.frame.size = size
+            
+            let container = UIView(frame: CGRect(origin: point, size: size))
+            canvas.addSubview(container)
+            tvc.willMoveToParentViewController(self)
+            container.addSubview(tvc.view)
+            addChildViewController(tvc)
+            tvc.didMoveToParentViewController(self)
+            
+            veloTables.append(tvc)
+        }
     }
     
-    var veloTables = [VeloTableViewController]()
+    @IBAction func tappedButton() {
+//        Engine.shared.addProperty(.Double, to: "XXX")
+//        Engine.shared.describe()
+        
+        veloTables.forEach { $0.reloadAll() }
+    }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let veloTable = segue.destinationViewController as? VeloTableViewController {
-            veloTables.append(veloTable)
-            
-            veloTable.tableClassName = "TableBase"
-            veloTable.tableId = "xyz"
-        }
+    @IBAction func tappedOtherButton() {
+        Engine.shared.describe()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -94,34 +111,102 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var leftIndexTableView: UITableView!
     @IBOutlet weak var coreTableView: UITableView!
     @IBOutlet weak var computedColumnsTableView: UITableView!
+    @IBOutlet weak var addComputedColumns: UIStackView!
+
+    @IBOutlet weak var computedColumnsWidth: NSLayoutConstraint!
+
+    @IBOutlet weak var addComputedColumnsWidth: NSLayoutConstraint!
     
-    let leftIndexDataSource = IndexDataSource()
-    let coreTableDataSource = CoreDataSource()
-    let computedColumnsDataSource = ComputedColumnsDataSource()
+    @IBOutlet weak var mainStack: UIStackView!
+    @IBOutlet weak var computedColumns: UIStackView!
+    
+    private let leftIndexDataSource = IndexDataSource()
+    private let coreTableDataSource = CoreDataSource()
+    private let computedColumnsDataSource = ComputedColumnsDataSource()
     
     var tableId: String!
-    var tableClassName: String!
     
-    var table: RLMObject!
+    // temp
+    let cellWidth: CGFloat = 120
+    let addComputedColumnsButtonWidth: CGFloat = 70
+    var showAddComputedColumns = true
+
+    var intrinsicSize: CGSize {
+        let margin = mainStack.spacing
+        let coreWidth = CGFloat(Engine.shared.tableHeader(tableId).count)*cellWidth
+        let width = leftIndexTableView.frame.width + coreWidth + computedWidth() + addComputedWidth() + 2*margin
+        
+        return CGSize(width: width, height: 500)
+    }
+    
+    private func computedWidth() -> CGFloat {
+        return CGFloat(computedColumnsDataSource.columns)*cellWidth
+    }
+
+    private func addComputedWidth() -> CGFloat {
+        return showAddComputedColumns ? addComputedColumnsButtonWidth : 0
+    }
+    
+    func reloadAll() {
+        view.frame.size.width = intrinsicSize.width
+
+        reloadIndex()
+        reloadCore()
+        reloadComputed()
+    }
+
+    private func reloadIndex() {
+        leftIndexTableView.reloadData()
+    }
+    
+    private func reloadCore() {
+        mainStack.layoutIfNeeded()
+        coreHeaderRow.setupFields(Engine.shared.tableHeader(tableId))
+        
+        coreTableView.reloadData()
+    }
+    
+    private func reloadComputed() {
+        computedColumnsWidth.constant = computedWidth()
+        addComputedColumnsWidth.constant = addComputedWidth()
+
+        computedColumns.layoutIfNeeded()
+        addComputedColumns.layoutIfNeeded()
+        
+        let columns = computedColumnsDataSource.columns
+        computedHeaderRow.setupFields((0..<columns).map{ "f" + String($0) })
+        
+        if columns > 0 {
+            computedColumnsTableView.reloadData()
+        }
+    }
+    
+//    func arrangeComputed() {
+//        computedColumnsWidth.constant = computedWidth()
+//        addComputedColumnsWidth.constant = addComputedWidth()
+//        
+//        computedHeaderRow.arrange()
+//        for row in 0..<computedColumnsTableView.numberOfRowsInSection(0) {
+//            let indexPath = NSIndexPath(forRow: row, inSection: 0)
+//            (computedColumnsTableView.cellForRowAtIndexPath(indexPath) as! VeloRow).arrange()
+//        }
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        table = Engine.shared.table(tableClassName, id: tableId)
-        
-        coreHeaderRow.setupFields(Engine.shared.tableHeader(table))
-        
         leftIndexTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        leftIndexDataSource.data = table["rows"] as! RLMArray
+        leftIndexDataSource.tableId = tableId
         leftIndexTableView.dataSource = leftIndexDataSource
         
+        coreHeaderRow.color = UIColor.coreHeaderCell()
         coreTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        coreTableDataSource.data = table["rows"] as! RLMArray
+        coreTableDataSource.tableId = tableId
         coreTableView.dataSource = coreTableDataSource
 
+        computedHeaderRow.color = UIColor.computedHeaderCell()
         computedColumnsTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
-        computedColumnsDataSource.data = table["rows"] as! RLMArray
-        
+        computedColumnsDataSource.tableId = tableId
         
 //        let valueCompDiff = Computation(signature: ["Double", "Double"]) { values in
 //            return (values[0] as! Double) - (values[1] as! Double)
@@ -139,13 +224,16 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
 //        computedColumnsDataSource.computations = [comp1, comp2]
         computedColumnsTableView.dataSource = computedColumnsDataSource
         
-        computedHeaderRow.setupFields(["diff", "sum"])
+//        computedHeaderRow.setupFields(["diff", "sum"])
+        
+        reloadAll()
     }
 
     // MARK: From containing View Controller
 
     func canvasScrolled(offset: CGFloat) {
-        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - 60)
+        let stopWidth = addComputedColumnsWidth.constant + mainStack.spacing
+        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
     }
     
     // MARK: UITableViewDelegate
@@ -161,147 +249,27 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     @IBAction func tableNameChanged(sender: UITextField) {
         sender.invalidateIntrinsicContentSize()
     }
-}
+    
+    @IBAction func tappedButton() {
+        Engine.shared.addProperty(.Double, toTable: tableId)
 
-protocol VeloRow: class {
-    var subCells: [UIButton] { get set }
-    func addSubview(_: UIView)
-    var bounds: CGRect { get }
-}
-
-extension VeloRow {
-    func arrange() {
-        let w = bounds.width/CGFloat(subCells.count)
-        for (index, subCell) in subCells.enumerate() {
-            subCell.frame = CGRect(x: CGFloat(index)*w, y: 0, width: w, height: bounds.height)
-        }
+        view.frame.size.width = intrinsicSize.width
+        reloadCore()
     }
     
-    func addSubCell() {
-        let subCell = UIButton()
-        subCell.titleLabel?.hidden = false
-        addSubview(subCell)
-        subCells.append(subCell)
-        subCell.backgroundColor = UIColor.random()
-    }
-    
-    func setupFields(labels: [String]) {
-        if subCells.count == 0 {
-            for _ in 0..<labels.count {
-                addSubCell()
-            }
-            arrange()
-        }
+    @IBAction func tappedOtherButton() {
+        computedColumnsDataSource.columns = (computedColumnsDataSource.columns + 1) % 4
         
-        for (label, subCell) in zip(labels, subCells) {
-            subCell.setTitle(label, forState: .Normal)
-        }
+        view.frame.size.width = intrinsicSize.width
+        reloadComputed()
+    }
+    
+    @IBAction func tappedThirdButton() {
+        showAddComputedColumns = !showAddComputedColumns
+        view.frame.size.width = intrinsicSize.width
+        reloadComputed()
     }
 }
 
-class VeloView: UIView, VeloRow {
-    var subCells = [UIButton]()
-}
-
-class VeloCell: UITableViewCell, VeloRow {
-    class var identifier: String { return "VeloCell" }
-    
-    var subCells = [UIButton]()
-}
-
-extension RLMCollection {
-    subscript(i: Int) -> RLMObject {
-        return self[UInt(i)] as! RLMObject
-    }
-    
-    var count: Int { return Int(count) }
-}
-
-// MARK: Left Index Table View
-
-class IndexDataSource: NSObject, UITableViewDataSource {
-    var data: RLMCollection!
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(VeloCell.identifier, forIndexPath: indexPath) as! VeloCell
-        let label = data[indexPath.row]["index"] as! String
-        cell.setupFields([label])
-        
-        return cell
-    }
-}
-
-// MARK: Core Table View
-
-class CoreDataSource: NSObject, UITableViewDataSource {
-    var data: RLMCollection!
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(VeloCell.identifier, forIndexPath: indexPath) as! VeloCell
-        
-        let row = data[indexPath.row]
-//        cell.setupFields(row.objectSchema.properties.filter { $0.name != "index" }.map { "\(row[$0.name]!)" })
-        
-        return cell
-    }
-}
-
-// MARK: Computed Columns Table View
-
-class ComputedColumnsDataSource: NSObject, UITableViewDataSource {
-    var data: RLMCollection!
-//    var computations: [ElementComputation]?
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(VeloCell.identifier, forIndexPath: indexPath) as! VeloCell
-        
-//        var texts = [String]()
-//        
-//        if let row = input?.row(indexPath.row), computations = computations {
-//            for comp in computations {
-//                comp.apply(row)
-//                texts.append("\(comp.apply(row))")
-//            }
-//        }
-//        
-//        cell.setupFields(texts)
-        
-        return cell
-    }
-}
-
-extension UIColor {
-    class func random() -> UIColor {
-        func randomFloat() -> CGFloat {
-            return CGFloat(arc4random() % 256)/256
-        }
-        
-        return UIColor(red: randomFloat(), green: randomFloat(), blue: randomFloat(), alpha: 1.0)
-    }
-}
 
 
