@@ -28,6 +28,20 @@
                                                 <rect key="frame" x="1000" y="60" width="240" height="128"/>
                                                 <color key="backgroundColor" red="0.98594677450000001" green="0.0" blue="0.039444983009999997" alpha="1" colorSpace="calibratedRGB"/>
                                             </view>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-Ee-Q43">
+                                                <rect key="frame" x="8" y="8" width="94" height="55"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="tappedButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="gIn-Hu-U0W"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIX-Mq-Gz7">
+                                                <rect key="frame" x="12" y="71" width="87" height="55"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="tappedOtherButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="kQA-qf-hPG"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
@@ -52,20 +66,6 @@
                                     <outlet property="delegate" destination="x6m-zP-mzm" id="EHP-yS-PZZ"/>
                                 </connections>
                             </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIX-Mq-Gz7">
-                                <rect key="frame" x="0.0" y="0.0" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="tappedOtherButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="kQA-qf-hPG"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-Ee-Q43">
-                                <rect key="frame" x="0.0" y="0.0" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="tappedButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="gIn-Hu-U0W"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.99771857261657715" green="0.90414530038833618" blue="0.91576111316680908" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -89,59 +89,7 @@
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-380" y="2521"/>
-        </scene>
-        <!--Velo Canvas View Controller-->
-        <scene sceneID="NDy-47-U0U">
-            <objects>
-                <viewController id="dvS-Dn-9NQ" customClass="VeloCanvasViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="IU9-dr-UAh"/>
-                        <viewControllerLayoutGuide type="bottom" id="uEn-HU-3x3"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="HCK-gP-Rav">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="53r-CZ-GfN">
-                                <rect key="frame" x="10" y="71" width="66" height="30"/>
-                                <state key="normal" title="Add table"/>
-                                <connections>
-                                    <action selector="tappedOtherButton" destination="dvS-Dn-9NQ" eventType="touchUpInside" id="vDA-ym-hig"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wql-Vw-LNz">
-                                <rect key="frame" x="10" y="20" width="91" height="30"/>
-                                <state key="normal" title="Add property"/>
-                                <connections>
-                                    <action selector="tappedButton" destination="dvS-Dn-9NQ" eventType="touchUpInside" id="WRt-Vz-CcA"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rx8-ry-cIv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1024" y="2569"/>
-        </scene>
-        <!--MyVC-->
-        <scene sceneID="X0M-gf-Meh">
-            <objects>
-                <viewController id="rb4-ru-S2J" customClass="MyVC" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="9DH-y4-Zq1"/>
-                        <viewControllerLayoutGuide type="bottom" id="J8a-lL-Pj0"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="p3e-6K-TQm">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eHv-5i-QQe" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1024" y="3238"/>
+            <point key="canvasLocation" x="-362" y="2495"/>
         </scene>
         <!--Velo Table View Controller-->
         <scene sceneID="M6I-1m-rvt">
