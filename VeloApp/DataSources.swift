@@ -23,11 +23,10 @@ extension VeloRow {
     }
     
     func arrange() {
-        let width = bounds.width/(CGFloat(subCells.count) - 0.5)
+        let w = bounds.width/CGFloat(subCells.count)
         
         for (index, subCell) in subCells.enumerate() {
-            let w = index == subCells.count ? width/2 : width
-            subCell.frame = CGRect(x: CGFloat(index)*width, y: 0, width: w, height: bounds.height).insetBy(dx: margin, dy: margin)
+            subCell.frame = CGRect(x: CGFloat(index)*w, y: 0, width: w, height: bounds.height).insetBy(dx: margin, dy: margin)
         }
     }
     
@@ -40,15 +39,15 @@ extension VeloRow {
     }
     
     func setupFields(labels: [String]) {
-        while subCells.count < labels.count + 1 {
+        while subCells.count < labels.count {
             addSubCell()
         }
         
-        while subCells.count > labels.count + 1 {
+        while subCells.count > labels.count {
             subCells.removeLast().removeFromSuperview()
         }
         
-        for (label, subCell) in zip(labels, subCells.dropLast()) {
+        for (label, subCell) in zip(labels, subCells) {
             subCell.setTitle(label, forState: .Normal)
         }
         
