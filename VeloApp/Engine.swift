@@ -22,7 +22,7 @@ struct Platform {
 class Engine {
     static var shared = Engine()
     
-    private var realm: RLMRealm    
+    private var realm: RLMRealm
     private var tableClassForId = [String : String]()
     
     private init() {
@@ -153,7 +153,7 @@ class Engine {
     
     func makeTable() -> String {
         let tableId = "tableId" + String(Int(arc4random() % 1000))
-        let tableClass = "TableClass" + String(Int(arc4random() % 100))
+        let tableClass = "TableClass" + String(Int(arc4random() % 10000))
         
         newTableClass(tableClass)
         realm.beginWriteTransaction()

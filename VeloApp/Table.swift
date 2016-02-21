@@ -1,5 +1,5 @@
 //
-//  VeloTableViewController.swift
+//  Table.swift
 //  VeloApp
 //
 //  Created by Gustaf Kugelberg on 11/02/16.
@@ -7,71 +7,6 @@
 //
 
 import UIKit
-import Realm
-
-class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
-    
-    @IBOutlet weak var canvas: UIScrollView!
-    
-    private var veloTables = [VeloTableViewController]()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        canvas.contentSize = CGSize(width: 2000, height: 2000)
-    }
-
-    // MARK: User actions
-    
-    @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
-        if sender.state == .Began {
-            newTable(sender.locationInView(canvas))
-        }
-    }
-
-    func newTable(point: CGPoint) {
-        if let tvc = storyboard?.instantiateViewControllerWithIdentifier("VeloTable") as? VeloTableViewController {
-            let tableId = Engine.shared.makeTable()
-            Engine.shared.addProperty(.Double, toTable: tableId)
-            Engine.shared.addRandomRowToTable(tableId)
-            
-            tvc.tableId = tableId
-            let size = CGSize(width: 500, height: 300)
-            tvc.view.frame.size = size
-            
-            let container = UIView(frame: CGRect(origin: point, size: size))
-            canvas.addSubview(container)
-            tvc.willMoveToParentViewController(self)
-            container.addSubview(tvc.view)
-            addChildViewController(tvc)
-            tvc.didMoveToParentViewController(self)
-            
-            veloTables.append(tvc)
-        }
-    }
-    
-    @IBAction func tappedButton() {
-//        Engine.shared.addProperty(.Double, to: "XXX")
-//        Engine.shared.describe()
-        
-        veloTables.forEach { $0.reloadAll() }
-    }
-    
-    @IBAction func tappedOtherButton() {
-        Engine.shared.describe()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        for veloTable in veloTables {
-            if let tableContainer = veloTable.view.superview {
-                veloTable.canvasScrolled(scrollView.contentOffset.x - tableContainer.frame.minX)
-            }
-        }
-    }
-}
 
 func clamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
     if x > lower && x < upper {
@@ -111,14 +46,18 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var leftIndexTableView: UITableView!
     @IBOutlet weak var coreTableView: UITableView!
     @IBOutlet weak var computedColumnsTableView: UITableView!
-    @IBOutlet weak var addComputedColumns: UIStackView!
-
+    
+    @IBOutlet weak var addComputedColumnsHeader: VeloView!
+    @IBOutlet weak var addComputedColumns: VeloView!
+    
+    @IBOutlet weak var coreTableWidth: NSLayoutConstraint!
     @IBOutlet weak var computedColumnsWidth: NSLayoutConstraint!
-
     @IBOutlet weak var addComputedColumnsWidth: NSLayoutConstraint!
     
     @IBOutlet weak var mainStack: UIStackView!
     @IBOutlet weak var computedColumns: UIStackView!
+    
+    @IBOutlet weak var coreTableHeight: NSLayoutConstraint!
     
     private let leftIndexDataSource = IndexDataSource()
     private let coreTableDataSource = CoreDataSource()
@@ -130,48 +69,32 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     let cellWidth: CGFloat = 120
     let addComputedColumnsButtonWidth: CGFloat = 70
     var showAddComputedColumns = true
-
-    var intrinsicSize: CGSize {
-        let margin = mainStack.spacing
-        let coreWidth = CGFloat(Engine.shared.tableHeader(tableId).count)*cellWidth
-        let width = leftIndexTableView.frame.width + coreWidth + computedWidth() + addComputedWidth() + 2*margin
-        
-        return CGSize(width: width, height: 500)
-    }
-    
-    private func computedWidth() -> CGFloat {
-        return CGFloat(computedColumnsDataSource.columns)*cellWidth
-    }
-
-    private func addComputedWidth() -> CGFloat {
-        return showAddComputedColumns ? addComputedColumnsButtonWidth : 0
-    }
     
     func reloadAll() {
-        view.frame.size.width = intrinsicSize.width
-
         reloadIndex()
         reloadCore()
         reloadComputed()
     }
-
+    
     private func reloadIndex() {
         leftIndexTableView.reloadData()
     }
     
     private func reloadCore() {
-        mainStack.layoutIfNeeded()
+        coreTableWidth.constant = CGFloat(Engine.shared.tableHeader(tableId).count)*cellWidth
+        coreTableHeight.constant = min(CGFloat(Engine.shared.tableRowCount(tableId))*44, 600)
+        
+        view.layoutIfNeeded()
         coreHeaderRow.setupFields(Engine.shared.tableHeader(tableId))
         
         coreTableView.reloadData()
     }
     
     private func reloadComputed() {
-        computedColumnsWidth.constant = computedWidth()
-        addComputedColumnsWidth.constant = addComputedWidth()
+        computedColumnsWidth.constant = CGFloat(computedColumnsDataSource.columns)*cellWidth
+        addComputedColumnsWidth.constant = showAddComputedColumns ? addComputedColumnsButtonWidth : 0
 
-        computedColumns.layoutIfNeeded()
-        addComputedColumns.layoutIfNeeded()
+        view.layoutIfNeeded()
         
         let columns = computedColumnsDataSource.columns
         computedHeaderRow.setupFields((0..<columns).map{ "f" + String($0) })
@@ -179,6 +102,9 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
         if columns > 0 {
             computedColumnsTableView.reloadData()
         }
+        
+        addComputedColumns.setupFields(["f"])
+        addComputedColumnsHeader.setupFields(["+"])
     }
     
 //    func arrangeComputed() {
@@ -226,13 +152,23 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
         
 //        computedHeaderRow.setupFields(["diff", "sum"])
         
+        addComputedColumns.color = UIColor.computedCell()
+        addComputedColumnsHeader.color = UIColor.computedHeaderCell()
+    }
+    
+    private var didLayoutOnce = false
+    
+    override func viewDidLayoutSubviews() {
+        if didLayoutOnce { return }
+        didLayoutOnce = true
+        
         reloadAll()
     }
 
     // MARK: From containing View Controller
 
     func canvasScrolled(offset: CGFloat) {
-        let stopWidth = addComputedColumnsWidth.constant + mainStack.spacing
+        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
         leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
     }
     
@@ -252,22 +188,22 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     
     @IBAction func tappedButton() {
         Engine.shared.addProperty(.Double, toTable: tableId)
-
-        view.frame.size.width = intrinsicSize.width
         reloadCore()
     }
     
     @IBAction func tappedOtherButton() {
         computedColumnsDataSource.columns = (computedColumnsDataSource.columns + 1) % 4
-        
-        view.frame.size.width = intrinsicSize.width
         reloadComputed()
     }
     
     @IBAction func tappedThirdButton() {
         showAddComputedColumns = !showAddComputedColumns
-        view.frame.size.width = intrinsicSize.width
         reloadComputed()
+    }
+    
+    @IBAction func tappedFourthButton() {
+        Engine.shared.addRandomRowToTable(tableId)
+        reloadAll()
     }
 }
 

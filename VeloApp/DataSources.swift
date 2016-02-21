@@ -15,7 +15,7 @@ protocol VeloRow: class {
     var color: UIColor { get }
 }
 
-let margin: CGFloat = 2
+let margin: CGFloat = 1
 
 extension VeloRow {
     func updateColor() {
