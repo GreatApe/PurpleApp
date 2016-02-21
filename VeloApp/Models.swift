@@ -165,11 +165,9 @@ extension RLMObject {
     }
 }
 
-
 // Meta
 // Elk, Elque
 // Moose
 // Boss
 // Money
 // Hype, Hypr
-

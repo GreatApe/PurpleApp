@@ -53,7 +53,7 @@ class Engine {
         let columnIndex = props.map { $0.name }.indexOf(propertyId)!
         let type = props[columnIndex].type
         let values = tableColumn(tableId, columnIndex: columnIndex)
-
+        
         return (type, values)
     }
 

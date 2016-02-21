@@ -63,8 +63,6 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
             newTable(sender.locationInView(canvas))
         }
     }
-
-    
     
     @IBAction func tappedButton() {
         scrollView.contentSize.width = scrollView.contentSize.width + 200
@@ -84,24 +82,24 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        if scrollView.contentOffset.x + scrollView.frame.size.width - scrollView.contentSize.width > 200 {
+        if scrollView.dragging && scrollView.contentOffset.x + scrollView.frame.size.width - scrollView.contentSize.width > 100 {
             scrollView.scrollEnabled = false
             scrollView.scrollEnabled = true
-            
-            scrollView.contentOffset.x = scrollView.contentOffset.x + 200
+            scrollView.contentOffset.x = scrollView.contentOffset.x + 100
+
+            let newOffset = CGPoint(x: scrollView.contentOffset.x, y: scrollView.contentOffset.y)
+            scrollView.setContentOffset(newOffset, animated: false)
 
             UIView.animateWithDuration(0.2, animations: {
                 scrollView.backgroundColor = UIColor.whiteColor()
-//                self.canvasWidth.constant = self.canvasWidth.constant + 200
-//                scrollView.layoutIfNeeded()
-                
                 }) { _ in
-                    self.canvasWidth.constant = self.canvasWidth.constant + 200
+                    self.canvasWidth.constant = self.canvasWidth.constant + scrollView.frame.size.width
                     scrollView.layoutIfNeeded()
+                    
                     scrollView.backgroundColor = UIColor.lightGrayColor()
             }
         }
-    
+        
         for veloTable in veloTables {
             if let tableContainer = veloTable.view.superview {
                 veloTable.canvasScrolled(scrollView.contentOffset.x - tableContainer.frame.minX)
