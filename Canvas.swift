@@ -70,19 +70,20 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction func tappedButton() {
-//        scrollView.contentSize.width = scrollView.contentSize.width + 200
-//        print(scrollView.contentSize)
+        //        scrollView.contentSize.width = scrollView.contentSize.width + 200
+        //        print(scrollView.contentSize)
         
         veloTables.forEach { tabula in
-            tabula.selected = !tabula.selected
-            tabula.tabulaLayout.invalidateLayout()
+            tabula.layout.selected = !tabula.layout.selected
+            tabula.layout.invalidateLayout()
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            tabula.computedColumns = (tabula.computedColumns + 1) % 3
-            tabula.tabulaLayout.invalidateLayout()
+            let n = (tabula.layout.computedWidths.count + 1) % 3
+            tabula.layout.computedWidths = Array(count: n, repeatedValue: 60) + [30]
+            tabula.layout.invalidateLayout()
         }
 
 //        canvasWidth.constant = canvasWidth.constant + 200

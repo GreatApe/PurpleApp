@@ -98,7 +98,8 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="Hal-CE-Tnb">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableFlowLayout" customModule="VeloApp" customModuleProvider="target"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TableName" id="Nw5-r7-oGJ">
                                 <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
@@ -233,7 +234,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <color key="backgroundColor" red="0.99078726770000003" green="0.90263897179999997" blue="0.90835040810000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.97482359409332275" green="0.055288564413785934" blue="0.17432501912117004" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="customSize" width="49" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedCell" id="N83-hL-BZ1">
@@ -293,7 +294,7 @@
                         </connections>
                     </collectionView>
                     <connections>
-                        <outlet property="tabulaLayout" destination="WWP-ps-qt3" id="GDM-cL-7Aw"/>
+                        <outlet property="layout" destination="WWP-ps-qt3" id="yP7-7D-9qF"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J4Q-i2-zLs" userLabel="First Responder" sceneMemberID="firstResponder"/>

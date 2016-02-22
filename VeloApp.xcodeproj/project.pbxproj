@@ -13,7 +13,7 @@
 		22335C051C7907D800E5CE68 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C031C79070C00E5CE68 /* Canvas.swift */; };
 		22335C191C7A710D00E5CE68 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22335C181C7A710D00E5CE68 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */; };
-		22335C1D1C7B3ED600E5CE68 /* TableFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1C1C7B3ED600E5CE68 /* TableFlowLayout.swift */; };
+		22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */; };
 		22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1E1C7B65D400E5CE68 /* Extensions.swift */; };
 		22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223CA1C6CB54500F74F81 /* AppDelegate.swift */; };
 		22A223CD1C6CB54500F74F81 /* Table.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223CC1C6CB54500F74F81 /* Table.swift */; };
@@ -63,7 +63,7 @@
 		22335C031C79070C00E5CE68 /* Canvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Canvas.swift; path = ../Canvas.swift; sourceTree = "<group>"; };
 		22335C181C7A710D00E5CE68 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
 		22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabulaViewController.swift; sourceTree = "<group>"; };
-		22335C1C1C7B3ED600E5CE68 /* TableFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableFlowLayout.swift; sourceTree = "<group>"; };
+		22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableLayout.swift; sourceTree = "<group>"; };
 		22335C1E1C7B65D400E5CE68 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		22A223C71C6CB54500F74F81 /* VeloApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VeloApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22A223CA1C6CB54500F74F81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -131,7 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				22236B3D1C76A67800F58A86 /* RLMSupport.swift */,
-				22335C1C1C7B3ED600E5CE68 /* TableFlowLayout.swift */,
+				22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */,
 				22335C1E1C7B65D400E5CE68 /* Extensions.swift */,
 				22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */,
 				22A223CA1C6CB54500F74F81 /* AppDelegate.swift */,
@@ -321,7 +321,7 @@
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
 				22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */,
-				22335C1D1C7B3ED600E5CE68 /* TableFlowLayout.swift in Sources */,
+				22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */,
 				22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */,
 				22335C021C78E10300E5CE68 /* DataSources.swift in Sources */,
 				22236B481C77AF4E00F58A86 /* Engine.swift in Sources */,

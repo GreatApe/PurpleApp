@@ -9,13 +9,20 @@
 import UIKit
 
 class TabulaViewController: UICollectionViewController {
-    @IBOutlet weak var tabulaLayout: TableFlowLayout!
+    @IBOutlet weak var layout: TableLayout!
     
     var tableId: String!
-        
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         //        collectionView.
+    }
+    override func viewDidLoad() {
+        layout.indexWidth = 100
+        layout.mainWidths = [80, 80, 80, 30]
+        layout.computedWidths = [60, 60, 30]
+        layout.rows = 5
+        layout.computedRows = 2
     }
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
