@@ -14,17 +14,19 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var canvasWidth: NSLayoutConstraint!
     @IBOutlet weak var canvasHeight: NSLayoutConstraint!
     
-    private var veloTables = [VeloTableViewController]()
+    private var veloTables = [TabulaViewController]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     func newTable(point: CGPoint) {
-        if let tvc = storyboard?.instantiateViewControllerWithIdentifier("VeloTable") as? VeloTableViewController {
-            let tableId = Engine.shared.makeTable()
-            Engine.shared.addProperty(.Double, toTable: tableId)
-            Engine.shared.addRandomRowToTable(tableId)
+        if let tvc = storyboard?.instantiateViewControllerWithIdentifier("Tabula") as? TabulaViewController {
+//            let tableId = Engine.shared.makeTable()
+//            Engine.shared.addProperty(.Double, toTable: tableId)
+//            Engine.shared.addRandomRowToTable(tableId)
+  
+            let tableId = "jlkj"
             
             tvc.tableId = tableId
             let container = UIView()
@@ -34,23 +36,26 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
             container.addSubview(tvc.view)
             addChildViewController(tvc)
             tvc.didMoveToParentViewController(self)
+
+            container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
+            tvc.view.frame = container.bounds
             
-            container.translatesAutoresizingMaskIntoConstraints = false
-            tvc.view.translatesAutoresizingMaskIntoConstraints = false
+//            container.translatesAutoresizingMaskIntoConstraints = false
+//            tvc.view.translatesAutoresizingMaskIntoConstraints = false
             
-//            container.backgroundColor = UIColor.redColor()
+            container.backgroundColor = UIColor.redColor()
 //            tvc.view.leftAnchor.constraintEqualToAnchor(container.leftAnchor, constant: 10).active = true
 //            tvc.view.rightAnchor.constraintEqualToAnchor(container.rightAnchor, constant: -10).active = true
 //            tvc.view.topAnchor.constraintEqualToAnchor(container.topAnchor, constant: 10).active = true
 //            tvc.view.bottomAnchor.constraintEqualToAnchor(container.bottomAnchor, constant: -10).active = true
             
-            tvc.view.leftAnchor.constraintEqualToAnchor(container.leftAnchor).active = true
-            tvc.view.rightAnchor.constraintEqualToAnchor(container.rightAnchor).active = true
-            tvc.view.topAnchor.constraintEqualToAnchor(container.topAnchor).active = true
-            tvc.view.bottomAnchor.constraintEqualToAnchor(container.bottomAnchor).active = true
-            
-            container.leftAnchor.constraintEqualToAnchor(canvas.leftAnchor, constant: point.x).active = true
-            container.topAnchor.constraintEqualToAnchor(canvas.topAnchor, constant: point.y).active = true
+//            tvc.view.leftAnchor.constraintEqualToAnchor(container.leftAnchor).active = true
+//            tvc.view.rightAnchor.constraintEqualToAnchor(container.rightAnchor).active = true
+//            tvc.view.topAnchor.constraintEqualToAnchor(container.topAnchor).active = true
+//            tvc.view.bottomAnchor.constraintEqualToAnchor(container.bottomAnchor).active = true
+//            
+//            container.leftAnchor.constraintEqualToAnchor(canvas.leftAnchor, constant: point.x).active = true
+//            container.topAnchor.constraintEqualToAnchor(canvas.topAnchor, constant: point.y).active = true
             
             veloTables.append(tvc)
         }
@@ -65,16 +70,26 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction func tappedButton() {
-        scrollView.contentSize.width = scrollView.contentSize.width + 200
-        print(scrollView.contentSize)
+//        scrollView.contentSize.width = scrollView.contentSize.width + 200
+//        print(scrollView.contentSize)
+        
+        veloTables.forEach { tabula in
+            tabula.selected = !tabula.selected
+            tabula.tabulaLayout.invalidateLayout()
+        }
     }
     
     @IBAction func tappedOtherButton() {
-        canvasWidth.constant = canvasWidth.constant + 200
-        scrollView.layoutIfNeeded()
-        
-//        Engine.shared.describe()
-        print(scrollView.contentSize)
+        veloTables.forEach { tabula in
+            tabula.computedColumns = (tabula.computedColumns + 1) % 3
+            tabula.tabulaLayout.invalidateLayout()
+        }
+
+//        canvasWidth.constant = canvasWidth.constant + 200
+//        scrollView.layoutIfNeeded()
+//        
+////        Engine.shared.describe()
+//        print(scrollView.contentSize)
     }
     
     required init?(coder aDecoder: NSCoder) {
