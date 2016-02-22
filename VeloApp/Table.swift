@@ -45,7 +45,9 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     
     @IBOutlet weak var leftIndexTableView: UITableView!
     @IBOutlet weak var coreTableView: UITableView!
+    
     @IBOutlet weak var computedColumnsTableView: UITableView!
+    @IBOutlet weak var addColumnTableView: UITableView!
     
     @IBOutlet weak var addComputedColumnsHeader: VeloView!
     @IBOutlet weak var addComputedColumns: VeloView!
@@ -61,6 +63,7 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     
     private let leftIndexDataSource = IndexDataSource()
     private let coreTableDataSource = CoreDataSource()
+    private let addColumnDataSource = AddColumnDataSource()
     private let computedColumnsDataSource = ComputedColumnsDataSource()
     
     var tableId: String!
@@ -73,6 +76,7 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
     func reloadAll() {
         reloadIndex()
         reloadCore()
+        reloadAddColumn()
         reloadComputed()
     }
     
@@ -88,6 +92,10 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
         coreHeaderRow.setupFields(Engine.shared.tableHeader(tableId))
         
         coreTableView.reloadData()
+    }
+    
+    private func reloadAddColumn() {
+        addColumnTableView.reloadData()
     }
     
     private func reloadComputed() {
@@ -129,6 +137,10 @@ class VeloTableViewController: UIViewController, UITableViewDelegate {
         coreTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
         coreTableDataSource.tableId = tableId
         coreTableView.dataSource = coreTableDataSource
+        
+        addColumnTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)
+        addColumnDataSource.tableId = tableId
+        addColumnTableView.dataSource = addColumnDataSource
 
         computedHeaderRow.color = UIColor.computedHeaderCell()
         computedColumnsTableView.registerClass(VeloCell.self, forCellReuseIdentifier: VeloCell.identifier)

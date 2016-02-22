@@ -113,6 +113,26 @@ class CoreDataSource: NSObject, UITableViewDataSource {
     }
 }
 
+class AddColumnDataSource: NSObject, UITableViewDataSource {
+    var tableId: String!
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Engine.shared.tableRowCount(tableId)
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier(VeloCell.identifier, forIndexPath: indexPath) as! VeloCell
+        cell.setupFields(["+"])
+        cell.color = UIColor.coreCell()
+        
+        return cell
+    }
+}
+
 // MARK: Computed Columns Table View
 
 class ComputedColumnsDataSource: NSObject, UITableViewDataSource {
