@@ -84,27 +84,18 @@ class TabulaViewController: UICollectionViewController {
         switch (row, column) {
         case (headerRow, indexColumn): cellId = "TableName"
         case (headerRow, mainColumns): cellId = "FieldName"
-        case (headerRow, addColumn): cellId = "Spacer"
         case (headerRow, computedColumns): cellId = "ComputedFieldName"
-        case (headerRow, addComputedColumn): cellId = "Spacer"
             
         case (mainRows, indexColumn): cellId = "RowIndex"
         case (mainRows, mainColumns): cellId = "Cell"
         case (mainRows, addColumn): cellId = "NewCell"
         case (mainRows, computedColumns): cellId = "ComputedColumnCell"
         case (mainRows, addComputedColumn): cellId = "NewComputedCell"
+
+        case (addRow, indexColumn), (addRow, mainColumns): cellId = "NewCell"
             
-        case (addRow, indexColumn): cellId = "NewCell"
-        case (addRow, mainColumns): cellId = "NewCell"
-        case (addRow, addColumn): cellId = "Spacer"
-        case (addRow, computedColumns): cellId = "Spacer"
-        case (addRow, addComputedColumn): cellId = "Spacer"
-            
-        case (computedRows, indexColumn): cellId = "Spacer"
         case (computedRows, mainColumns): cellId = "ComputedCell"
-        case (computedRows, addColumn): cellId = "Spacer"
         case (computedRows, computedColumns): cellId = "ComputedCell"
-        case (computedRows, addComputedColumn): cellId = "Spacer"
 
         default: cellId = "Spacer"
             

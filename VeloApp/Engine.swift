@@ -97,7 +97,7 @@ class Engine {
         let tableSchema = RLMObjectSchema(className: tableClass, objectClass: TableBase.self, properties: tableProps)
 
         realm.schema.objectSchema += [tableSchema, rowSchema]
-
+        
         migrate()
     }
     

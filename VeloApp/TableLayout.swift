@@ -18,12 +18,19 @@ class TableLayout: UICollectionViewLayout {
     var rows = 0
     var computedRows = 0
     
+    var fieldHeight: CGFloat = 30
+    var mainHeight: CGFloat = 40
+    var computedHeight: CGFloat = 60
+    
     private let borderMargin: CGFloat = 10
     private let largeMargin: CGFloat = 7
     private let smallMargin: CGFloat = 2
     
-    private var columnWidths = [CGFloat]()
     private var columnOffsets = [CGFloat]()
+    private var columnWidths = [CGFloat]()
+    
+    private var rowOffsets = [CGFloat]()
+    private var rowHeights = [CGFloat]()
     
     var duplicate: TableLayout {
         let result = TableLayout()
@@ -40,45 +47,29 @@ class TableLayout: UICollectionViewLayout {
     // MARK: Callbacks
     
     override func prepareLayout() {
-        columnWidths = [indexWidth] + mainWidths + computedWidths
-        
-        let offsetsMain = cumulate([indexWidth, largeMargin] + splice(mainWidths, margin: smallMargin), from: borderMargin)
+        let offsetsMain = cumulate([indexWidth, largeMargin] + splice(mainWidths, with: smallMargin), from: borderMargin)
         let offsetToComp = offsetsMain.last! + largeMargin + (selected ? mainWidths.last! : -smallMargin)
-        let offsetsComp = cumulate(splice(computedWidths, margin: smallMargin), from: offsetToComp)
+        let offsetsComp = cumulate(splice(computedWidths, with: smallMargin), from: offsetToComp)
         
         columnOffsets = offsetsMain + offsetsComp
+        columnWidths = [indexWidth] + mainWidths + computedWidths
+        
+        let rowOffsetsMain = cumulate([fieldHeight, 0] + alternate(mainHeight, with: smallMargin, count: rows), from: borderMargin)
+        let rowOffsetToComp = rowOffsetsMain.last! + largeMargin + (selected ? mainHeight : -smallMargin)
+        let rowOffsetsComp = cumulate(alternate(computedHeight, with: smallMargin, count: computedRows), from: rowOffsetToComp)
+
+        rowOffsets = rowOffsetsMain + rowOffsetsComp
+        
+        let mainHeights = Array(count: rows + 1, repeatedValue: mainHeight)
+        let computedHeights = Array(count: computedRows + 1, repeatedValue: computedHeight)
+        
+        rowHeights = [fieldHeight] + mainHeights + computedHeights
     }
     
     override func collectionViewContentSize() -> CGSize {
         let width = columnOffsets.last! + (selected ? columnWidths.last! : -smallMargin) + borderMargin
-        return CGSize(width: width, height: 400)
-    }
-    
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-        
-        let columnCount = columnWidths.count
-        
-        let row = indexPath.item/columnCount
-        let column = indexPath.item % columnCount
-        
-        let height: CGFloat = row == 0 ? 30 : 40
-        
-        let y: CGFloat
-        
-        switch row {
-        case 0: y = borderMargin
-        case 1..<1 + rows + 1: y = borderMargin + 30 + CGFloat(row - 1)*(40 + smallMargin)
-        default: y = borderMargin + 30 + largeMargin + CGFloat(row - (selected ? 1 : 2))*(40 + smallMargin)
-        }
-        
-        let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
-        let hideRow = !selected && row == 1 + rows
-
-        attr.alpha = hideColumn || hideRow ? 0.3 : 1
-        attr.frame = CGRect(x: columnOffsets[column], y: y, width: columnWidths[column], height: height)
-        
-        return attr
+        let height = rowOffsets.last! + borderMargin
+        return CGSize(width: width, height: height)
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -94,6 +85,23 @@ class TableLayout: UICollectionViewLayout {
         return result
     }
     
+    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        
+        let columnCount = columnWidths.count
+        
+        let row = indexPath.item/columnCount
+        let column = indexPath.item % columnCount
+        
+        let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
+        let hideRow = !selected && row == 1 + rows
+        
+        attr.alpha = hideColumn || hideRow ? 0.1 : 1
+        attr.frame = CGRect(x: columnOffsets[column], y: rowOffsets[row], width: columnWidths[column], height: rowHeights[row])
+                
+        return attr
+    }
+
 //    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
 //        let x = CGFloat(Int(proposedContentOffset.x) % 60)
 //        return proposedContentOffset
@@ -101,12 +109,18 @@ class TableLayout: UICollectionViewLayout {
     
     // MARK: Pure functions
     
-    private func splice(widths: [CGFloat], margin: CGFloat) -> [CGFloat] {
-        guard let last = widths.last else { return [] }
+    private func splice(values: [CGFloat], with value: CGFloat) -> [CGFloat] {
+        guard let last = values.last else { return [] }
         
-        return widths.dropLast().reduce([]) { result, new in result + [new, margin] } + [last]
+        return values.dropLast().reduce([]) { result, new in result + [new, value] } + [last]
     }
     
+    private func alternate(value: CGFloat, with otherValue: CGFloat, count: Int) -> [CGFloat] {
+        guard count > 0 else { return [] }
+        
+        return (0..<count).reduce([]) { result, new in result + [value, otherValue] } + [value]
+    }
+
     private func cumulate(distances: [CGFloat], from: CGFloat) -> [CGFloat] {
         var result = [CGFloat]()
         var cumulated = CGFloat()

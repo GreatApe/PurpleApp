@@ -213,7 +213,7 @@
                                 <size key="customSize" width="111" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="pEg-Z6-35m">
-                                <rect key="frame" x="0.0" y="60" width="111" height="50"/>
+                                <rect key="frame" x="0.0" y="70" width="111" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
@@ -238,7 +238,7 @@
                                 <size key="customSize" width="111" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewCell" id="CbI-U3-Goe">
-                                <rect key="frame" x="121" y="60" width="49" height="50"/>
+                                <rect key="frame" x="121" y="70" width="49" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="49" height="50"/>
@@ -249,10 +249,10 @@
                                 <size key="customSize" width="49" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedCell" id="N83-hL-BZ1">
-                                <rect key="frame" x="180" y="60" width="139" height="50"/>
+                                <rect key="frame" x="180" y="60" width="139" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="139" height="70"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J38-t6-iSz" userLabel="Label">
@@ -262,7 +262,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdb-hz-axw">
-                                            <rect key="frame" x="8" y="8" width="123" height="33"/>
+                                            <rect key="frame" x="8" y="31" width="123" height="33"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -273,14 +273,14 @@
                                 <color key="backgroundColor" red="0.673526685377836" green="0.79694942062857155" blue="0.77149348359559577" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="centerX" secondItem="N83-hL-BZ1" secondAttribute="centerX" id="6SN-4J-zi7"/>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="NdQ-Ww-yGb"/>
+                                    <constraint firstItem="xdb-hz-axw" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" constant="23" id="NdQ-Ww-yGb"/>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="leading" secondItem="N83-hL-BZ1" secondAttribute="leadingMargin" id="eAk-Wm-kU9"/>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="centerY" secondItem="N83-hL-BZ1" secondAttribute="centerY" id="fy2-M9-sA1"/>
+                                    <constraint firstItem="xdb-hz-axw" firstAttribute="centerY" secondItem="N83-hL-BZ1" secondAttribute="centerY" constant="12.5" id="fy2-M9-sA1"/>
                                 </constraints>
-                                <size key="customSize" width="139" height="50"/>
+                                <size key="customSize" width="139" height="70"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedColumnCell" id="67E-Ub-EJ0">
-                                <rect key="frame" x="329" y="60" width="139" height="50"/>
+                                <rect key="frame" x="329" y="70" width="139" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
@@ -305,7 +305,7 @@
                                 <size key="customSize" width="139" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewComputedCell" id="gN2-tR-itH">
-                                <rect key="frame" x="478" y="60" width="44" height="50"/>
+                                <rect key="frame" x="478" y="70" width="44" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
@@ -330,7 +330,7 @@
                                 <size key="customSize" width="44" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Spacer" id="zAs-Pw-joI">
-                                <rect key="frame" x="532" y="60" width="44" height="50"/>
+                                <rect key="frame" x="532" y="70" width="44" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
