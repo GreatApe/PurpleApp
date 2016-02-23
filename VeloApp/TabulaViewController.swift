@@ -112,3 +112,32 @@ class TabulaViewController: UICollectionViewController {
 //        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
     }
 }
+
+func clamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
+    if x > lower && x < upper {
+        return x
+    }
+    
+    return min(max(x, lower), upper)
+}
+
+//struct ElementComputation {
+//    let elementType: String
+//    let inputFields: [String]
+//    let computation: Computation
+//
+//    func apply(element: Object) -> AnyObject {
+//        let values = inputFields.map { element[$0]! }
+//
+//        return computation.function(values)
+//    }
+//}
+
+//struct Computation {
+//    let signature: [String]
+//    let function: [AnyObject] -> AnyObject
+//}
+//
+//func dropIndex(headerRow: [String]) -> [String] {
+//    return headerRow.filter { $0 != "id" }
+//}
