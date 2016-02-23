@@ -91,7 +91,7 @@ class TabulaViewController: UICollectionViewController {
         case (mainRows, indexColumn): cellId = "RowIndex"
         case (mainRows, mainColumns): cellId = "Cell"
         case (mainRows, addColumn): cellId = "NewCell"
-        case (mainRows, computedColumns): cellId = "ComputedCell"
+        case (mainRows, computedColumns): cellId = "ComputedColumnCell"
         case (mainRows, addComputedColumn): cellId = "NewComputedCell"
             
         case (addRow, indexColumn): cellId = "NewCell"

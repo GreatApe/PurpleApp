@@ -69,7 +69,7 @@ class TableLayout: UICollectionViewLayout {
         switch row {
         case 0: y = borderMargin
         case 1..<1 + rows + 1: y = borderMargin + 30 + CGFloat(row - 1)*(40 + smallMargin)
-        default: y = borderMargin + 30 + largeMargin + CGFloat(row - 1)*(40 + smallMargin) - (selected ? 0 : 1)
+        default: y = borderMargin + 30 + largeMargin + CGFloat(row - (selected ? 1 : 2))*(40 + smallMargin)
         }
         
         let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)

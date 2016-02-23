@@ -255,6 +255,12 @@
                                     <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J38-t6-iSz" userLabel="Label">
+                                            <rect key="frame" x="8" y="0.0" width="41" height="18"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdb-hz-axw">
                                             <rect key="frame" x="8" y="8" width="123" height="33"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -273,8 +279,33 @@
                                 </constraints>
                                 <size key="customSize" width="139" height="50"/>
                             </collectionViewCell>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedColumnCell" id="67E-Ub-EJ0">
+                                <rect key="frame" x="329" y="60" width="139" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgE-Qb-AyA">
+                                            <rect key="frame" x="8" y="8" width="123" height="33"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <color key="backgroundColor" red="0.67352668540000005" green="0.79694942059999996" blue="0.77149348360000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="centerY" secondItem="67E-Ub-EJ0" secondAttribute="centerY" id="fbL-FW-YwH"/>
+                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="top" secondItem="67E-Ub-EJ0" secondAttribute="topMargin" id="me7-UL-5rJ"/>
+                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="centerX" secondItem="67E-Ub-EJ0" secondAttribute="centerX" id="pCk-bn-GwY"/>
+                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="leading" secondItem="67E-Ub-EJ0" secondAttribute="leadingMargin" id="xeT-ib-rpd"/>
+                                </constraints>
+                                <size key="customSize" width="139" height="50"/>
+                            </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewComputedCell" id="gN2-tR-itH">
-                                <rect key="frame" x="329" y="60" width="44" height="50"/>
+                                <rect key="frame" x="478" y="60" width="44" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
@@ -299,7 +330,7 @@
                                 <size key="customSize" width="44" height="50"/>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Spacer" id="zAs-Pw-joI">
-                                <rect key="frame" x="383" y="60" width="44" height="50"/>
+                                <rect key="frame" x="532" y="60" width="44" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
