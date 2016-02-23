@@ -9,19 +9,35 @@
 import UIKit
 
 class TabulaViewController: UICollectionViewController {
-    @IBOutlet weak var layout: TableLayout!
-    
     var tableId: String!
+    
+    var selected = true { didSet { changedSelected() } }
+    
+    private var columns = 3
+    private var computedColumns = 2
+    private var rows = 3
+    private var computedRows = 2
+
+    private var layout: TableLayout { return collectionView!.collectionViewLayout as! TableLayout }
+    
+    // MARK: Setters
+    
+    private func changedSelected() {
+        let newLayout = layout.duplicate
+        newLayout.selected = selected
+        collectionView!.setCollectionViewLayout(newLayout, animated: true)
+    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         //        collectionView.
     }
+    
     override func viewDidLoad() {
         layout.indexWidth = 100
-        layout.mainWidths = [80, 80, 80, 30]
+        layout.mainWidths = [80, 80, 80, 80, 80, 30]
         layout.computedWidths = [60, 60, 30]
-        layout.rows = 5
+        layout.rows = 4
         layout.computedRows = 2
     }
     
@@ -34,6 +50,8 @@ class TabulaViewController: UICollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("NewCell", forIndexPath: indexPath)
         return cell
     }

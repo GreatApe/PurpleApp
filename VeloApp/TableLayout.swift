@@ -22,40 +22,61 @@ class TableLayout: UICollectionViewLayout {
     private let largeMargin: CGFloat = 7
     private let smallMargin: CGFloat = 2
     
+    private var columnWidths = [CGFloat]()
+    private var columnOffsets = [CGFloat]()
+    
+    var duplicate: TableLayout {
+        let result = TableLayout()
+        result.selected = selected
+        result.indexWidth = indexWidth
+        result.mainWidths = mainWidths
+        result.computedWidths = computedWidths
+        result.rows = rows
+        result.computedRows = computedRows
+        
+        return result
+    }
+    
     // MARK: Callbacks
     
     override func prepareLayout() {
-    }
-    
-    override func collectionViewContentSize() -> CGSize {
-        return CGSize(width: 600, height: 400)
-    }
-    
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let columnWidths = [indexWidth] + mainWidths + computedWidths
+        columnWidths = [indexWidth] + mainWidths + computedWidths
         
         let offsetsMain = cumulate([indexWidth, largeMargin] + splice(mainWidths, margin: smallMargin), from: borderMargin)
         let offsetToComp = offsetsMain.last! + largeMargin + (selected ? mainWidths.last! : -smallMargin)
         let offsetsComp = cumulate(splice(computedWidths, margin: smallMargin), from: offsetToComp)
-
-        let columnOffsets = offsetsMain + offsetsComp
         
+        columnOffsets = offsetsMain + offsetsComp
+    }
+    
+    override func collectionViewContentSize() -> CGSize {
+        let width = columnOffsets.last! + (selected ? columnWidths.last! : -smallMargin) + borderMargin
+        return CGSize(width: width, height: 400)
+    }
+    
+    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        
+        let columnCount = columnWidths.count
+        
+        let row = indexPath.item/columnCount
+        let column = indexPath.item % columnCount
+        
+        let hide = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
+        attr.alpha = hide ? 0 : 1
+        attr.frame = CGRect(x: columnOffsets[column], y: 10 + CGFloat(row)*50, width: columnWidths[column], height: 44)
+        
+        return attr
+    }
+    
+    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var result = [UICollectionViewLayoutAttributes]()
         
-        for item in 0..<rows*mainWidths.count {
+        for item in 0..<rows*columnWidths.count {
             let indexPath = NSIndexPath(forItem: item, inSection: 0)
-            let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-            
-            let columnCount = columnWidths.count
-            if item < rows*mainWidths.count {
-                let row = item/columnCount
-                let column = item % columnCount
-                
-                attr.alpha = 0.3
-                attr.frame = CGRect(x: columnOffsets[column], y: 10 + CGFloat(row)*50, width: columnWidths[column], height: 44)
+            if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
+                result.append(attr)
             }
-            
-            result.append(attr)
         }
         
         return result

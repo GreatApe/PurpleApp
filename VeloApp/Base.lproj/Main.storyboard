@@ -42,6 +42,13 @@
                                                     <action selector="tappedOtherButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="kQA-qf-hPG"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="edO-Fc-FRd">
+                                                <rect key="frame" x="32" y="134" width="46" height="30"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="tappedThirdButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="QY4-kb-AcH"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
@@ -98,7 +105,7 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="Hal-CE-Tnb">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.99633866548538208" green="0.96513330936431885" blue="0.96981418132781982" alpha="1" colorSpace="calibratedRGB"/>
                         <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TableName" id="Nw5-r7-oGJ">
@@ -293,9 +300,6 @@
                             <outlet property="delegate" destination="lqy-bL-fWz" id="yX3-KU-NdB"/>
                         </connections>
                     </collectionView>
-                    <connections>
-                        <outlet property="layout" destination="WWP-ps-qt3" id="yP7-7D-9qF"/>
-                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J4Q-i2-zLs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

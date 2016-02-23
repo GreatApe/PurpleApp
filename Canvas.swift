@@ -74,16 +74,18 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         //        print(scrollView.contentSize)
         
         veloTables.forEach { tabula in
-            tabula.layout.selected = !tabula.layout.selected
-            tabula.layout.invalidateLayout()
+            tabula.selected = !tabula.selected
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            let n = (tabula.layout.computedWidths.count + 1) % 3
-            tabula.layout.computedWidths = Array(count: n, repeatedValue: 60) + [30]
-            tabula.layout.invalidateLayout()
+//            let n = (tabula.layout.computedWidths.count + 1) % 3
+//            tabula.layout.computedWidths = Array(count: n, repeatedValue: 60) + [30]
+////            tabula.layout.invalidateLayout()
+//            
+//            tabula.collectionView?.setCollectionViewLayout(tabula.layout, animated: true)
+
         }
 
 //        canvasWidth.constant = canvasWidth.constant + 200
@@ -91,6 +93,12 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //        
 ////        Engine.shared.describe()
 //        print(scrollView.contentSize)
+    }
+    
+    @IBAction func tappedThirdButton() {
+        veloTables.forEach { tabula in
+            tabula.selected
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
