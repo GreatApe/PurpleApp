@@ -62,9 +62,21 @@ class TableLayout: UICollectionViewLayout {
         let row = indexPath.item/columnCount
         let column = indexPath.item % columnCount
         
-        let hide = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
-        attr.alpha = hide ? 0 : 1
-        attr.frame = CGRect(x: columnOffsets[column], y: 10 + CGFloat(row)*50, width: columnWidths[column], height: 44)
+        let height: CGFloat = row == 0 ? 30 : 40
+        
+        let y: CGFloat
+        
+        switch row {
+        case 0: y = borderMargin
+        case 1..<1 + rows + 1: y = borderMargin + 30 + CGFloat(row - 1)*(40 + smallMargin)
+        default: y = borderMargin + 30 + largeMargin + CGFloat(row - 1)*(40 + smallMargin) - (selected ? 0 : 1)
+        }
+        
+        let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
+        let hideRow = !selected && row == 1 + rows
+
+        attr.alpha = hideColumn || hideRow ? 0.3 : 1
+        attr.frame = CGRect(x: columnOffsets[column], y: y, width: columnWidths[column], height: height)
         
         return attr
     }
@@ -72,7 +84,7 @@ class TableLayout: UICollectionViewLayout {
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var result = [UICollectionViewLayoutAttributes]()
         
-        for item in 0..<rows*columnWidths.count {
+        for item in 0..<(rows + 1 + 1 + computedRows)*columnWidths.count {
             let indexPath = NSIndexPath(forItem: item, inSection: 0)
             if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
                 result.append(attr)
