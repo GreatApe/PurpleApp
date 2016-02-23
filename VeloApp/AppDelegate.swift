@@ -29,6 +29,12 @@ class AppDelegate: FirebaseAppDelegate {
             print(loginViewController.currentUser().description)
         }
         
+        
+        // temporary
+        let fireVC = FirebaseViewController()
+        window.makeKeyAndVisible()
+        window.rootViewController!.presentViewController(fireVC, animated: true, completion: nil)
+        
         return true
     }
     

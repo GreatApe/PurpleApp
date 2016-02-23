@@ -25,6 +25,9 @@
 		22A223EB1C6CB54500F74F81 /* VeloAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223EA1C6CB54500F74F81 /* VeloAppUITests.swift */; };
 		22A224011C6D304B00F74F81 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A224001C6D304A00F74F81 /* Models.swift */; };
 		9FF17E591C7CB38300563266 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FF17E581C7CB38300563266 /* GoogleService-Info.plist */; };
+		9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */; };
+		9FF17E701C7CFD1000563266 /* Gloss.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF17E641C7CFC4300563266 /* Gloss.framework */; };
+		9FF17E711C7CFD1000563266 /* Gloss.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF17E641C7CFC4300563266 /* Gloss.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +45,41 @@
 			remoteGlobalIDString = 22A223C61C6CB54500F74F81;
 			remoteInfo = VeloApp;
 		};
+		9FF17E631C7CFC4300563266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC39BF611B8A7AD200088CE0;
+			remoteInfo = Gloss;
+		};
+		9FF17E651C7CFC4300563266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DCF3008A1BDCA3FF003FBF15;
+			remoteInfo = GlossMacOSX;
+		};
+		9FF17E671C7CFC4300563266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A04168E71C0DF69900269A6A;
+			remoteInfo = "Gloss tvOS";
+		};
+		9FF17E691C7CFC4300563266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DC683ADB1C2C615D0035EAC3;
+			remoteInfo = "Gloss watchOS";
+		};
+		9FF17E721C7CFD1000563266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DC39BF601B8A7AD200088CE0;
+			remoteInfo = Gloss;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +90,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				22335C191C7A710D00E5CE68 /* Realm.framework in Embed Frameworks */,
+				9FF17E711C7CFD1000563266 /* Gloss.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,6 +123,8 @@
 		5D88CECD828078C913561124 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF17E571C7CB2AC00563266 /* VeloApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VeloApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		9FF17E581C7CB38300563266 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseViewController.swift; sourceTree = "<group>"; };
+		9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Gloss.xcodeproj; path = "../../../../Downloads/Gloss-master/Gloss.xcodeproj"; sourceTree = "<group>"; };
 		A3BE2B44474156687C748102 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		BDF7C8E8419A1EF225D4FB76 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -94,6 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C922276EACEF19DCDD2DF38 /* libPods.a in Frameworks */,
+				9FF17E701C7CFD1000563266 /* Gloss.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +159,7 @@
 		22A223BE1C6CB54500F74F81 = {
 			isa = PBXGroup;
 			children = (
+				9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */,
 				22335C181C7A710D00E5CE68 /* Realm.framework */,
 				22A223C91C6CB54500F74F81 /* VeloApp */,
 				22A223DE1C6CB54500F74F81 /* VeloAppTests */,
@@ -156,6 +199,7 @@
 				22A223D61C6CB54500F74F81 /* Info.plist */,
 				9FF17E581C7CB38300563266 /* GoogleService-Info.plist */,
 				9FF17E571C7CB2AC00563266 /* VeloApp-Bridging-Header.h */,
+				9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */,
 			);
 			path = VeloApp;
 			sourceTree = "<group>";
@@ -186,6 +230,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		9FF17E5D1C7CFC4300563266 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9FF17E641C7CFC4300563266 /* Gloss.framework */,
+				9FF17E661C7CFC4300563266 /* Gloss.framework */,
+				9FF17E681C7CFC4300563266 /* Gloss.framework */,
+				9FF17E6A1C7CFC4300563266 /* Gloss.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A04D9FB2F4D858730A40EB42 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,6 +269,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9FF17E731C7CFD1000563266 /* PBXTargetDependency */,
 			);
 			name = VeloApp;
 			productName = VeloApp;
@@ -290,6 +346,12 @@
 			mainGroup = 22A223BE1C6CB54500F74F81;
 			productRefGroup = 22A223C81C6CB54500F74F81 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9FF17E5D1C7CFC4300563266 /* Products */;
+					ProjectRef = 9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				22A223C61C6CB54500F74F81 /* VeloApp */,
@@ -298,6 +360,37 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9FF17E641C7CFC4300563266 /* Gloss.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Gloss.framework;
+			remoteRef = 9FF17E631C7CFC4300563266 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9FF17E661C7CFC4300563266 /* Gloss.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Gloss.framework;
+			remoteRef = 9FF17E651C7CFC4300563266 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9FF17E681C7CFC4300563266 /* Gloss.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Gloss.framework;
+			remoteRef = 9FF17E671C7CFC4300563266 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9FF17E6A1C7CFC4300563266 /* Gloss.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Gloss.framework;
+			remoteRef = 9FF17E691C7CFC4300563266 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		22A223C51C6CB54500F74F81 /* Resources */ = {
@@ -398,6 +491,7 @@
 				22A223CD1C6CB54500F74F81 /* Table.swift in Sources */,
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
+				9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */,
 				22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */,
 				22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */,
 				22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */,
@@ -434,6 +528,11 @@
 			isa = PBXTargetDependency;
 			target = 22A223C61C6CB54500F74F81 /* VeloApp */;
 			targetProxy = 22A223E71C6CB54500F74F81 /* PBXContainerItemProxy */;
+		};
+		9FF17E731C7CFD1000563266 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Gloss;
+			targetProxy = 9FF17E721C7CFD1000563266 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -545,6 +644,7 @@
 			baseConfigurationReference = 5D88CECD828078C913561124 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -562,6 +662,7 @@
 			baseConfigurationReference = A3BE2B44474156687C748102 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
