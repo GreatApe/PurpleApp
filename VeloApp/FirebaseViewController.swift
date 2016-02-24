@@ -31,15 +31,12 @@ class FirebaseViewController: UIViewController {
                 return
             }
             self.tables[snap.key] = table
-            
-            if let name = table.name {
-                print("Table added: \(name)")
-            }
+            print("Table added: \(table)")
         }
         
         refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
-            if let table = self.tables[snap.key], name = table.name {
-                print("Table removed: \(name)")
+            if let table = self.tables[snap.key] {
+                print("Table removed: \(table)")
             }
             self.tables.removeValueForKey(snap.key)
         }
@@ -49,28 +46,43 @@ class FirebaseViewController: UIViewController {
                 return
             }
             self.tables[snap.key] = table
-            
-            if let name = table.name {
-                print("Table updated: \(name)")
-            }
+            print("Table updated: \(table)")
         }
     }
     
 }
 
-struct Table {
-    let data: [[AnyObject]]
-    var name: String? {
-        if let s = data[0][0] as? String {
-            return s
-        }
-        return nil
+struct Table: CustomStringConvertible {
+    let rawdata: [[AnyObject]]
+    
+    var name: String {
+        return toString(rawdata[0][0])
+    }
+    
+    var headers: [String] {
+        return rawdata[1].map(toString)
+    }
+    
+    var data: [[AnyObject]] {
+        return Array(rawdata[2..<rawdata.count])
+    }
+    
+    var description: String {
+        return "\(name), header: \(headers), data: \(data)"
     }
     
     init?(object: AnyObject!) {
-        guard let d = object as? [[AnyObject]] else {
+        guard let d = object as? [[AnyObject]] where d.count > 2 else {
             return nil
         }
-        data = d
+        rawdata = d
+    }
+    
+    func toString(a: AnyObject) -> String {
+        switch a {
+        case let n as String: return n
+        case let n as NSNumber: return n.stringValue
+        default: return "no name"
+        }
     }
 }
