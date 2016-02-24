@@ -61,7 +61,7 @@ class TableLayout: UICollectionViewLayout {
         rowOffsets = rowOffsetsMain + rowOffsetsComp
         
         let mainHeights = Array(count: rows + 1, repeatedValue: mainHeight)
-        let computedHeights = Array(count: computedRows + 1, repeatedValue: computedHeight)
+        let computedHeights = Array(count: computedRows, repeatedValue: computedHeight)
         
         rowHeights = [fieldHeight] + mainHeights + computedHeights
     }
@@ -75,7 +75,7 @@ class TableLayout: UICollectionViewLayout {
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var result = [UICollectionViewLayoutAttributes]()
         
-        for item in 0..<(rows + 1 + 1 + computedRows)*columnWidths.count {
+        for item in 0..<rowHeights.count*columnWidths.count {
             let indexPath = NSIndexPath(forItem: item, inSection: 0)
             if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
                 result.append(attr)

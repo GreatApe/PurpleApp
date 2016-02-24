@@ -8,18 +8,54 @@
 
 import UIKit
 
+protocol LabeledCell {
+    var label: UILabel! { get }
+}
+
+class TableNameCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+class FieldNameCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+class ComputedFieldNameCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+class IndexCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+class Cell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+class ComputedCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var iconLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var label: UILabel!
+}
+
+class ComputedColumnCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
+
 class TabulaViewController: UICollectionViewController {
     var tableId: String!
     
     var selected = true { didSet { changedSelected() } }
     
-    private var columnCount = 4
+    private var columnCount = 2
     private var computedColumnCount = 2
-    private var rowCount = 5
-    private var computedRowCount = 2
+    
+    private var rowCount = 2
+    private var computedRowCount = 1
 
     private var layout: TableLayout { return collectionViewLayout as! TableLayout }
-    
+
     // MARK: Setters
     
     private func changedSelected() {
@@ -28,13 +64,42 @@ class TabulaViewController: UICollectionViewController {
         collectionView!.setCollectionViewLayout(newLayout, animated: true)
     }
     
-    func addColumn() {
+    private func pathsForRow(row: Int) -> [NSIndexPath] {
+        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
+        return (row*totalColumns..<(row + 1)*totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+    }
+    
+    private func pathsForColumn(column: Int) -> [NSIndexPath] {
+        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
+        return column.stride(through: totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+    }
+    
+    func addColumn(column: Int) {
         columnCount += 1
-        let newLayout = layout.duplicate
         layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
-        collectionView!.setCollectionViewLayout(newLayout, animated: true)
+        collectionView!.insertItemsAtIndexPaths(pathsForColumn(column))
+    }
+    
+    func deleteColumn(column: Int) {
+        let paths = pathsForColumn(column)
+        columnCount -= 1
+        layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
+        collectionView!.deleteItemsAtIndexPaths(paths)
     }
 
+    func addRow(row: Int) {
+        rowCount += 1
+        layout.rows = rowCount
+        collectionView!.insertItemsAtIndexPaths(pathsForRow(row))
+    }
+
+    func deleteRow(row: Int) {
+        let paths = pathsForRow(row)
+        rowCount -= 1
+        layout.rows = rowCount
+        collectionView!.deleteItemsAtIndexPaths(paths)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -59,8 +124,15 @@ class TabulaViewController: UICollectionViewController {
         return 1
     }
     
+    var totalCells: Int {
+        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
+        let totalRows = 1 + rowCount + 1 + computedRowCount
+        
+        return totalColumns*totalRows
+    }
+    
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 100
+        return totalCells
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -98,10 +170,31 @@ class TabulaViewController: UICollectionViewController {
         case (computedRows, computedColumns): cellId = "ComputedCell"
 
         default: cellId = "Spacer"
-            
         }
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellId, forIndexPath: indexPath)
+
+        if let cell = cell as? LabeledCell {
+            cell.label.text = "\(row):\(column)"
+        }
+        
+        print("Get cell: \(indexPath.item): (\(row), \(column))")
+        
+//        if cellId == "ComputedCell" {
+//            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ComputedCell", forIndexPath: indexPath) as! ComputedCell
+//            cell.label.text = "C:\(row)\(column)"
+//            return cell
+//        }
+//        else if cellId == "NewCell" {
+//            return collectionView.dequeueReusableCellWithReuseIdentifier("NewCell", forIndexPath: indexPath)
+//        }
+//        else if cellId == "Spacer" {
+//            return collectionView.dequeueReusableCellWithReuseIdentifier("Spacer", forIndexPath: indexPath)
+//        }
+//        else if let cell = cell as? Cell {
+////            cell.label.text = cellId + ":\(row)\(column)"
+//        }
+        
         return cell
     }
     

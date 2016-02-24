@@ -49,6 +49,13 @@
                                                     <action selector="tappedThirdButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="QY4-kb-AcH"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qun-tT-eMJ">
+                                                <rect key="frame" x="32" y="188" width="46" height="30"/>
+                                                <state key="normal" title="Button"/>
+                                                <connections>
+                                                    <action selector="tappedFourthButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="hNn-du-NyY"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
@@ -107,15 +114,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.99633866548538208" green="0.96513330936431885" blue="0.96981418132781982" alpha="1" colorSpace="calibratedRGB"/>
                         <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
-                        <label key="backgroundView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="f" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7TR-1i-RYd">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TableName" id="Nw5-r7-oGJ">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TableName" id="Nw5-r7-oGJ" customClass="TableNameCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -137,8 +137,11 @@
                                     <constraint firstItem="Wdr-3V-e4e" firstAttribute="centerY" secondItem="Nw5-r7-oGJ" secondAttribute="centerY" id="zqg-0E-Znk"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="Wdr-3V-e4e" id="f0W-gd-ugC"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FieldName" id="Qqx-le-N1g">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FieldName" id="Qqx-le-N1g" customClass="FieldNameCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="155" y="0.0" width="111" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -162,8 +165,11 @@
                                     <constraint firstItem="uv6-Hh-Gwo" firstAttribute="centerY" secondItem="Qqx-le-N1g" secondAttribute="centerY" id="sXE-zq-ppl"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="uv6-Hh-Gwo" id="EEC-o3-dwC"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedFieldName" id="7sy-Yg-Tlx">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedFieldName" id="7sy-Yg-Tlx" customClass="ComputedFieldNameCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="309" y="0.0" width="136" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -186,8 +192,11 @@
                                     <constraint firstItem="goI-wz-VFf" firstAttribute="top" secondItem="7sy-Yg-Tlx" secondAttribute="topMargin" id="iTw-95-1m5"/>
                                 </constraints>
                                 <size key="customSize" width="136" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="goI-wz-VFf" id="eAm-aM-OX5"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="RowIndex" id="LuH-O5-4JJ">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="RowIndex" id="LuH-O5-4JJ" customClass="IndexCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="489" y="0.0" width="111" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -211,8 +220,11 @@
                                     <constraint firstItem="4uk-A3-YgB" firstAttribute="centerX" secondItem="LuH-O5-4JJ" secondAttribute="centerX" id="cas-Ly-NMw"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="4uk-A3-YgB" id="hre-t1-Gmp"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="pEg-Z6-35m">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="pEg-Z6-35m" customClass="Cell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="70" width="111" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -236,6 +248,9 @@
                                     <constraint firstItem="vHO-WF-fu0" firstAttribute="centerX" secondItem="pEg-Z6-35m" secondAttribute="centerX" id="sma-3r-G0j"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="vHO-WF-fu0" id="XxV-oG-aL8"/>
+                                </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewCell" id="CbI-U3-Goe">
                                 <rect key="frame" x="121" y="70" width="49" height="50"/>
@@ -248,17 +263,17 @@
                                 <color key="backgroundColor" red="0.84244978427886963" green="0.73808324337005615" blue="0.75108122825622559" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="customSize" width="49" height="50"/>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedCell" id="N83-hL-BZ1">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedCell" id="N83-hL-BZ1" customClass="ComputedCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="180" y="60" width="139" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="139" height="70"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J38-t6-iSz" userLabel="Label">
-                                            <rect key="frame" x="8" y="0.0" width="41" height="18"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J38-t6-iSz" userLabel="Label">
+                                            <rect key="frame" x="19" y="8" width="112" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdb-hz-axw">
@@ -267,19 +282,35 @@
                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="∑" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wxT-WG-GvH" userLabel="Label">
+                                            <rect key="frame" x="8" y="8" width="11" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <color key="backgroundColor" red="0.673526685377836" green="0.79694942062857155" blue="0.77149348359559577" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="centerX" secondItem="N83-hL-BZ1" secondAttribute="centerX" id="6SN-4J-zi7"/>
+                                    <constraint firstAttribute="leadingMargin" secondItem="wxT-WG-GvH" secondAttribute="leading" id="DBh-ok-W9L"/>
+                                    <constraint firstItem="wxT-WG-GvH" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="EWK-Gf-Mq6"/>
+                                    <constraint firstItem="J38-t6-iSz" firstAttribute="leading" secondItem="wxT-WG-GvH" secondAttribute="trailing" id="HJf-wT-ZTJ"/>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" constant="23" id="NdQ-Ww-yGb"/>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="leading" secondItem="N83-hL-BZ1" secondAttribute="leadingMargin" id="eAk-Wm-kU9"/>
                                     <constraint firstItem="xdb-hz-axw" firstAttribute="centerY" secondItem="N83-hL-BZ1" secondAttribute="centerY" constant="12.5" id="fy2-M9-sA1"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="J38-t6-iSz" secondAttribute="trailing" id="nxr-1b-HI1"/>
+                                    <constraint firstItem="J38-t6-iSz" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="yQw-5E-AKe"/>
                                 </constraints>
                                 <size key="customSize" width="139" height="70"/>
+                                <connections>
+                                    <outlet property="iconLabel" destination="wxT-WG-GvH" id="N7v-PP-fBA"/>
+                                    <outlet property="label" destination="xdb-hz-axw" id="8lY-BU-zDP"/>
+                                    <outlet property="titleLabel" destination="J38-t6-iSz" id="HqK-Ml-iry"/>
+                                </connections>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedColumnCell" id="67E-Ub-EJ0">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ComputedColumnCell" id="67E-Ub-EJ0" customClass="ComputedColumnCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="329" y="70" width="139" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -303,6 +334,9 @@
                                     <constraint firstItem="rgE-Qb-AyA" firstAttribute="leading" secondItem="67E-Ub-EJ0" secondAttribute="leadingMargin" id="xeT-ib-rpd"/>
                                 </constraints>
                                 <size key="customSize" width="139" height="50"/>
+                                <connections>
+                                    <outlet property="label" destination="rgE-Qb-AyA" id="UKD-5u-VwT"/>
+                                </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="NewComputedCell" id="gN2-tR-itH">
                                 <rect key="frame" x="478" y="70" width="44" height="50"/>

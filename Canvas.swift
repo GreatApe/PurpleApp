@@ -71,22 +71,32 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedButton() {
         veloTables.forEach { tabula in
-            tabula.selected = !tabula.selected
+            print("Adding")
+            tabula.addRow(1)
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            tabula.addColumn()
+            print("Removing")
+            tabula.deleteRow(1)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
-            tabula.selected
+            print("Adding")
+            tabula.addColumn(1)
         }
     }
-    
+
+    @IBAction func tappedFourthButton() {
+        veloTables.forEach { tabula in
+            print("Removing")
+            tabula.deleteColumn(1)
+        }
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
