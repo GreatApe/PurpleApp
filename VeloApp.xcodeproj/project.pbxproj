@@ -25,8 +25,6 @@
 		22A224011C6D304B00F74F81 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A224001C6D304A00F74F81 /* Models.swift */; };
 		9FF17E591C7CB38300563266 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FF17E581C7CB38300563266 /* GoogleService-Info.plist */; };
 		9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */; };
-		9FF17E701C7CFD1000563266 /* Gloss.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF17E641C7CFC4300563266 /* Gloss.framework */; };
-		9FF17E711C7CFD1000563266 /* Gloss.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9FF17E641C7CFC4300563266 /* Gloss.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,7 +130,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C922276EACEF19DCDD2DF38 /* libPods.a in Frameworks */,
-				9FF17E701C7CFD1000563266 /* Gloss.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

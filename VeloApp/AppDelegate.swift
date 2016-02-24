@@ -24,16 +24,11 @@ class AppDelegate: FirebaseAppDelegate {
         if ((loginViewController.currentUser() == nil)) {
             window.makeKeyAndVisible()
             window.rootViewController!.presentViewController(loginViewController, animated: true, completion: nil)
-        } else {
+        }
+        else {
             print("already loged in")
             print(loginViewController.currentUser().description)
         }
-        
-        
-        // temporary
-        let fireVC = FirebaseViewController()
-        window.makeKeyAndVisible()
-        window.rootViewController!.presentViewController(fireVC, animated: true, completion: nil)
         
         return true
     }

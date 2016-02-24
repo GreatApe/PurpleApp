@@ -7,12 +7,10 @@
 //
 
 import Foundation
-import Gloss
-
 
 class FirebaseViewController: UIViewController {
     
-    var ds = DataSync()
+    let ds = DataSync()
     
     override func viewDidLoad() {
         ds.tableAdded = { (t: Table) in
@@ -27,108 +25,106 @@ class FirebaseViewController: UIViewController {
     }
 }
 
-
 class DataSync {
-    let ref = Firebase(url: "https://purplemist.firebaseio.com/")
-    lazy var refTables: Firebase = { self.ref
-        .childByAppendingPath("users")
-        .childByAppendingPath(self.ref.authData.uid)
-        .childByAppendingPath("tables") }()
+    private let ref = Firebase(url: "https://purplemist.firebaseio.com/")
+    lazy var refTables: Firebase = { self.ref.childByAppendingPath("tables") }()
     
     var tableAdded: (Table -> Void)! { didSet { tableAdd() } }
     var tableChanged: (Table -> Void)! { didSet { tableChange() } }
     var tableRemoved: (Table -> Void)! { didSet { tableRemove() } }
     
-    init() {
-    }
-    
-    func getPushId() -> String {
+    func getSyncId() -> String {
         return ref.childByAutoId().key
     }
     
-    func setTable(t: Table) {
-        refTables.childByAppendingPath(t.key).setValue(t.rawdata)
+    func upload(table: Table) {
+        refTables.childByAppendingPath(table.tableId).setValue(table.rawData)
     }
     
-    func setRow(key: String, rowindex: Int, r: [AnyObject]) {
+    func upload(row: [AnyObject], atIndex rowIndex: Int, inTable tableId: String) {
         refTables
-            .childByAppendingPath(key)
-            .childByAppendingPath(String(rowindex))
-            .setValue(r)
+            .childByAppendingPath(tableId)
+            .childByAppendingPath(String(rowIndex))
+            .setValue(row)
     }
     
     private func tableAdd() {
         refTables.observeEventType(.ChildAdded) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(key: snap.key, object: snap.value) else {
+            guard let table = Table(tableId: snap.key, object: snap.value) else {
                 return
             }
             self.tableAdded(table)
-            print("Table added: \(table)")
         }
     }
     private func tableRemove() {
         refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(key: snap.key, object: snap.value) else {
+            guard let table = Table(tableId: snap.key, object: snap.value) else {
                 return
             }
             self.tableRemoved(table)
-            print("Table removed: \(table)")
         }
     }
     
     private func tableChange() {
         refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(key: snap.key, object: snap.value) else {
+            guard let table = Table(tableId: snap.key, object: snap.value) else {
                 return
             }
             self.tableChanged(table)
-            print("Table changed: \(table)")
         }
     }
-    
 }
 
-
 struct Table: CustomStringConvertible {
-    let rawdata: [[AnyObject]]
-    let key: String
+    let rawData: [[AnyObject]]
+    let tableId: String
     
     var name: String {
-        return toString(rawdata[0][0])
+        return toString(rawData[0][0])
     }
     
     var headers: [String] {
-        return rawdata[1].map(toString)
+        return rawData[1].map(toString)
     }
     
     var data: [[AnyObject]] {
-        return Array(rawdata[2..<rawdata.count])
+        return Array(rawData[2..<rawData.count])
     }
     
     var description: String {
-        return "\(name), header: \(headers), data: \(data)"
+        return "\(name), header: \(headers)\ndata: \(data)"
     }
     
-    init?(key: String, object: AnyObject!) {
-        self.key = key
-        guard let d = object as? [[AnyObject]] where d.count > 2 else {
+    init?(tableId: String, object: AnyObject!) {
+        self.tableId = tableId
+        guard let data = object as? [[AnyObject]] where data.count > 2 else {
             return nil
         }
-        rawdata = d
+        
+        rawData = data.map(parseRow)
     }
     
-    init?(key: String, name: String, headers: [String], var data: [[AnyObject]]) {
-        self.key = key
+    init?(tableId: String, name: String, headers: [String], var data: [[AnyObject]]) {
+        self.tableId = tableId
         data.insert([name, "", ""], atIndex: 0)
         data.insert(headers, atIndex: 1)
-        rawdata = data
+        rawData = data
     }
     
-    func toString(a: AnyObject) -> String {
-        switch a {
-        case let n as String: return n
-        case let n as NSNumber: return n.stringValue
-        default: return "no name"
+    func toString(value: AnyObject) -> String {
+        switch value {
+        case let value as String: return value
+        case let value as NSNumber: return value.stringValue
+        default: return "Field"
         }
+    }
+}
+
+// Parsing
+
+func parseRow(row: [AnyObject]) -> [AnyObject] {
+    return row.map { value in
+        if let num = value as? NSNumber { return num.doubleValue }
+        else { return value }
     }
 }

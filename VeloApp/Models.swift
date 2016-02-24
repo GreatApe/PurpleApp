@@ -11,24 +11,25 @@ import Realm
 
 // MARK: Dynamic models
 
-class Collection: RLMObject {
-    dynamic var id = ""
-    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
-    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
-}
-
-class TaggedTable: RLMObject {
-    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
-    dynamic var tableId = ""
-    
-    override class func indexedProperties() -> [String] {
-        return ["tableId"]
-    }
-}
+//class Collection: RLMObject {
+//    dynamic var id = ""
+//    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
+//}
+//
+//class TaggedTable: RLMObject {
+//    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
+//    dynamic var tableId = ""
+//    
+//    override class func indexedProperties() -> [String] {
+//        return ["tableId"]
+//    }
+//}
 
 class TableBase: RLMObject {
     dynamic var id: String = ""
-    
+    dynamic var rowType: RowType?
+
     //        dynamic var sourceTable: TableX?
     //        dynamic var tableFunction: Function?
     //        dynamic var elementFunction: Function?
@@ -44,8 +45,8 @@ class TableBase: RLMObject {
 }
 
 class RowBase: RLMObject {
-    dynamic var index = ""
-    
+    dynamic var index: String = ""
+
     override class func primaryKey() -> String {
         return "index"
     }
@@ -53,14 +54,42 @@ class RowBase: RLMObject {
 
 // MARK: Fixed models
 
-class TableType: RLMObject {
-    dynamic var id: String = ""
-    //    dynamic var elementTypeId = ""
-    //
-    //    let computedColumns = List<ComputedColumn>()
-    //    let computedRows = List<ComputedRow>()
+class RowType: RLMObject {
+    dynamic var rowClassName: String = ""
+    dynamic var properties = RLMArray(objectClassName: "RowFieldProperty")
+    
+    override class func primaryKey() -> String {
+        return "rowClassName"
+    }
 }
 
+class RowFieldProperty: RLMObject {
+    dynamic var displayName: String = ""
+    dynamic var deleted: Bool = false
+}
+
+class TableClass: RLMObject {
+    dynamic var tableId: String = ""
+    dynamic var tableClass: String = ""
+
+    override class func primaryKey() -> String {
+        return "tableId"
+    }
+}
+
+//class TableType: RLMObject {
+//    dynamic var id: String = ""
+//    //    dynamic var elementTypeId = ""
+//    let properties = RLMArray(objectClassName: "TableProperty")
+//}
+//
+//class TableDecorations: RLMObject {
+//    dynamic var id: String = ""
+//
+//    let computedColumns = List<ComputedColumn>()
+//    let computedRows = List<ComputedRow>()
+//}
+//
 //class ComputedColumn: Object {
 //    dynamic var id = ""
 //    dynamic var function: Function?

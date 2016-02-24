@@ -18,6 +18,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Engine.shared.describe()
     }
     
     func newTable(point: CGPoint) {
