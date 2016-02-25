@@ -51,36 +51,36 @@ class DataSync {
     private func registerTableAdd() {
         print("Observing table add")
 //        observe(.Value, callback: tableAdded)
-        //        observe(.ChildAdded, callback: tableAdded)
+                observe(.ChildAdded, callback: tableAdded)
 
-        refTables.observeEventType(.ChildAdded) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(tableId: snap.key, object: snap.value) else {
-                return
-            }
-            self.tableAdded(table)
-        }
+//        refTables.observeEventType(.ChildAdded) { (snap: FDataSnapshot!) -> Void in
+//            guard let table = Table(tableId: snap.key, object: snap.value) else {
+//                return
+//            }
+//            self.tableAdded(table)
+//        }
     }
     
     private func registerTableChange() {
-        //        observe(.ChildChanged, callback: tableChanged)
+                observe(.ChildChanged, callback: tableChanged)
 
-        refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(tableId: snap.key, object: snap.value) else {
-                return
-            }
-            self.tableChanged(table)
-        }
+//        refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
+//            guard let table = Table(tableId: snap.key, object: snap.value) else {
+//                return
+//            }
+//            self.tableChanged(table)
+//        }
     }
 
     private func registerTableRemoved() {
-//        observe(.ChildRemoved, callback: tableRemoved)
-
-        refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(tableId: snap.key, object: snap.value) else {
-                return
-            }
-            self.tableRemoved(table)
-        }
+        observe(.ChildRemoved, callback: tableRemoved)
+//
+//        refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
+//            guard let table = Table(tableId: snap.key, object: snap.value) else {
+//                return
+//            }
+//            self.tableRemoved(table)
+//        }
     }
     
     private func observe(type: FEventType, callback: Table -> Void) {

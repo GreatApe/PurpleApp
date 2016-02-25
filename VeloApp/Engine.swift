@@ -50,13 +50,12 @@ class Engine {
         let tableClass = "TableClass" + String(Int(arc4random() % 10000))
         newTableClass(tableClass)
         
-        for (propName, cellValue) in zip(table.headers, table.data[0]).dropFirst() {
+        for (propName, cellValue) in zip(table.headers, table.data[0]) {
             addProperty(typeForCell(cellValue), tableClass: tableClass, displayName: propName)
         }
         
         createTable(tableClass, tableId: table.tableId, displayName: table.name)
         replaceTableRows(table.data, tableId: table.tableId, tableClass: tableClass)
-        
         
         printt()
         print("Table Added")
@@ -185,6 +184,11 @@ class Engine {
 
         realm.schema.objectSchema += [tableSchema, rowSchema]
 
+        printt()
+        print("Table Class Created")
+        print(rowSchema)
+        print(tableSchema)
+        
         migrate()
     }
     
@@ -199,10 +203,6 @@ class Engine {
         RLMRealm.migrateRealm(config)
         realm = try! RLMRealm.dynamicRealm("store")
     }
-    
-//    func addProperty(type: RLMPropertyType, toTable tableId: String, value: AnyObject? = nil) -> String {
-//        return addProperty(type, to: tableClassForId[tableId]!, value: value)
-//    }
     
     func printt() {
         for _ in 0..<10 { print("*") }
@@ -255,10 +255,12 @@ class Engine {
     // Table creation
     
     private func createTable(tableClass: String, tableId: String, displayName: String) -> RLMObject {
+        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
+
         realm.beginWriteTransaction()
         let tableInfo = TableInfo.make(tableId, tableClass: tableClass, displayName: displayName)
         realm.addObject(tableInfo)
-        let object = realm.createObject(tableClass, withValue: ["id" : tableId, "rowType" : getRowType(tableClass)])
+        let object = realm.createObject(tableClass, withValue: ["id" : tableId, "rowType" : rowType])
         try! realm.commitWriteTransaction()
 
         return object
@@ -278,12 +280,15 @@ class Engine {
     
     private func updatePropertyNames(tableId: String, propertyNames: [String]) -> [Bool] {
         let tableInfo = getTableInfo(tableId)
-        let properties = getRowType(tableInfo.tableClass).properties.map { ($0 as! RowFieldProperty) }
+        let properties = getRowType(tableInfo.tableClass).properties
         let zipped = zip(properties, propertyNames)
-        let changes = zipped.map { property, newName in newName == property.displayName }
+        let changes = zipped.map { property, newName in newName == property["displayName"] as! String }
+        
+        printt()
+        print("Changes = \(changes)")
         
         realm.beginWriteTransaction()
-        zipped.forEach { property, newName in property.displayName = newName }
+        zipped.forEach { property, newName in property["displayName"] = newName }
         try! realm.commitWriteTransaction()
 
         return changes

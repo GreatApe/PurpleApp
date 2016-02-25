@@ -45,11 +45,11 @@ class TableBase: RLMObject {
 }
 
 class RowBase: RLMObject {
-    dynamic var index: String = ""
-
-    override class func primaryKey() -> String {
-        return "index"
-    }
+//    dynamic var index: String = ""
+//
+//    override class func primaryKey() -> String {
+//        return "index"
+//    }
 }
 
 // MARK: Fixed models
