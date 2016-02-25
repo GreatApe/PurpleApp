@@ -67,33 +67,42 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
             newTable(sender.locationInView(canvas))
+            
+            if let list = storyboard?.instantiateViewControllerWithIdentifier("TableList") as? TableListViewController {
+                
+                list.modalPresentationStyle = .FormSheet
+                list.tables = Engine.shared.listTables()
+                
+                list.onSelection = { tableId in
+                    print(tableId)
+                    self.dismissViewControllerAnimated(true, completion: nil)
+                }
+                
+                presentViewController(list, animated: true, completion: nil)
+            }
         }
     }
     
     @IBAction func tappedButton() {
         veloTables.forEach { tabula in
-            print("Adding")
             tabula.addRow(1)
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            print("Removing")
             tabula.deleteRow(1)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
-            print("Adding")
             tabula.addColumn(1)
         }
     }
 
     @IBAction func tappedFourthButton() {
         veloTables.forEach { tabula in
-            print("Removing")
             tabula.deleteColumn(1)
         }
     }

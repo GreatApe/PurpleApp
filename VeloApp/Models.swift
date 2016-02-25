@@ -61,6 +61,13 @@ class RowType: RLMObject {
     override class func primaryKey() -> String {
         return "rowClassName"
     }
+    
+    class func make(object: RLMObject) -> RowType {
+        let rowType = RowType()
+        rowType.rowClassName = object["rowClassName"]! as! String
+        rowType.properties = object["properties"]! as! RLMArray
+        return rowType
+    }
 }
 
 class RowFieldProperty: RLMObject {
@@ -68,10 +75,27 @@ class RowFieldProperty: RLMObject {
     dynamic var deleted: Bool = false
 }
 
-class TableClass: RLMObject {
+class TableInfo: RLMObject {
     dynamic var tableId: String = ""
     dynamic var tableClass: String = ""
+    dynamic var displayName: String = ""
 
+    class func make(tableId: String, tableClass: String, displayName: String) -> TableInfo {
+        let tableInfo = TableInfo()
+        tableInfo.tableId = tableId
+        tableInfo.tableClass = tableClass
+        tableInfo.displayName = displayName
+        return tableInfo
+    }
+    
+    class func make(object: RLMObject) -> TableInfo {
+        let tableInfo = TableInfo()
+        tableInfo.tableId = object["tableId"]! as! String
+        tableInfo.tableClass = object["tableClass"]! as! String
+        tableInfo.displayName = object["displayName"]! as! String
+        return tableInfo
+    }
+    
     override class func primaryKey() -> String {
         return "tableId"
     }

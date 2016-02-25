@@ -177,24 +177,7 @@ class TabulaViewController: UICollectionViewController {
         if let cell = cell as? LabeledCell {
             cell.label.text = "\(row):\(column)"
         }
-        
-        print("Get cell: \(indexPath.item): (\(row), \(column))")
-        
-//        if cellId == "ComputedCell" {
-//            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ComputedCell", forIndexPath: indexPath) as! ComputedCell
-//            cell.label.text = "C:\(row)\(column)"
-//            return cell
-//        }
-//        else if cellId == "NewCell" {
-//            return collectionView.dequeueReusableCellWithReuseIdentifier("NewCell", forIndexPath: indexPath)
-//        }
-//        else if cellId == "Spacer" {
-//            return collectionView.dequeueReusableCellWithReuseIdentifier("Spacer", forIndexPath: indexPath)
-//        }
-//        else if let cell = cell as? Cell {
-////            cell.label.text = cellId + ":\(row)\(column)"
-//        }
-        
+                
         return cell
     }
     

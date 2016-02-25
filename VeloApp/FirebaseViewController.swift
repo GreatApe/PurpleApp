@@ -29,9 +29,9 @@ class DataSync {
     private let ref = Firebase(url: "https://purplemist.firebaseio.com/")
     lazy var refTables: Firebase = { self.ref.childByAppendingPath("tables") }()
     
-    var tableAdded: (Table -> Void)! { didSet { tableAdd() } }
-    var tableChanged: (Table -> Void)! { didSet { tableChange() } }
-    var tableRemoved: (Table -> Void)! { didSet { tableRemove() } }
+    var tableAdded: (Table -> Void)! { didSet { registerTableAdd() } }
+    var tableChanged: (Table -> Void)! { didSet { registerTableChange() } }
+    var tableRemoved: (Table -> Void)! { didSet { registerTableRemoved() } }
     
     func getSyncId() -> String {
         return ref.childByAutoId().key
@@ -48,7 +48,11 @@ class DataSync {
             .setValue(row)
     }
     
-    private func tableAdd() {
+    private func registerTableAdd() {
+        print("Observing table add")
+//        observe(.Value, callback: tableAdded)
+        //        observe(.ChildAdded, callback: tableAdded)
+
         refTables.observeEventType(.ChildAdded) { (snap: FDataSnapshot!) -> Void in
             guard let table = Table(tableId: snap.key, object: snap.value) else {
                 return
@@ -56,7 +60,21 @@ class DataSync {
             self.tableAdded(table)
         }
     }
-    private func tableRemove() {
+    
+    private func registerTableChange() {
+        //        observe(.ChildChanged, callback: tableChanged)
+
+        refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
+            guard let table = Table(tableId: snap.key, object: snap.value) else {
+                return
+            }
+            self.tableChanged(table)
+        }
+    }
+
+    private func registerTableRemoved() {
+//        observe(.ChildRemoved, callback: tableRemoved)
+
         refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
             guard let table = Table(tableId: snap.key, object: snap.value) else {
                 return
@@ -65,19 +83,18 @@ class DataSync {
         }
     }
     
-    private func tableChange() {
-        refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
-            guard let table = Table(tableId: snap.key, object: snap.value) else {
-                return
-            }
-            self.tableChanged(table)
-        }
+    private func observe(type: FEventType, callback: Table -> Void) {
+        refTables.observeEventType(type, withBlock: parse(callback))
     }
+}
+
+func parse(f: Table -> Void) -> FDataSnapshot! -> Void {
+    return { snap in _ = Table(tableId: snap.key, object: snap.value).map(f) }
 }
 
 struct Table: CustomStringConvertible {
     let rawData: [[AnyObject]]
-    let tableId: String
+    var tableId: String
     
     var name: String {
         return toString(rawData[0][0])
