@@ -21,15 +21,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         Engine.shared.describe()
     }
     
-    func newTable(point: CGPoint) {
-        if let tvc = storyboard?.instantiateViewControllerWithIdentifier("Tabula") as? TabulaViewController {
-//            let tableId = Engine.shared.makeTable()
-//            Engine.shared.addProperty(.Double, toTable: tableId)
-//            Engine.shared.addRandomRowToTable(tableId)
-  
-            let tableId = "jlkj"
-            
-            tvc.tableId = tableId
+    func newTable(point: CGPoint) -> TabulaViewController {
+        let tvc = storyboard!.instantiateViewControllerWithIdentifier("Tabula") as! TabulaViewController
             let container = UIView()
             
             canvas.addSubview(container)
@@ -59,14 +52,15 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //            container.topAnchor.constraintEqualToAnchor(canvas.topAnchor, constant: point.y).active = true
             
             veloTables.append(tvc)
-        }
+
+        return tvc
     }
     
     // MARK: User actions
     
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
-            newTable(sender.locationInView(canvas))
+            let table = newTable(sender.locationInView(canvas))
             
             if let list = storyboard?.instantiateViewControllerWithIdentifier("TableList") as? TableListViewController {
                 
@@ -74,8 +68,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
                 list.tables = Engine.shared.listTables()
                 
                 list.onSelection = { tableId in
-                    print(tableId)
                     self.dismissViewControllerAnimated(true, completion: nil)
+                    table.tableId = tableId
                 }
                 
                 presentViewController(list, animated: true, completion: nil)
@@ -112,28 +106,27 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        if scrollView.dragging && scrollView.contentOffset.x + scrollView.frame.size.width - scrollView.contentSize.width > 100 {
-            scrollView.scrollEnabled = false
-            scrollView.scrollEnabled = true
-            scrollView.contentOffset.x = scrollView.contentOffset.x + 100
-
-            let newOffset = CGPoint(x: scrollView.contentOffset.x, y: scrollView.contentOffset.y)
-            scrollView.setContentOffset(newOffset, animated: false)
-
-            UIView.animateWithDuration(0.2, animations: {
-                scrollView.backgroundColor = UIColor.whiteColor()
-                }) { _ in
-                    self.canvasWidth.constant = self.canvasWidth.constant + scrollView.frame.size.width
-                    scrollView.layoutIfNeeded()
-                    
-                    scrollView.backgroundColor = UIColor.lightGrayColor()
-            }
-        }
-        
-        for veloTable in veloTables {
-            if let tableContainer = veloTable.view.superview {
-                veloTable.canvasScrolled(scrollView.contentOffset.x - tableContainer.frame.minX)
-            }
-        }
+//        if scrollView.dragging && scrollView.contentOffset.x + scrollView.frame.size.width - scrollView.contentSize.width > 100 {
+//            scrollView.scrollEnabled = false
+//            scrollView.scrollEnabled = true
+//            scrollView.contentOffset.x = scrollView.contentOffset.x + 100
+//
+//            let newOffset = CGPoint(x: scrollView.contentOffset.x, y: scrollView.contentOffset.y)
+//            scrollView.setContentOffset(newOffset, animated: false)
+//
+//            UIView.animateWithDuration(0.2, animations: {
+//                scrollView.backgroundColor = UIColor.whiteColor()
+//                }) { _ in
+//                    self.canvasWidth.constant = self.canvasWidth.constant + scrollView.frame.size.width
+//                    scrollView.layoutIfNeeded()
+//                    scrollView.backgroundColor = UIColor.lightGrayColor()
+//            }
+//        }
+//        
+//        for veloTable in veloTables {
+//            if let tableContainer = veloTable.view.superview {
+//                veloTable.canvasScrolled(scrollView.contentOffset.x - tableContainer.frame.minX)
+//            }
+//        }
     }
 }

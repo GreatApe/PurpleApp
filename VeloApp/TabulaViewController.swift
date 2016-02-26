@@ -42,18 +42,31 @@ class ComputedColumnCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
+enum CellType: String {
+    case TableName = "TableName"
+    case FieldName = "FieldName"
+    case ComputedFieldName = "ComputedFieldName"
+    case RowIndex = "RowIndex"
+    case Cell = "Cell"
+    case NewCell = "NewCell"
+    case ComputedColumnCell = "ComputedColumnCell"
+    case NewComputedCell = "NewComputedCell"
+    case ComputedCell = "ComputedCell"
+    case Spacer = "Spacer"
+}
 
 class TabulaViewController: UICollectionViewController {
-    var tableId: String!
-    
+    var tableId: String! { didSet { reload() } }
     var selected = true { didSet { changedSelected() } }
     
-    private var columnCount = 2
-    private var computedColumnCount = 2
+    private var columnCount = 1
+    private var emptyColumns = 0
+    private var computedColumnCount = 0
     
-    private var rowCount = 2
-    private var computedRowCount = 1
-
+    private var rowCount = 1
+    private var emptyRows = 0
+    private var computedRowCount = 0
+    
     private var layout: TableLayout { return collectionViewLayout as! TableLayout }
 
     // MARK: Setters
@@ -105,10 +118,38 @@ class TabulaViewController: UICollectionViewController {
     }
     
     override func viewDidLoad() {
-        updateLayout()
+        layoutChanged()
     }
     
-    private func updateLayout() {
+    private var name = "Table"
+    private var headerData = ["Field0"]
+    private var rowData: [[AnyObject]] = [["ndx0", "val0"]]
+    
+    func reload() {
+        tableChanged()
+        layoutChanged()
+        
+        print("Reload:")
+        print(name)
+        print(headerData)
+        print(columnCount)
+        print(rowCount)
+        print(rowData)
+        
+        collectionView?.reloadData()
+    }
+    
+    private func tableChanged() {
+        name = Engine.shared.tableName(tableId)
+        
+        headerData = Engine.shared.tableHeader(tableId)
+        columnCount = headerData.count
+        
+        rowData = Engine.shared.tableRows(tableId)
+        rowCount = rowData.count
+    }
+    
+    private func layoutChanged() {
         layout.selected = selected
         layout.indexWidth = 100
         layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
@@ -124,7 +165,7 @@ class TabulaViewController: UICollectionViewController {
         return 1
     }
     
-    var totalCells: Int {
+    private var totalCells: Int {
         let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
         let totalRows = 1 + rowCount + 1 + computedRowCount
         
@@ -144,47 +185,65 @@ class TabulaViewController: UICollectionViewController {
         let mainColumns = 1..<1 + columnCount
         let addColumn = 1 + columnCount
         let computedColumns = addColumn + 1..<addColumn + 1 + computedColumnCount
-        let addComputedColumn = computedColumns.last! + 1
+        let addComputedColumn = computedColumns.last ?? addColumn + 1
         
         let headerRow = 0
         let mainRows = 1..<1 + rowCount
         let addRow = mainRows.last! + 1
         let computedRows = addRow + 1..<addRow + 1 + computedRowCount
         
-        let cellId: String
+        let cellType: CellType
+        let text: String?
         
         switch (row, column) {
-        case (headerRow, indexColumn): cellId = "TableName"
-        case (headerRow, mainColumns): cellId = "FieldName"
-        case (headerRow, computedColumns): cellId = "ComputedFieldName"
-            
-        case (mainRows, indexColumn): cellId = "RowIndex"
-        case (mainRows, mainColumns): cellId = "Cell"
-        case (mainRows, addColumn): cellId = "NewCell"
-        case (mainRows, computedColumns): cellId = "ComputedColumnCell"
-        case (mainRows, addComputedColumn): cellId = "NewComputedCell"
-
-        case (addRow, indexColumn), (addRow, mainColumns): cellId = "NewCell"
-            
-        case (computedRows, mainColumns): cellId = "ComputedCell"
-        case (computedRows, computedColumns): cellId = "ComputedCell"
-
-        default: cellId = "Spacer"
+        case (headerRow, indexColumn):
+            cellType = .TableName
+            text = name
+        case (headerRow, mainColumns):
+            cellType = .FieldName
+            text = headerData[column - 1]
+        case (headerRow, computedColumns):
+            cellType = .ComputedFieldName
+            text = "Fx"
+        case (mainRows, indexColumn):
+            cellType = .RowIndex
+            text = (rowData[row - 1][indexColumn] as! String)
+        case (mainRows, mainColumns):
+            cellType = .Cell
+            text = String(rowData[row - 1][column])
+        case (mainRows, computedColumns):
+            cellType = .ComputedColumnCell
+            text = "xx"
+        case (mainRows, addComputedColumn):
+            cellType = .NewComputedCell
+            text = nil
+        case (mainRows, addColumn), (addRow, indexColumn), (addRow, mainColumns):
+            cellType = .NewCell
+            text = nil
+        case (computedRows, mainColumns), (computedRows, computedColumns):
+            cellType = .ComputedCell
+            text = "yy"
+        default:
+            cellType = .Spacer
+            text = nil
         }
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellId, forIndexPath: indexPath)
-
-        if let cell = cell as? LabeledCell {
-            cell.label.text = "\(row):\(column)"
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.rawValue, forIndexPath: indexPath)
+        
+        if let cell = cell as? LabeledCell, text = text {
+            cell.label.text = text
         }
-                
+        
+        //            case .RowIndex: text = String(rowData[row - 1][column])
+        //            case .Cell: text = String(rowData[row - 1][column - 1])
+        
         return cell
     }
     
     // MARK: From containing View Controller
     
     func canvasScrolled(offset: CGFloat) {
-//        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
+        //        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
 //        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
     }
 }

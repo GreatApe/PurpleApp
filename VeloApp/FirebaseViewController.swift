@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Realm
 
 class FirebaseViewController: UIViewController {
     
@@ -29,9 +30,9 @@ class DataSync {
     private let ref = Firebase(url: "https://purplemist.firebaseio.com/")
     lazy var refTables: Firebase = { self.ref.childByAppendingPath("tables") }()
     
-    var tableAdded: (Table -> Void)! { didSet { registerTableAdd() } }
-    var tableChanged: (Table -> Void)! { didSet { registerTableChange() } }
-    var tableRemoved: (Table -> Void)! { didSet { registerTableRemoved() } }
+    var tableAdded: (Table -> Void)! { didSet { observe(.ChildAdded, callback: tableAdded) } }
+    var tableChanged: (Table -> Void)! { didSet { observe(.ChildChanged, callback: tableChanged) } }
+    var tableRemoved: (Table -> Void)! { didSet { observe(.ChildRemoved, callback: tableRemoved) } }
     
     func getSyncId() -> String {
         return ref.childByAutoId().key
@@ -48,49 +49,31 @@ class DataSync {
             .setValue(row)
     }
     
-    private func registerTableAdd() {
-        print("Observing table add")
-//        observe(.Value, callback: tableAdded)
-                observe(.ChildAdded, callback: tableAdded)
-
-//        refTables.observeEventType(.ChildAdded) { (snap: FDataSnapshot!) -> Void in
-//            guard let table = Table(tableId: snap.key, object: snap.value) else {
-//                return
-//            }
-//            self.tableAdded(table)
-//        }
-    }
-    
-    private func registerTableChange() {
-                observe(.ChildChanged, callback: tableChanged)
-
-//        refTables.observeEventType(.ChildChanged) { (snap: FDataSnapshot!) -> Void in
-//            guard let table = Table(tableId: snap.key, object: snap.value) else {
-//                return
-//            }
-//            self.tableChanged(table)
-//        }
-    }
-
-    private func registerTableRemoved() {
-        observe(.ChildRemoved, callback: tableRemoved)
-//
-//        refTables.observeEventType(.ChildRemoved) { (snap: FDataSnapshot!) -> Void in
-//            guard let table = Table(tableId: snap.key, object: snap.value) else {
-//                return
-//            }
-//            self.tableRemoved(table)
-//        }
-    }
-    
     private func observe(type: FEventType, callback: Table -> Void) {
-        refTables.observeEventType(type, withBlock: parse(callback))
+        refTables.observeEventType(type, withBlock: { snap in
+            let tableId = snap.key
+
+            guard let data = snap.value as? [[AnyObject]] where data.count > 2 else {
+                print("#######")
+                print("#### Failed parsing ####")
+                print(snap.value)
+                return
+            }
+
+            let schemaForData = data[2].map(Engine.typeForCell)
+            let schema = Engine.shared.schemaForTable(tableId) ?? schemaForData
+            callback(Table(tableId: tableId, data: data, schema: schema))
+        })
+    }
+    
+    private func schemaForRow(data: [[AnyObject]]) -> [RLMPropertyType] {
+        return data[2].map(Engine.typeForCell)
     }
 }
 
-func parse(f: Table -> Void) -> FDataSnapshot! -> Void {
-    return { snap in _ = Table(tableId: snap.key, object: snap.value).map(f) }
-}
+//func parse(f: Table -> Void) -> FDataSnapshot! -> Void {
+//    return { snap in _ = Table(tableId: snap.key, object: snap.value).map(f) }
+//}
 
 struct Table: CustomStringConvertible {
     let rawData: [[AnyObject]]
@@ -112,36 +95,67 @@ struct Table: CustomStringConvertible {
         return "\(name), header: \(headers)\ndata: \(data)"
     }
     
-    init?(tableId: String, object: AnyObject!) {
+    init(tableId: String, data: [[AnyObject]], schema: [RLMPropertyType]) {
         self.tableId = tableId
-        guard let data = object as? [[AnyObject]] where data.count > 2 else {
-            return nil
-        }
-        
-        rawData = data.map(parseRow)
-    }
-    
-    init?(tableId: String, name: String, headers: [String], var data: [[AnyObject]]) {
-        self.tableId = tableId
-        data.insert([name, "", ""], atIndex: 0)
-        data.insert(headers, atIndex: 1)
-        rawData = data
-    }
-    
-    func toString(value: AnyObject) -> String {
-        switch value {
-        case let value as String: return value
-        case let value as NSNumber: return value.stringValue
-        default: return "Field"
+        let parser = parseRow(schema)
+        rawData = data.enumerate().map { index, row in
+            index < 2 ? row : parser(row)
         }
     }
+    
+//    init?(tableId: String, name: String, headers: [String], var data: [[AnyObject]]) {
+//        self.tableId = tableId
+//        data.insert([name, "", ""], atIndex: 0)
+//        data.insert(headers, atIndex: 1)
+//        rawData = data
+//    }
+    
 }
 
 // Parsing
 
-func parseRow(row: [AnyObject]) -> [AnyObject] {
-    return row.map { value in
-        if let num = value as? NSNumber { return num.doubleValue }
-        else { return value }
+func describe(propType: RLMPropertyType) -> String {
+    switch propType {
+    case .String: return "String"
+    case .Int: return "Int"
+    case .Double: return "Double"
+    case .Date: return "Date"
+    case .Data: return "Data"
+    case .Object: return "Object"
+    case .Array: return "Array"
+    case .Any: return "Any"
+    case .Bool: return "Bool"
+    default: return "Error"
     }
 }
+
+func toString(value: AnyObject) -> String {
+    switch value {
+    case let value as String: return value
+    case let value as NSNumber: return value.stringValue
+    default: return "Field"
+    }
+}
+
+func parseRow(schema: [RLMPropertyType]) -> [AnyObject] -> [AnyObject] {
+    return { row in
+        return zip(row, schema).map { value, type in
+            switch (value, type) {
+            case (let value as String, .String): return value
+            case (_, .String): return "empty string"
+            case (let value as NSNumber, .Double): return value.doubleValue
+            case (_, .Double): return 9.9
+            case (let value as NSNumber, .Int): return value.integerValue ?? 99
+            case (_, .Int): return 99
+            default: fatalError("Wrong type")
+            }
+        }
+    }
+}
+
+//func parseRow(row: [AnyObject]) -> [AnyObject] {
+//    return row.map { value in
+//        if let num = value as? NSNumber { return num.doubleValue }
+//        else { return value }
+//    }
+//}
