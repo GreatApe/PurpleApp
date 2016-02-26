@@ -34,6 +34,8 @@ class DataSync {
     var tableChanged: (Table -> Void)! { didSet { observe(.ChildChanged, callback: tableChanged) } }
     var tableRemoved: (Table -> Void)! { didSet { observe(.ChildRemoved, callback: tableRemoved) } }
     
+//    var rowChanged: ((Table) -> Void)! { didSet { observe(.ChildRemoved, callback: tableRemoved) } }
+    
     func getSyncId() -> String {
         return ref.childByAutoId().key
     }
@@ -45,7 +47,7 @@ class DataSync {
     func upload(row: [AnyObject], atIndex rowIndex: Int, inTable tableId: String) {
         refTables
             .childByAppendingPath(tableId)
-            .childByAppendingPath(String(rowIndex))
+            .childByAppendingPath(String(rowIndex + 2))
             .setValue(row)
     }
     
@@ -65,15 +67,7 @@ class DataSync {
             callback(Table(tableId: tableId, data: data, schema: schema))
         })
     }
-    
-    private func schemaForRow(data: [[AnyObject]]) -> [RLMPropertyType] {
-        return data[2].map(Engine.typeForCell)
-    }
 }
-
-//func parse(f: Table -> Void) -> FDataSnapshot! -> Void {
-//    return { snap in _ = Table(tableId: snap.key, object: snap.value).map(f) }
-//}
 
 struct Table: CustomStringConvertible {
     let rawData: [[AnyObject]]
@@ -152,10 +146,3 @@ func parseRow(schema: [RLMPropertyType]) -> [AnyObject] -> [AnyObject] {
         }
     }
 }
-
-//func parseRow(row: [AnyObject]) -> [AnyObject] {
-//    return row.map { value in
-//        if let num = value as? NSNumber { return num.doubleValue }
-//        else { return value }
-//    }
-//}

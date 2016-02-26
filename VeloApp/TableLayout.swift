@@ -9,14 +9,15 @@
 import UIKit
 
 class TableLayout: UICollectionViewLayout {
+    var config = TableConfig()
+    
     var selected = true
 
-    var indexWidth = CGFloat()
-    var mainWidths = [CGFloat]()
-    var computedWidths = [CGFloat]()
-
-    var rows = 0
-    var computedRows = 0
+    var indexWidth: CGFloat { return 100 }
+    var mainWidths: [CGFloat] { return Array(count: config.columns, repeatedValue: 80)  }
+    var emptyWidths: [CGFloat] { return Array(count: config.emptyColumns, repeatedValue: 40)  }
+    var computedWidths: [CGFloat] { return Array(count: config.computedColumns, repeatedValue: 80)  }
+    var emptyComputedWidths: [CGFloat] { return Array(count: config.emptyComputedColumns, repeatedValue: 40)  }
     
     var fieldHeight: CGFloat = 30
     var mainHeight: CGFloat = 40
@@ -35,11 +36,7 @@ class TableLayout: UICollectionViewLayout {
     var duplicate: TableLayout {
         let result = TableLayout()
         result.selected = selected
-        result.indexWidth = indexWidth
-        result.mainWidths = mainWidths
-        result.computedWidths = computedWidths
-        result.rows = rows
-        result.computedRows = computedRows
+        result.config = config
         
         return result
     }
@@ -54,14 +51,14 @@ class TableLayout: UICollectionViewLayout {
         columnOffsets = offsetsMain + offsetsComp
         columnWidths = [indexWidth] + mainWidths + computedWidths
         
-        let rowOffsetsMain = cumulate([fieldHeight, 0] + alternate(mainHeight, with: smallMargin, count: rows), from: borderMargin)
+        let rowOffsetsMain = cumulate([fieldHeight, 0] + alternate(mainHeight, with: smallMargin, count: config.rows), from: borderMargin)
         let rowOffsetToComp = rowOffsetsMain.last! + largeMargin + (selected ? mainHeight : -smallMargin)
-        let rowOffsetsComp = cumulate(alternate(computedHeight, with: smallMargin, count: computedRows), from: rowOffsetToComp)
+        let rowOffsetsComp = cumulate(alternate(computedHeight, with: smallMargin, count: config.computedRows), from: rowOffsetToComp)
 
         rowOffsets = rowOffsetsMain + rowOffsetsComp
         
-        let mainHeights = Array(count: rows + 1, repeatedValue: mainHeight)
-        let computedHeights = Array(count: computedRows, repeatedValue: computedHeight)
+        let mainHeights = Array(count: config.rows + config.emptyRows, repeatedValue: mainHeight)
+        let computedHeights = Array(count: config.computedRows, repeatedValue: computedHeight)
         
         rowHeights = [fieldHeight] + mainHeights + computedHeights
     }
@@ -94,7 +91,7 @@ class TableLayout: UICollectionViewLayout {
         let column = indexPath.item % columnCount
         
         let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
-        let hideRow = !selected && row == 1 + rows
+        let hideRow = !selected && row == 1 + size.rows
         
         attr.alpha = hideColumn || hideRow ? 0.1 : 1
         attr.frame = CGRect(x: columnOffsets[column], y: rowOffsets[row], width: columnWidths[column], height: rowHeights[row])

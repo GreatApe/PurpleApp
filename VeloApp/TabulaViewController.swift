@@ -20,7 +20,7 @@ class FieldNameCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
-class ComputedFieldNameCell: UICollectionViewCell, LabeledCell {
+class CompFieldNameCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
@@ -32,40 +32,151 @@ class Cell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
-class ComputedCell: UICollectionViewCell, LabeledCell {
+class CompCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var iconLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var label: UILabel!
 }
 
-class ComputedColumnCell: UICollectionViewCell, LabeledCell {
+class CompColumnCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
-enum CellType: String {
-    case TableName = "TableName"
-    case FieldName = "FieldName"
-    case ComputedFieldName = "ComputedFieldName"
-    case RowIndex = "RowIndex"
-    case Cell = "Cell"
-    case NewCell = "NewCell"
-    case ComputedColumnCell = "ComputedColumnCell"
-    case NewComputedCell = "NewComputedCell"
-    case ComputedCell = "ComputedCell"
-    case Spacer = "Spacer"
+enum CellType {
+    case IndexName(column: Int)
+    case FieldName(column: Int)
+    case EmptyFieldName
+    case CompFieldName(column: Int)
+    case EmptyCompFieldName
+    case Index(row: Int)
+    case EmptyIndex
+    case Cell(row: Int, column: Int)
+    case EmptyCell
+    case CompColumnCell(row: Int, column: Int)
+    case EmptyCompColumnCell
+    case CompCell(row: Int, column: Int)
+    case EmptyCompCell
+    case Spacer
+    
+    var id: String {
+        switch self {
+        case IndexName: return "IndexName"
+        case FieldName: return "FieldName"
+        case EmptyFieldName: return "FieldName"
+        case CompFieldName, EmptyCompFieldName: return "ComputedFieldName"
+        case Index, EmptyIndex: return "Index"
+        case Cell, EmptyCell: return "Cell"
+        case CompColumnCell, EmptyCompColumnCell: return "ComputedColumnCell"
+        case CompCell, EmptyCompCell: return "CompCell"
+        case Spacer: return "Spacer"
+        }
+    }
+    
+    init(config c: TableConfig, row: Int, column: Int) {
+        switch (row, column) {
+        case (c.headerRowRange, c.indexColumnRange): self = .IndexName(column: column)
+        case (c.headerRowRange, c.columnsRange): self = .FieldName(column: column)
+        case (c.headerRowRange, c.emptyColumnsRange): self = .EmptyFieldName
+        case (c.headerRowRange, c.compColumnsRange): self = .CompFieldName(column: column - c.firstCompColumn)
+        case (c.headerRowRange, c.emptyCompColumnsRange): self = .EmptyCompFieldName
+            
+        case (c.rowsRange, c.indexColumnRange): self = .Index(row: row - c.firstRow)
+        case (c.rowsRange, c.columnsRange): self = .Cell(row: row - c.firstRow, column: column)
+        case (c.rowsRange, c.emptyColumnsRange): self = .Cell(row: row - c.firstRow, column: column)
+        case (c.rowsRange, c.compColumnsRange): self = .CompColumnCell(row: row - c.firstRow, column: column - c.firstCompColumn)
+        case (c.rowsRange, c.emptyCompColumnsRange): self = .EmptyCompColumnCell
+            
+        case (c.emptyRowsRange, c.indexColumnRange): self = .EmptyIndex
+        case (c.emptyRowsRange, c.columnsRange): self = .EmptyCell
+        case (c.emptyRowsRange, c.emptyColumnsRange): self = .Spacer
+        case (c.emptyRowsRange, c.compColumnsRange): self = .EmptyCompColumnCell
+        case (c.emptyRowsRange, c.emptyCompColumnsRange): self = .Spacer
+            
+        case (c.compRowsRange, c.indexColumnRange): self = .Spacer
+        case (c.compRowsRange, c.columnsRange): self = .CompCell(row: row - c.firstCompRow, column: column)
+        case (c.compRowsRange, c.emptyColumnsRange): self = .Spacer
+        case (c.compRowsRange, c.compColumnsRange): self = .CompCell(row: row - c.firstCompRow, column: column - c.firstCompColumn)
+        case (c.compRowsRange, c.emptyCompColumnsRange): self = .Spacer
+            
+        default: fatalError("Cell error")
+        }
+    }
+}
+
+struct TableConfig {
+    let indexColumns = 1
+    var columns = 3
+    var emptyColumns = 1
+    var compColumns = 2
+    var emptyCompColumns = 1
+    
+    let headerRows = 1
+    var rows = 3
+    var emptyRows = 1
+    var compRows = 2
+    
+    var totalRows: Int { return headerRows + rows + emptyRows + compRows }
+    var totalColumns: Int { return indexColumns + columns + emptyColumns + compColumns + emptyCompColumns }
+    var totalCells: Int { return totalRows*totalColumns }
+    
+    func cellType(row: Int, column: Int) -> CellType {
+        switch (row, column) {
+        case (headerRowRange, indexColumnRange): return .IndexName(column: column)
+        case (headerRowRange, columnsRange): return .FieldName(column: column)
+        case (headerRowRange, emptyColumnsRange): return .EmptyFieldName
+        case (headerRowRange, compColumnsRange): return .CompFieldName(column: column - firstCompColumn)
+        case (headerRowRange, emptyCompColumnsRange): return .EmptyCompFieldName
+            
+        case (rowsRange, indexColumnRange): return .Index(row: row - firstRow)
+        case (rowsRange, columnsRange): return .Cell(row: row - firstRow, column: column)
+        case (rowsRange, emptyColumnsRange): return .Cell(row: row - firstRow, column: column)
+        case (rowsRange, compColumnsRange): return .CompColumnCell(row: row - firstRow, column: column - firstCompColumn)
+        case (rowsRange, emptyCompColumnsRange): return .EmptyCompColumnCell
+            
+        case (emptyRowsRange, indexColumnRange): return .EmptyIndex
+        case (emptyRowsRange, columnsRange): return .EmptyCell
+        case (emptyRowsRange, emptyColumnsRange): return .Spacer
+        case (emptyRowsRange, compColumnsRange): return .EmptyCompColumnCell
+        case (emptyRowsRange, emptyCompColumnsRange): return .Spacer
+            
+        case (compRowsRange, indexColumnRange): return .Spacer
+        case (compRowsRange, columnsRange): return .CompCell(row: row - firstCompRow, column: column)
+        case (compRowsRange, emptyColumnsRange): return .Spacer
+        case (compRowsRange, compColumnsRange): return .CompCell(row: row - firstCompRow, column: column - firstCompColumn)
+        case (compRowsRange, emptyCompColumnsRange): return .Spacer
+            
+        default: fatalError("Cell error")
+        }
+    }
+    
+    private var firstIndexColumn: Int { return 0 }
+    private var firstColumn: Int { return firstIndexColumn + indexColumns }
+    private var firstEmptyColumn: Int { return firstColumn + columns }
+    private var firstCompColumn: Int { return firstEmptyColumn + emptyColumns}
+    private var firstEmptyCompColumn: Int { return firstCompColumn + emptyCompColumns}
+    
+    private var firstHeaderRow: Int { return 0 }
+    private var firstRow: Int { return firstHeaderRow + headerRows }
+    private var firstEmptyRow: Int { return firstRow + rows }
+    private var firstCompRow: Int { return firstEmptyColumn + emptyColumns}
+    
+    private func range(from: Int, length: Int) -> Range<Int> { return from..<(from + length) }
+    
+    private var indexColumnRange: Range<Int> { return range(firstIndexColumn, length: indexColumns) }
+    private var columnsRange: Range<Int> { return range(firstColumn, length: columns) }
+    private var emptyColumnsRange: Range<Int> { return range(firstEmptyColumn, length: emptyColumns) }
+    private var compColumnsRange: Range<Int> { return range(firstCompColumn, length: compColumns) }
+    private var emptyCompColumnsRange: Range<Int> { return range(firstEmptyCompColumn, length: emptyCompColumns) }
+    
+    private var headerRowRange: Range<Int> { return range(firstHeaderRow, length: headerRows) }
+    private var rowsRange: Range<Int> { return range(firstRow, length: rows) }
+    private var emptyRowsRange: Range<Int> { return range(firstEmptyRow, length: emptyRows) }
+    private var compRowsRange: Range<Int> { return range(firstCompRow, length: compRows) }
 }
 
 class TabulaViewController: UICollectionViewController {
     var tableId: String! { didSet { reload() } }
-    var selected = true { didSet { changedSelected() } }
-    
-    private var columnCount = 1
-    private var emptyColumns = 0
-    private var computedColumnCount = 0
-    
-    private var rowCount = 1
-    private var emptyRows = 0
-    private var computedRowCount = 0
+//    var selected = true { didSet { changedSelected() } }
     
     private var layout: TableLayout { return collectionViewLayout as! TableLayout }
 
@@ -78,30 +189,30 @@ class TabulaViewController: UICollectionViewController {
     }
     
     private func pathsForRow(row: Int) -> [NSIndexPath] {
-        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
-        return (row*totalColumns..<(row + 1)*totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+        let totalColumns = size.totalColumns
+        return (row*totalColumns..<(row + 1)*size.totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
     }
     
     private func pathsForColumn(column: Int) -> [NSIndexPath] {
-        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
-        return column.stride(through: totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+        let totalColumns = size.totalColumns
+        return column.stride(through: size.totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
     }
     
     func addColumn(column: Int) {
-        columnCount += 1
-        layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
+        size.columns += 1
+        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
         collectionView!.insertItemsAtIndexPaths(pathsForColumn(column))
     }
     
     func deleteColumn(column: Int) {
         let paths = pathsForColumn(column)
-        columnCount -= 1
-        layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
+        size.columns -= 1
+        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
         collectionView!.deleteItemsAtIndexPaths(paths)
     }
 
     func addRow(row: Int) {
-        rowCount += 1
+        layout.size.rows += 1
         layout.rows = rowCount
         collectionView!.insertItemsAtIndexPaths(pathsForRow(row))
     }
@@ -153,9 +264,9 @@ class TabulaViewController: UICollectionViewController {
         layout.selected = selected
         layout.indexWidth = 100
         layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
-        layout.computedWidths = [CGFloat](count: computedColumnCount, repeatedValue: 60) + [44]
+        layout.compWidths = [CGFloat](count: compColumnCount, repeatedValue: 60) + [44]
         layout.rows = rowCount
-        layout.computedRows = computedRowCount
+        layout.compRows = compRowCount
         layout.invalidateLayout()
     }
     
@@ -165,68 +276,14 @@ class TabulaViewController: UICollectionViewController {
         return 1
     }
     
-    private var totalCells: Int {
-        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
-        let totalRows = 1 + rowCount + 1 + computedRowCount
-        
-        return totalColumns*totalRows
-    }
-    
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return totalCells
+        return config.totalCells
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let totalColumns = 1 + columnCount + 1 + computedColumnCount + 1
-        let row = indexPath.item / totalColumns
-        let column = indexPath.item % totalColumns
+        let row = indexPath.item / config.totalColumns
+        let column = indexPath.item % config.totalColumns
         
-        let indexColumn = 0
-        let mainColumns = 1..<1 + columnCount
-        let addColumn = 1 + columnCount
-        let computedColumns = addColumn + 1..<addColumn + 1 + computedColumnCount
-        let addComputedColumn = computedColumns.last ?? addColumn + 1
-        
-        let headerRow = 0
-        let mainRows = 1..<1 + rowCount
-        let addRow = mainRows.last! + 1
-        let computedRows = addRow + 1..<addRow + 1 + computedRowCount
-        
-        let cellType: CellType
-        let text: String?
-        
-        switch (row, column) {
-        case (headerRow, indexColumn):
-            cellType = .TableName
-            text = name
-        case (headerRow, mainColumns):
-            cellType = .FieldName
-            text = headerData[column - 1]
-        case (headerRow, computedColumns):
-            cellType = .ComputedFieldName
-            text = "Fx"
-        case (mainRows, indexColumn):
-            cellType = .RowIndex
-            text = (rowData[row - 1][indexColumn] as! String)
-        case (mainRows, mainColumns):
-            cellType = .Cell
-            text = String(rowData[row - 1][column])
-        case (mainRows, computedColumns):
-            cellType = .ComputedColumnCell
-            text = "xx"
-        case (mainRows, addComputedColumn):
-            cellType = .NewComputedCell
-            text = nil
-        case (mainRows, addColumn), (addRow, indexColumn), (addRow, mainColumns):
-            cellType = .NewCell
-            text = nil
-        case (computedRows, mainColumns), (computedRows, computedColumns):
-            cellType = .ComputedCell
-            text = "yy"
-        default:
-            cellType = .Spacer
-            text = nil
-        }
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.rawValue, forIndexPath: indexPath)
         
