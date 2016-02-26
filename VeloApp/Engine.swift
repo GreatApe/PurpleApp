@@ -122,7 +122,7 @@ class Engine {
     }
 
     func tableHeader(tableId: String) -> [String] {
-        return tableProperties(tableId).map { $0.name }.filter { $0 != "index" }
+        return getRowType(getTableInfo(tableId)!.tableClass).properties.map { $0["displayName"] as! String }
     }
 
 //    func tableCell(tableId: String, rowIndex: Int, propertyId: String) -> AnyObject {

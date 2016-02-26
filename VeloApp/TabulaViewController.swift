@@ -12,7 +12,7 @@ protocol LabeledCell {
     var label: UILabel! { get }
 }
 
-class TableNameCell: UICollectionViewCell, LabeledCell {
+class IndexNameCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
@@ -32,13 +32,13 @@ class Cell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
-class CompCell: UICollectionViewCell, LabeledCell {
-    @IBOutlet weak var iconLabel: UILabel!
-    @IBOutlet weak var titleLabel: UILabel!
+class CompColumnCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
 
-class CompColumnCell: UICollectionViewCell, LabeledCell {
+class CompCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var iconLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var label: UILabel!
 }
 
@@ -60,15 +60,21 @@ enum CellType {
     
     var id: String {
         switch self {
-        case IndexName: return "IndexName"
-        case FieldName: return "FieldName"
-        case EmptyFieldName: return "FieldName"
-        case CompFieldName, EmptyCompFieldName: return "ComputedFieldName"
-        case Index, EmptyIndex: return "Index"
+        case IndexName: return "IndexNameCell"
+        case FieldName, EmptyFieldName: return "FieldNameCell"
+        case CompFieldName, EmptyCompFieldName: return "CompFieldNameCell"
+        case Index, EmptyIndex: return "IndexCell"
         case Cell, EmptyCell: return "Cell"
-        case CompColumnCell, EmptyCompColumnCell: return "ComputedColumnCell"
+        case CompColumnCell, EmptyCompColumnCell: return "CompColumnCell"
         case CompCell, EmptyCompCell: return "CompCell"
-        case Spacer: return "Spacer"
+        case Spacer: return "SpacerCell"
+        }
+    }
+    
+    var isEmpty: Bool {
+        switch self {
+        case EmptyFieldName, EmptyCompFieldName, EmptyIndex, EmptyCell, EmptyCompColumnCell, EmptyCompCell: return true
+        default: return false
         }
     }
     
@@ -82,7 +88,7 @@ enum CellType {
             
         case (c.rowsRange, c.indexColumnRange): self = .Index(row: row - c.firstRow)
         case (c.rowsRange, c.columnsRange): self = .Cell(row: row - c.firstRow, column: column)
-        case (c.rowsRange, c.emptyColumnsRange): self = .Cell(row: row - c.firstRow, column: column)
+        case (c.rowsRange, c.emptyColumnsRange): self = .EmptyCell
         case (c.rowsRange, c.compColumnsRange): self = .CompColumnCell(row: row - c.firstRow, column: column - c.firstCompColumn)
         case (c.rowsRange, c.emptyCompColumnsRange): self = .EmptyCompColumnCell
             
@@ -103,15 +109,15 @@ enum CellType {
     }
 }
 
-struct TableConfig {
+struct TableConfig: CustomStringConvertible {
     let indexColumns = 1
-    var columns = 3
+    var columns = 1
     var emptyColumns = 1
     var compColumns = 2
     var emptyCompColumns = 1
     
     let headerRows = 1
-    var rows = 3
+    var rows = 1
     var emptyRows = 1
     var compRows = 2
     
@@ -119,46 +125,16 @@ struct TableConfig {
     var totalColumns: Int { return indexColumns + columns + emptyColumns + compColumns + emptyCompColumns }
     var totalCells: Int { return totalRows*totalColumns }
     
-    func cellType(row: Int, column: Int) -> CellType {
-        switch (row, column) {
-        case (headerRowRange, indexColumnRange): return .IndexName(column: column)
-        case (headerRowRange, columnsRange): return .FieldName(column: column)
-        case (headerRowRange, emptyColumnsRange): return .EmptyFieldName
-        case (headerRowRange, compColumnsRange): return .CompFieldName(column: column - firstCompColumn)
-        case (headerRowRange, emptyCompColumnsRange): return .EmptyCompFieldName
-            
-        case (rowsRange, indexColumnRange): return .Index(row: row - firstRow)
-        case (rowsRange, columnsRange): return .Cell(row: row - firstRow, column: column)
-        case (rowsRange, emptyColumnsRange): return .Cell(row: row - firstRow, column: column)
-        case (rowsRange, compColumnsRange): return .CompColumnCell(row: row - firstRow, column: column - firstCompColumn)
-        case (rowsRange, emptyCompColumnsRange): return .EmptyCompColumnCell
-            
-        case (emptyRowsRange, indexColumnRange): return .EmptyIndex
-        case (emptyRowsRange, columnsRange): return .EmptyCell
-        case (emptyRowsRange, emptyColumnsRange): return .Spacer
-        case (emptyRowsRange, compColumnsRange): return .EmptyCompColumnCell
-        case (emptyRowsRange, emptyCompColumnsRange): return .Spacer
-            
-        case (compRowsRange, indexColumnRange): return .Spacer
-        case (compRowsRange, columnsRange): return .CompCell(row: row - firstCompRow, column: column)
-        case (compRowsRange, emptyColumnsRange): return .Spacer
-        case (compRowsRange, compColumnsRange): return .CompCell(row: row - firstCompRow, column: column - firstCompColumn)
-        case (compRowsRange, emptyCompColumnsRange): return .Spacer
-            
-        default: fatalError("Cell error")
-        }
-    }
-    
     private var firstIndexColumn: Int { return 0 }
     private var firstColumn: Int { return firstIndexColumn + indexColumns }
     private var firstEmptyColumn: Int { return firstColumn + columns }
     private var firstCompColumn: Int { return firstEmptyColumn + emptyColumns}
-    private var firstEmptyCompColumn: Int { return firstCompColumn + emptyCompColumns}
+    private var firstEmptyCompColumn: Int { return firstCompColumn + compColumns}
     
     private var firstHeaderRow: Int { return 0 }
     private var firstRow: Int { return firstHeaderRow + headerRows }
     private var firstEmptyRow: Int { return firstRow + rows }
-    private var firstCompRow: Int { return firstEmptyColumn + emptyColumns}
+    private var firstCompRow: Int { return firstEmptyRow + emptyRows}
     
     private func range(from: Int, length: Int) -> Range<Int> { return from..<(from + length) }
     
@@ -172,6 +148,11 @@ struct TableConfig {
     private var rowsRange: Range<Int> { return range(firstRow, length: rows) }
     private var emptyRowsRange: Range<Int> { return range(firstEmptyRow, length: emptyRows) }
     private var compRowsRange: Range<Int> { return range(firstCompRow, length: compRows) }
+    
+    var description: String {
+        return " Columns: \(columns)\n EmptyColumns: \(emptyColumns)\n Rows: \(rows)\n EmptyRows: \(emptyRows)\n CompRows: \(compRows)" +
+        "\n indexColumnRange: \(indexColumnRange)\n columnsRange: \(columnsRange)\n emptyColumnsRange: \(emptyColumnsRange)\n compColumnsRange: \(compColumnsRange)\n emptyCompColumnsRange: \(emptyCompColumnsRange)"
+    }
 }
 
 class TabulaViewController: UICollectionViewController {
@@ -183,90 +164,77 @@ class TabulaViewController: UICollectionViewController {
     // MARK: Setters
     
     private func changedSelected() {
-        let newLayout = layout.duplicate
-        newLayout.selected = selected
-        collectionView!.setCollectionViewLayout(newLayout, animated: true)
+//        let newLayout = layout.duplicate
+//        newLayout.selected = selected
+//        collectionView!.setCollectionViewLayout(newLayout, animated: true)
     }
     
     private func pathsForRow(row: Int) -> [NSIndexPath] {
-        let totalColumns = size.totalColumns
-        return (row*totalColumns..<(row + 1)*size.totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+        let totalColumns = layout.config.totalColumns
+        return (row*totalColumns..<(row + 1)*totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
     }
     
     private func pathsForColumn(column: Int) -> [NSIndexPath] {
-        let totalColumns = size.totalColumns
-        return column.stride(through: size.totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
+        let totalColumns = layout.config.totalColumns
+        let totalCells = layout.config.totalCells
+        return column.stride(through: totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
     }
     
-    func addColumn(column: Int) {
-        size.columns += 1
-        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
-        collectionView!.insertItemsAtIndexPaths(pathsForColumn(column))
-    }
+//    func addColumn(column: Int) {
+//        size.columns += 1
+//        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
+//        collectionView!.insertItemsAtIndexPaths(pathsForColumn(column))
+//    }
+//    
+//    func deleteColumn(column: Int) {
+//        let paths = pathsForColumn(column)
+//        size.columns -= 1
+//        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
+//        collectionView!.deleteItemsAtIndexPaths(paths)
+//    }
+//
+//    func addRow(row: Int) {
+//        layout.size.rows += 1
+//        layout.rows = rowCount
+//        collectionView!.insertItemsAtIndexPaths(pathsForRow(row))
+//    }
+//
+//    func deleteRow(row: Int) {
+//        let paths = pathsForRow(row)
+//        rowCount -= 1
+//        layout.rows = rowCount
+//        collectionView!.deleteItemsAtIndexPaths(paths)
+//    }
     
-    func deleteColumn(column: Int) {
-        let paths = pathsForColumn(column)
-        size.columns -= 1
-        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)
-        collectionView!.deleteItemsAtIndexPaths(paths)
-    }
-
-    func addRow(row: Int) {
-        layout.size.rows += 1
-        layout.rows = rowCount
-        collectionView!.insertItemsAtIndexPaths(pathsForRow(row))
-    }
-
-    func deleteRow(row: Int) {
-        let paths = pathsForRow(row)
-        rowCount -= 1
-        layout.rows = rowCount
-        collectionView!.deleteItemsAtIndexPaths(paths)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override func viewDidLoad() {
-        layoutChanged()
-    }
+//    required init?(coder aDecoder: NSCoder) {
+//        super.init(coder: aDecoder)
+//    }
+//    
+//    override func viewDidLoad() {
+//        layoutChanged()
+//    }
     
     private var name = "Table"
-    private var headerData = ["Field0"]
+    private var headerData = ["Field0", "Field1"]
     private var rowData: [[AnyObject]] = [["ndx0", "val0"]]
     
     func reload() {
         tableChanged()
         layoutChanged()
         
-        print("Reload:")
-        print(name)
-        print(headerData)
-        print(columnCount)
-        print(rowCount)
-        print(rowData)
-        
         collectionView?.reloadData()
     }
     
     private func tableChanged() {
         name = Engine.shared.tableName(tableId)
-        
         headerData = Engine.shared.tableHeader(tableId)
-        columnCount = headerData.count
-        
         rowData = Engine.shared.tableRows(tableId)
-        rowCount = rowData.count
+        
+        layout.config.columns = headerData.count - 1
+        layout.config.rows = rowData.count
     }
     
     private func layoutChanged() {
-        layout.selected = selected
-        layout.indexWidth = 100
-        layout.mainWidths = [CGFloat](count: columnCount, repeatedValue: 80) + [44]
-        layout.compWidths = [CGFloat](count: compColumnCount, repeatedValue: 60) + [44]
-        layout.rows = rowCount
-        layout.compRows = compRowCount
         layout.invalidateLayout()
     }
     
@@ -277,22 +245,48 @@ class TabulaViewController: UICollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return config.totalCells
+        print("## TotalCells: \(layout.config.totalCells)")
+        return layout.config.totalCells
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let row = indexPath.item / config.totalColumns
-        let column = indexPath.item % config.totalColumns
+        let totalColumns = layout.config.totalColumns
         
+        let row = indexPath.item / totalColumns
+        let column = indexPath.item % totalColumns
+        let cellType = CellType(config: layout.config, row: row, column: column)
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.rawValue, forIndexPath: indexPath)
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         
-        if let cell = cell as? LabeledCell, text = text {
-            cell.label.text = text
+        print("Wants cell: \(row)\(column)")
+        
+        switch (cellType, cell) {
+        case (let .IndexName(column: c), let cell as IndexNameCell):
+            print("c: \(column)")
+            cell.label.text = headerData[c]
+        case (let .FieldName(column: c), let cell as FieldNameCell):
+            print("c: \(column)")
+            cell.label.text = headerData[c]
+        case (let .CompFieldName(column: c), let cell as CompFieldNameCell):
+            cell.label.text = ":\(c)"
+            
+        case (let .Index(row: r), let cell as IndexCell):
+            cell.label.text = String(rowData[r][0])
+        case (let .Cell(row: r, column: c), let cell as Cell):
+            cell.label.text = String(rowData[r][c])
+        case (let .CompColumnCell(row: r, column: c), let cell as CompColumnCell):
+            cell.label.text = "\(r):\(c)"
+
+        case (let .CompCell(row: r, column: c), let cell as CompCell):
+            cell.label.text = "\(r):\(c)"
+            
+        case (_, let cell as LabeledCell):
+            cell.label.text = ""
+        
+        default: break
         }
         
-        //            case .RowIndex: text = String(rowData[row - 1][column])
-        //            case .Cell: text = String(rowData[row - 1][column - 1])
+        cell.alpha = cellType.isEmpty ? 0.35 : 1
         
         return cell
     }

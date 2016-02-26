@@ -14,24 +14,25 @@ class TableLayout: UICollectionViewLayout {
     var selected = true
 
     var indexWidth: CGFloat { return 100 }
-    var mainWidths: [CGFloat] { return Array(count: config.columns, repeatedValue: 80)  }
-    var emptyWidths: [CGFloat] { return Array(count: config.emptyColumns, repeatedValue: 40)  }
-    var computedWidths: [CGFloat] { return Array(count: config.computedColumns, repeatedValue: 80)  }
-    var emptyComputedWidths: [CGFloat] { return Array(count: config.emptyComputedColumns, repeatedValue: 40)  }
+    var mainWidths: [CGFloat] { return Array(count: config.columns, repeatedValue: 80) }
+    var emptyWidths: [CGFloat] { return Array(count: config.emptyColumns, repeatedValue: 60) }
+    var compWidths: [CGFloat] { return Array(count: config.compColumns, repeatedValue: 80) }
+    var emptyCompWidths: [CGFloat] { return Array(count: config.emptyCompColumns, repeatedValue: 60) }
     
-    var fieldHeight: CGFloat = 30
-    var mainHeight: CGFloat = 40
-    var computedHeight: CGFloat = 60
+    var fieldHeight: CGFloat { return 30 }
+    var mainHeights: [CGFloat] { return Array(count: config.rows, repeatedValue: 40) }
+    var emptyHeights: [CGFloat] { return Array(count: config.emptyRows, repeatedValue: 40) }
+    var compHeights: [CGFloat] { return Array(count: config.emptyColumns, repeatedValue: 60) }
     
     private let borderMargin: CGFloat = 10
     private let largeMargin: CGFloat = 7
     private let smallMargin: CGFloat = 2
     
-    private var columnOffsets = [CGFloat]()
-    private var columnWidths = [CGFloat]()
+    private var columnOffsets: [CGFloat]!
+    private var columnWidths: [CGFloat]!
     
-    private var rowOffsets = [CGFloat]()
-    private var rowHeights = [CGFloat]()
+    private var rowOffsets: [CGFloat]!
+    private var rowHeights: [CGFloat]!
     
     var duplicate: TableLayout {
         let result = TableLayout()
@@ -44,23 +45,31 @@ class TableLayout: UICollectionViewLayout {
     // MARK: Callbacks
     
     override func prepareLayout() {
-        let offsetsMain = cumulate([indexWidth, largeMargin] + splice(mainWidths, with: smallMargin), from: borderMargin)
-        let offsetToComp = offsetsMain.last! + largeMargin + (selected ? mainWidths.last! : -smallMargin)
-        let offsetsComp = cumulate(splice(computedWidths, with: smallMargin), from: offsetToComp)
+        let widthsMain = [indexWidth, largeMargin] + splice(mainWidths + emptyWidths, with: smallMargin)
+        let widthsComp = [largeMargin] + splice(compWidths + emptyCompWidths, with: smallMargin)
         
-        columnOffsets = offsetsMain + offsetsComp
-        columnWidths = [indexWidth] + mainWidths + computedWidths
+        columnOffsets = cumulate(widthsMain + widthsComp, from: borderMargin)
+        columnWidths = [indexWidth] + mainWidths + emptyWidths + compWidths + emptyCompWidths
         
-        let rowOffsetsMain = cumulate([fieldHeight, 0] + alternate(mainHeight, with: smallMargin, count: config.rows), from: borderMargin)
-        let rowOffsetToComp = rowOffsetsMain.last! + largeMargin + (selected ? mainHeight : -smallMargin)
-        let rowOffsetsComp = cumulate(alternate(computedHeight, with: smallMargin, count: config.computedRows), from: rowOffsetToComp)
-
-        rowOffsets = rowOffsetsMain + rowOffsetsComp
+        let heightsMain = [fieldHeight, 0] + splice(mainHeights + emptyHeights, with: smallMargin)
+        let heightsComp = [largeMargin] + splice(compHeights, with: smallMargin)
         
-        let mainHeights = Array(count: config.rows + config.emptyRows, repeatedValue: mainHeight)
-        let computedHeights = Array(count: config.computedRows, repeatedValue: computedHeight)
+        rowOffsets = cumulate(heightsMain + heightsComp, from: borderMargin)
+        rowHeights = [fieldHeight] + mainHeights + emptyHeights + compHeights
         
-        rowHeights = [fieldHeight] + mainHeights + computedHeights
+        print("## prepareLayout")
+        print("total rows: \(config.totalRows)")
+        print("total columns: \(config.totalColumns)")
+        print("total cells: \(config.totalCells)")
+        print("config:\n\(config)")
+        
+        print("columnOffsets: \(columnOffsets)")
+        print("columnWidths: \(columnWidths)")
+        
+        print("rowOffsets: \(rowOffsets)")
+        print(" -heightsMain: \(heightsMain)")
+        print(" -heightsComp: \(heightsComp)")
+        print("rowHeights: \(rowHeights)")
     }
     
     override func collectionViewContentSize() -> CGSize {
@@ -83,17 +92,10 @@ class TableLayout: UICollectionViewLayout {
     }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        let row = indexPath.item/config.totalColumns
+        let column = indexPath.item % config.totalColumns
+        
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-        
-        let columnCount = columnWidths.count
-        
-        let row = indexPath.item/columnCount
-        let column = indexPath.item % columnCount
-        
-        let hideColumn = !selected && (column == mainWidths.count || column == mainWidths.count + computedWidths.count)
-        let hideRow = !selected && row == 1 + size.rows
-        
-        attr.alpha = hideColumn || hideRow ? 0.1 : 1
         attr.frame = CGRect(x: columnOffsets[column], y: rowOffsets[row], width: columnWidths[column], height: rowHeights[row])
                 
         return attr
@@ -112,11 +114,11 @@ class TableLayout: UICollectionViewLayout {
         return values.dropLast().reduce([]) { result, new in result + [new, value] } + [last]
     }
     
-    private func alternate(value: CGFloat, with otherValue: CGFloat, count: Int) -> [CGFloat] {
-        guard count > 0 else { return [] }
-        
-        return (0..<count).reduce([]) { result, new in result + [value, otherValue] } + [value]
-    }
+//    private func alternate(value: CGFloat, with otherValue: CGFloat, count: Int) -> [CGFloat] {
+//        guard count > 0 else { return [] }
+//        
+//        return (0..<count).reduce([]) { result, new in result + [value, otherValue] } + [value]
+//    }
 
     private func cumulate(distances: [CGFloat], from: CGFloat) -> [CGFloat] {
         var result = [CGFloat]()
@@ -133,3 +135,28 @@ class TableLayout: UICollectionViewLayout {
         return result
     }
 }
+//override func prepareLayout() {
+//    let offsetsMain = cumulate([indexWidth, largeMargin] + splice(mainWidths, with: smallMargin), from: borderMargin)
+//    let offsetToComp = offsetsMain.last! + largeMargin + (selected ? mainWidths.last! : -smallMargin)
+//    let offsetsComp = cumulate(splice(computedWidths, with: smallMargin), from: offsetToComp)
+//    
+//    columnOffsets = offsetsMain + offsetsComp
+//    columnWidths = [indexWidth] + mainWidths + computedWidths
+//    
+//    let rowOffsetsMain = cumulate([fieldHeight, 0] + alternate(mainHeight, with: smallMargin, count: config.rows), from: borderMargin)
+//    let rowOffsetToComp = rowOffsetsMain.last! + largeMargin + (selected ? mainHeight : -smallMargin)
+//    let rowOffsetsComp = cumulate(alternate(computedHeight, with: smallMargin, count: config.computedRows), from: rowOffsetToComp)
+//    
+//    rowOffsets = rowOffsetsMain + rowOffsetsComp
+//    
+//    let mainHeights = Array(count: config.rows + config.emptyRows, repeatedValue: mainHeight)
+//    let computedHeights = Array(count: config.computedRows, repeatedValue: computedHeight)
+//    
+//    rowHeights = [fieldHeight] + mainHeights + computedHeights
+//}
+
+
+
+
+
+
