@@ -11,12 +11,13 @@ import Realm
 
 // MARK: Dynamic models
 
-//class Collection: RLMObject {
-//    dynamic var id = ""
-//    dynamic var categoryIds = RLMArray(objectClassName: "RealmString")
-//    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
-//}
-//
+class CollectionBase: RLMObject {
+    dynamic var id = ""
+    dynamic var categories = RLMArray(objectClassName: "Category")
+    //    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
+    dynamic var tables = RLMArray(objectClassName: "TableBase")
+}
+
 //class TaggedTable: RLMObject {
 //    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
 //    dynamic var tableId = ""

@@ -8,6 +8,13 @@
 
 import UIKit
 
+struct TensorHelper {
+    var dimensions: [Int] = [3, 3, 3]
+    
+//    func position(section:)
+}
+
+
 class TableLayout: UICollectionViewLayout {
     var config = TableConfig()
     
@@ -22,7 +29,7 @@ class TableLayout: UICollectionViewLayout {
     var fieldHeight: CGFloat { return 30 }
     var mainHeights: [CGFloat] { return Array(count: config.rows, repeatedValue: 40) }
     var emptyHeights: [CGFloat] { return Array(count: config.emptyRows, repeatedValue: 40) }
-    var compHeights: [CGFloat] { return Array(count: config.emptyColumns, repeatedValue: 60) }
+    var compHeights: [CGFloat] { return Array(count: config.compRows, repeatedValue: 60) }
     
     private let borderMargin: CGFloat = 10
     private let largeMargin: CGFloat = 7
@@ -36,7 +43,6 @@ class TableLayout: UICollectionViewLayout {
     
     var duplicate: TableLayout {
         let result = TableLayout()
-        result.selected = selected
         result.config = config
         
         return result
@@ -95,9 +101,12 @@ class TableLayout: UICollectionViewLayout {
         let row = indexPath.item/config.totalColumns
         let column = indexPath.item % config.totalColumns
         
+        print("attr: \(row):\(column)")
+        
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attr.frame = CGRect(x: columnOffsets[column], y: rowOffsets[row], width: columnWidths[column], height: rowHeights[row])
-                
+        attr.alpha = config.isHidden(row, column: column) ? 0 : (config.isEmpty(row, column: column) ? 0.4 : 1)
+        
         return attr
     }
 

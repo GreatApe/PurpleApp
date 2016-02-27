@@ -94,7 +94,7 @@ enum CellType {
             
         case (c.emptyRowsRange, c.indexColumnRange): self = .EmptyIndex
         case (c.emptyRowsRange, c.columnsRange): self = .EmptyCell
-        case (c.emptyRowsRange, c.emptyColumnsRange): self = .Spacer
+        case (c.emptyRowsRange, c.emptyColumnsRange): self = .EmptyCell
         case (c.emptyRowsRange, c.compColumnsRange): self = .EmptyCompColumnCell
         case (c.emptyRowsRange, c.emptyCompColumnsRange): self = .Spacer
             
@@ -149,6 +149,14 @@ struct TableConfig: CustomStringConvertible {
     private var emptyRowsRange: Range<Int> { return range(firstEmptyRow, length: emptyRows) }
     private var compRowsRange: Range<Int> { return range(firstCompRow, length: compRows) }
     
+    func isEmpty(row: Int, column: Int) -> Bool {
+        return emptyColumnsRange.contains(column) || emptyCompColumnsRange.contains(column) || emptyRowsRange.contains(row)
+    }
+
+    func isHidden(row: Int, column: Int) -> Bool {
+        return (emptyColumnsRange.contains(column) || emptyCompColumnsRange.contains(column)) && emptyRowsRange.contains(row)
+    }
+
     var description: String {
         return " Columns: \(columns)\n EmptyColumns: \(emptyColumns)\n Rows: \(rows)\n EmptyRows: \(emptyRows)\n CompRows: \(compRows)" +
         "\n indexColumnRange: \(indexColumnRange)\n columnsRange: \(columnsRange)\n emptyColumnsRange: \(emptyColumnsRange)\n compColumnsRange: \(compColumnsRange)\n emptyCompColumnsRange: \(emptyCompColumnsRange)"
@@ -161,6 +169,8 @@ class TabulaViewController: UICollectionViewController {
     
     private var layout: TableLayout { return collectionViewLayout as! TableLayout }
 
+    private var tensor = TensorHelper()
+    
     // MARK: Setters
     
     private func changedSelected() {
@@ -273,7 +283,8 @@ class TabulaViewController: UICollectionViewController {
         case (let .Index(row: r), let cell as IndexCell):
             cell.label.text = String(rowData[r][0])
         case (let .Cell(row: r, column: c), let cell as Cell):
-            cell.label.text = String(rowData[r][c])
+            //            cell.label.text = String(rowData[r][c])
+            cell.label.text = "-"
         case (let .CompColumnCell(row: r, column: c), let cell as CompColumnCell):
             cell.label.text = "\(r):\(c)"
 
@@ -286,9 +297,20 @@ class TabulaViewController: UICollectionViewController {
         default: break
         }
         
-        cell.alpha = cellType.isEmpty ? 0.35 : 1
-        
         return cell
+    }
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let totalColumns = layout.config.totalColumns
+//        let row = indexPath.item / totalColumns
+        let column = indexPath.item % totalColumns
+        
+        if layout.config.emptyColumnsRange.contains(column) {
+            let newLayout = layout.duplicate
+            newLayout.config.emptyColumns = 0
+            newLayout.config.columns += 1
+            collectionView.setCollectionViewLayout(newLayout, animated: true)
+        }
     }
     
     // MARK: From containing View Controller
