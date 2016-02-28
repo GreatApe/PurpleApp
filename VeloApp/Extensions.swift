@@ -8,6 +8,14 @@
 
 import UIKit
 
+// Forward Pipe
+
+infix operator |> { associativity left precedence 80 }
+
+func |> <T, U>(value: T, function: (T -> U)) -> U {
+    return function(value)
+}
+
 // [Int] operations
 
 func *(lhs: [Int], rhs: [Int]) -> Int {

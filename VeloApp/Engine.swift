@@ -38,51 +38,29 @@ class Engine {
     // MARK: Collection Retrieval
     
     func getList() -> [(id: String, name: String)] {
-        return realm.allObjects("CollectionInfo").map { info in (info["id"] as! String, info["displayName"] as! String) }
-    }
-    
-    func getName(collectionId: String) -> String {
-        return getCollection(collectionId)!["displayName"] as! String
-    }
-    
-    func getHeader(collectionId: String) -> [String] {
-        let rowType = getCollection(collectionId)!["rowType"] as! RLMObject
-        let properties = rowType["properties"] as! RLMArray
+        func getId(collectionInfo: RLMObject) -> String { return collectionInfo["collectionId"] as! String }
+        func getDisplayName(collection: RLMObject) -> String { return collection["displayName"] as! String }
         
-        return properties.map { $0["displayName"] as! String }
+        return realm.allObjects("CollectionInfo").map(getId).map { id in (id, (id |> self.getCollection)! |> getDisplayName) }
     }
     
-    func getCategories(collectionId: String) -> [[String]] {
-        let collection = getCollection(collectionId)!
-        let categories = collection["categories"] as! RLMArray
-        
-        func getValues(category: RLMObject) -> [String] {
-            func getValue(string: RLMObject) -> String {
-                return string["value"] as! String
-            }
-            
-            let values = category["values"] as! RLMArray
-            return values.map(getValue)
-        }
-
-        return categories.map(getValues)
+    func getRowType(rowClass: String) -> RLMObject {
+        return realm.objectWithClassName("RowType", forPrimaryKey: rowClass)
     }
     
-    func getSchema(collectionId: String) -> [RLMPropertyType] {
-        let tableClass = getCollection(collectionId)!["tableClass"] as! String
-        let rowClass = getRowClassFor(tableClass)
-        
+    // MARK: Collection Helpers
+    
+    func getSchema(rowClass: String) -> [RLMPropertyType] {
         return realm.schema[rowClass].properties.map { $0.type }
     }
     
-    func getRows(collectionId: String, index: [Int]) -> [[AnyObject]] {
-        let rows = getCollection(collectionId)!["rows"] as! RLMArray
-        return rows.map { row in row.array }
+    func getData(collectionId: String, index: [Int]) -> (name: String, header: [String], categories: [[String]], rows: [[AnyObject]]) {
+        let collection = (collectionId |> getCollection)!
+        let header = collection |> getTableClass |> getRowClass |> getRowType |> getHeader
+        return (collection |> getName, header, collection |> getCategories, collection |> getTable(index) |> getRows)
     }
-
-    // MARK: Collection Helpers
-
-    private func getCollection(collectionId: String) -> RLMObject? {
+    
+    func getCollection(collectionId: String) -> RLMObject? {
         guard let info = getCollectionInfo(collectionId) else { return nil }
         return realm.objectWithClassName(info.collectionClass, forPrimaryKey: info.collectionId)
     }
@@ -92,20 +70,12 @@ class Engine {
         return collectionInfo.map(CollectionInfo.make)
     }
 
-    private func getRowClassFor(tableClass: String) -> String {
-        return "Row_" + tableClass
-    }
-
-    private func getCollectionClassFor(tableClass: String) -> String {
-        return "Coll_" + tableClass
-    }
-
     // MARK: Creation Methods
     
     func newCollection() -> RLMObject {
         let collectionId = sync.getSyncId()
         let tableClass = newCollectionClass(collectionId)
-        let collectionClass = getCollectionClassFor(tableClass)
+        let collectionClass = tableClass |> getCollectionClass
         
         realm.beginWriteTransaction()
         let table = realm.createObject(tableClass, withValue: [])
@@ -131,7 +101,7 @@ class Engine {
     func newCollectionClass(collectionId: String) -> String {
         let tableClass = "Class" + String(Int(arc4random() % 10000))
         
-        let rowClass = getRowClassFor(tableClass)
+        let rowClass = tableClass |> getRowClass
         let rowSchema = RLMObjectSchema(className: rowClass, objectClass: RowBase.self, properties: realm.schema["RowBase"].properties)
         
         let tableBaseProps = realm.schema["TableBase"].properties
@@ -139,7 +109,7 @@ class Engine {
         let tableProps = tableBaseProps.filter { prop in prop.name != "rows" } + [rowsProp]
         let tableSchema = RLMObjectSchema(className: tableClass, objectClass: TableBase.self, properties: tableProps)
         
-        let collectionClass = getCollectionClassFor(tableClass)
+        let collectionClass = tableClass |> getCollectionClass
         let collectionBaseProps = realm.schema["CollectionBase"].properties
         let tablesProp = RLMProperty(name: "tables", type: .Array, objectClassName: tableClass, indexed: false, optional: false)
         let collectionProps = collectionBaseProps.filter { prop in prop.name != "tables" } + [tablesProp]
@@ -260,7 +230,7 @@ class Engine {
         
         realm.deleteObjects(realmTable["rows"]!)
         
-        let rowClass = getRowClassFor(tableClass)
+        let rowClass = tableClass |> getRowClass
         let rows = RLMArray(objectClassName: rowClass)
         for row in data {
             rows.addObject(realm.createObject(rowClass, withValue: row))
@@ -436,16 +406,16 @@ class Engine {
     func createRandomCollection() -> String {
         let collectionId = sync.getSyncId()
         let tableClass = newCollectionClass(collectionId)
-        let rowClass = getRowClassFor(tableClass)
+        let rowClass = tableClass |> getRowClass
         
-        addProperty(.String, rowClass: getRowClassFor(tableClass), displayName: "Name")
-        addProperty(.Double, rowClass: getRowClassFor(tableClass), displayName: "Number")
+        addProperty(.String, rowClass: rowClass, displayName: "Name")
+        addProperty(.Double, rowClass: rowClass, displayName: "Number")
 
-        let collectionClass = getCollectionClassFor(tableClass)
+        let collectionClass = tableClass |> getCollectionClass
         
         realm.beginWriteTransaction()
         
-        let t = Tensor(size: [2, 3])
+        let t = Tensor(size: [2, 3, 4])
         
         var cats = [RLMObject]()
         t.size.enumerate().forEach { i, s in
@@ -494,6 +464,74 @@ class Engine {
         
         return realm.createObject(className, withValue: value)
     }
+}
+
+// MARK: Pure functions
+
+func getName(collection: RLMObject) -> String {
+    return collection["displayName"] as! String
+}
+
+func getHeader(rowType: RLMObject) -> [String] {
+    return (rowType["properties"] as! RLMArray).map { $0["displayName"] as! String }
+}
+
+func getCategories(collection: RLMObject) -> [[String]] {
+    let categories = collection["categories"] as! RLMArray
+    
+    func getValues(category: RLMObject) -> [String] {
+        func getValue(string: RLMObject) -> String {
+            return string["value"] as! String
+        }
+        
+        let values = category["values"] as! RLMArray
+        return values.map(getValue)
+    }
+    
+    return categories.map(getValues)
+}
+
+func getSize(collection: RLMObject) -> [Int] {
+    let categories = collection["categories"] as! RLMArray
+    
+    func getCount(category: RLMObject) -> Int {
+        return (category["values"] as! RLMArray).count
+    }
+    
+    return categories.map(getCount)
+}
+
+func getTables(collection: RLMObject) -> RLMArray {
+    return collection["tables"] as! RLMArray
+}
+
+func getTable(index: [Int]) -> RLMObject -> RLMObject {
+    return { collection  in
+        let tensor = collection |> getSize |> Tensor.init
+        let tables = collection |> getTables
+        
+        return tables[index |> tensor.linearise]
+    }
+}
+
+func getRows(table: RLMObject) -> [[AnyObject]] {
+    return (table["rows"] as! RLMArray).map { row in row.array }
+}
+
+func getRowCount(table: RLMObject) -> Int {
+    return (table["rows"] as! RLMArray).count
+}
+
+func getTableClass(collection: RLMObject) -> String {
+    return (collection["tables"] as! RLMArray).objectClassName
+}
+
+func getRowClass(tableClass: String) -> String {
+    return "Row_" + tableClass
+}
+
+func getCollectionClass(tableClass: String) -> String {
+    return "Coll_" + tableClass
 }
 
 func idendity<T>(value: T) -> T {

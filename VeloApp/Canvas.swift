@@ -18,37 +18,17 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        Engine.shared.describe()
+        
+//        Engine.shared.createRandomCollection()
         
 //        let id = Engine.shared.createRandomCollection()
-//        print("#####")
-//        
 //        let cats = Engine.shared.getCategories(id)
 //        let size = cats.map { $0.count }
-//        
 //        let tensor = Tensor(size: size)
-
-        let slice = Slice(position: 1, alongDimension: 2, dimensions: 4)
-        
-        print(slice)
-        
-        let tensor = Tensor(size: [2, 4])
-        
-        print("T = \(tensor)")
-        print("T.size = \(tensor.size)")
-        print("S.size = \(tensor.slicedSize)")
-
-        func p(s: [Int]) {
-            let u = tensor.unslice(s)
-            let i = tensor.linearise(u)
-            
-            print("S\(s) = S\(u) = S[\(i)]")
-        }
-        
-        p([0, 0])
-        p([1, 0])
-        p([0, 1])
-        p([1, 1])
+//        
+//        func pp(s: Slice, t: Tensor) {
+//            print("Coords of \(s.slicing): \(t.coords(s).map(t.linearise))")
+//        }
     }
     
     func newTabula(point: CGPoint) -> TabulaViewController {
@@ -92,6 +72,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         if sender.state == .Began {
             let tabula = newTabula(sender.locationInView(canvas))
             
+//            tabula.collectionId = Engine.shared.createRandomCollection()
+            
             if let list = storyboard?.instantiateViewControllerWithIdentifier("CollectionList") as? CollectionListViewController {
                 list.modalPresentationStyle = .FormSheet
                 list.collections = Engine.shared.getList()
@@ -99,6 +81,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
                 list.onSelection = { collectionId in
                     self.dismissViewControllerAnimated(true, completion: nil)
                     tabula.collectionId = collectionId
+                    tabula.collectionIndex = [0, 0, 0]
+                    tabula.reload()
                 }
                 
                 presentViewController(list, animated: true, completion: nil)
@@ -108,18 +92,26 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedButton() {
         veloTables.forEach { tabula in
+            tabula.collectionIndex = [0, 0, 0]
+            tabula.reload()
 //            tabula.addRow(1)
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
+            tabula.collectionIndex = [0, 1, 0]
+            tabula.reload()
+
 //            tabula.deleteRow(1)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
+            tabula.collectionIndex = [1, 2, 3]
+            tabula.reload()
+
 //            tabula.addColumn(1)
         }
     }

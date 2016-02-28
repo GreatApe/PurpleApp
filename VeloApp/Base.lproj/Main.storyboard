@@ -9,7 +9,7 @@
         <!--Collection List View Controller-->
         <scene sceneID="1be-R9-siA">
             <objects>
-                <viewController storyboardIdentifier="TableList" id="fd2-AJ-Nmd" customClass="CollectionListViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CollectionList" id="fd2-AJ-Nmd" customClass="CollectionListViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="w6F-cv-DCL"/>
                         <viewControllerLayoutGuide type="bottom" id="Q42-GL-Bob"/>

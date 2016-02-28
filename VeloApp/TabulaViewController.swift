@@ -176,23 +176,16 @@ class TabulaViewController: UICollectionViewController {
     
     func reload() {
         tableChanged()
-        layoutChanged()
-        
         collectionView?.reloadData()
     }
     
     private func tableChanged() {
-        name = Engine.shared.getName(collectionId)
-        header = Engine.shared.getHeader(collectionId)
-        categories = Engine.shared.getCategories(collectionId)
-        rows = Engine.shared.getRows(collectionId, index: collectionIndex)
+        print("Index: \(collectionIndex)")
+        
+        (name, header, categories, rows) = Engine.shared.getData(collectionId, index: collectionIndex)
         
         layout.config.columns = header.count - 1
         layout.config.rows = rows.count
-    }
-    
-    private func layoutChanged() {
-        layout.invalidateLayout()
     }
     
     // MARK: Collection View Data Source
@@ -215,7 +208,7 @@ class TabulaViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         
-        print("Wants cell: \(row)\(column)")
+//        print("Wants cell: \(row)\(column)")
         
         switch (cellType, cell) {
         case (let .IndexName(column: c), let cell as IndexNameCell):
@@ -230,8 +223,8 @@ class TabulaViewController: UICollectionViewController {
         case (let .Index(row: r), let cell as IndexCell):
             cell.label.text = String(rows[r][0])
         case (let .Cell(row: r, column: c), let cell as Cell):
-            //            cell.label.text = String(rowData[r][c])
-            cell.label.text = "-"
+            cell.label.text = String(rows[r][c])
+//            cell.label.text = "-"
         case (let .CompColumnCell(row: r, column: c), let cell as CompColumnCell):
             cell.label.text = "\(r):\(c)"
 

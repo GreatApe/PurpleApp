@@ -21,6 +21,10 @@ struct Slice {
         self.slicing = (0..<dimensions).map { $0 == d ? position : nil }
         self.ordering = (0..<dimensions).filter { $0 != d }
     }
+    
+    func contains(k: [Int]) -> Bool {
+        return !zip(slicing, k).contains { si, ki in ki != si && si != nil }
+    }
 }
 
 struct Tensor {
@@ -45,6 +49,10 @@ struct Tensor {
         return size.reduce(1, combine: *)
     }
     
+    var dimension: Int {
+        return size.count
+    }
+    
     var slicedSize: [Int] {
         return slice(size)
     }
@@ -53,11 +61,11 @@ struct Tensor {
         return Tensor(size: slicedSize)
     }
 
-    func coords(inSlice: Slice) -> [[Int]] {
-        fatalError()
+    // MARK: Public Operative Methods
+
+    func coords(s: Slice) -> [[Int]] {
+        return (0..<count).map(vectorise).filter(s.contains)
     }
-    
-    // MARK: Public Operation Methods
     
     func slice(x: [Int]) -> [Int] {
         return slice.ordering.map { x[$0] }
@@ -70,7 +78,7 @@ struct Tensor {
         return k.map { $0! }
     }
     
-//    func unslice2(s: [Int]) -> [Int] {
+//    func unslice(s: [Int]) -> [Int] {
 //        return slicing.enumerate().map { i, si in self.ordering.indexOf(i).map { s[$0] } ?? si! }
 //    }
     

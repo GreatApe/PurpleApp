@@ -96,7 +96,7 @@ class TableLayout: UICollectionViewLayout {
         let row = indexPath.item/config.totalColumns
         let column = indexPath.item % config.totalColumns
         
-        print("attr: \(row):\(column)")
+//        print("attr: \(row):\(column)")
         
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attr.frame = CGRect(x: columnOffsets[column], y: rowOffsets[row], width: columnWidths[column], height: rowHeights[row])
