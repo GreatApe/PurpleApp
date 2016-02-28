@@ -8,28 +8,37 @@
 
 import Foundation
 
-import Realm
-
 struct Slice {
-    let tensor: Tensor
+    let slicing: [Int?]
+    let ordering: [Int]
     
+    init(slicing: [Int?], ordering: [Int]) {
+        self.ordering = ordering
+        self.slicing = slicing
+    }
+    
+    init(position: Int, alongDimension d: Int, dimensions: Int) {
+        self.slicing = (0..<dimensions).map { $0 == d ? position : nil }
+        self.ordering = (0..<dimensions).filter { $0 != d }
+    }
 }
 
 struct Tensor {
     // MARK: Public
 
-    var size: [Int] = [3, 2, 4]
-    
-    var slicing: [Int?] = [nil, 2, nil]
-    var ordering: [Int] = [2, 0]
+    let size: [Int]
+    let slice: Slice
     
     init(size: [Int]) {
         self.size = size
+        self.slice = Slice(slicing: Array(count: size.count, repeatedValue: nil), ordering: Array(0..<size.count))
     }
 
-    init() {
+    init(size: [Int], slicing: [Int?], ordering: [Int]) {
+        self.size = size
+        self.slice = Slice(slicing: slicing, ordering: ordering)
     }
-
+    
     // MARK: Public Convenience Methods
 
     var count: Int {
@@ -39,24 +48,31 @@ struct Tensor {
     var slicedSize: [Int] {
         return slice(size)
     }
+
+    var slicedTensor: Tensor {
+        return Tensor(size: slicedSize)
+    }
+
+    func coords(inSlice: Slice) -> [[Int]] {
+        fatalError()
+    }
     
     // MARK: Public Operation Methods
     
     func slice(x: [Int]) -> [Int] {
-        return ordering.map { x[$0] }
+        return slice.ordering.map { x[$0] }
     }
     
     func unslice(s: [Int]) -> [Int] {
-        // slicing = [nil, 2, nil]
-        // ordering = [2, 0]
-        
-        // [i, j] -> [j, 2, i]
-        
-        var k = slicing
-        zip(s, ordering).forEach { si, o in k[o] = si }
+        var k = slice.slicing
+        zip(s, slice.ordering).forEach { si, o in k[o] = si }
         
         return k.map { $0! }
     }
+    
+//    func unslice2(s: [Int]) -> [Int] {
+//        return slicing.enumerate().map { i, si in self.ordering.indexOf(i).map { s[$0] } ?? si! }
+//    }
     
     func linearise(i: [Int]) -> Int {
         return i*multiplier

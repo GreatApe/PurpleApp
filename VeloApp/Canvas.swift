@@ -28,7 +28,11 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //        
 //        let tensor = Tensor(size: size)
 
-        let tensor = Tensor()
+        let slice = Slice(position: 1, alongDimension: 2, dimensions: 4)
+        
+        print(slice)
+        
+        let tensor = Tensor(size: [2, 4])
         
         print("T = \(tensor)")
         print("T.size = \(tensor.size)")
@@ -37,6 +41,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         func p(s: [Int]) {
             let u = tensor.unslice(s)
             let i = tensor.linearise(u)
+            
             print("S\(s) = S\(u) = S[\(i)]")
         }
         
