@@ -1,5 +1,5 @@
 //
-//  TableListViewController.swift
+//  CollectionListViewController.swift
 //  VeloApp
 //
 //  Created by Gustaf Kugelberg on 25/02/16.
@@ -8,8 +8,8 @@
 
 import UIKit
 
-class TableListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    var tables: [TableInfo]!
+class CollectionListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    var collections: [(id: String, name: String)]!
     
     var onSelection: (String? -> Void)!
     
@@ -20,20 +20,20 @@ class TableListViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tables.count
+        return collections.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let id = "TableListCell"
+        let id = "CollectionListCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(id) ?? UITableViewCell(style: .Default, reuseIdentifier: id)
-        cell.textLabel?.text = tables[indexPath.row].displayName
+        cell.textLabel?.text = collections[indexPath.row].name
         return cell
     }
     
     // MARK: Table View Delegate
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        onSelection(tables[indexPath.row].tableId)
+        onSelection(collections[indexPath.row].id)
     }
     
     // MARK: User Actions

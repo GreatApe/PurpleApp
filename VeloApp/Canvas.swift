@@ -18,21 +18,46 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        Engine.shared.describe()
+//        Engine.shared.describe()
+        
+//        let id = Engine.shared.createRandomCollection()
+//        print("#####")
+//        
+//        let cats = Engine.shared.getCategories(id)
+//        let size = cats.map { $0.count }
+//        
+//        let tensor = Tensor(size: size)
+
+        let tensor = Tensor()
+        
+        print("T = \(tensor)")
+        print("T.size = \(tensor.size)")
+        print("S.size = \(tensor.slicedSize)")
+
+        func p(s: [Int]) {
+            let u = tensor.unslice(s)
+            let i = tensor.linearise(u)
+            print("S\(s) = S\(u) = S[\(i)]")
+        }
+        
+        p([0, 0])
+        p([1, 0])
+        p([0, 1])
+        p([1, 1])
     }
     
-    func newTable(point: CGPoint) -> TabulaViewController {
-        let tvc = storyboard!.instantiateViewControllerWithIdentifier("Tabula") as! TabulaViewController
+    func newTabula(point: CGPoint) -> TabulaViewController {
+        let tabula = storyboard!.instantiateViewControllerWithIdentifier("Tabula") as! TabulaViewController
             let container = UIView()
             
             canvas.addSubview(container)
-            tvc.willMoveToParentViewController(self)
-            container.addSubview(tvc.view)
-            addChildViewController(tvc)
-            tvc.didMoveToParentViewController(self)
+            tabula.willMoveToParentViewController(self)
+            container.addSubview(tabula.view)
+            addChildViewController(tabula)
+            tabula.didMoveToParentViewController(self)
 
             container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
-            tvc.view.frame = container.bounds
+            tabula.view.frame = container.bounds
             
 //            container.translatesAutoresizingMaskIntoConstraints = false
 //            tvc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -51,25 +76,24 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //            container.leftAnchor.constraintEqualToAnchor(canvas.leftAnchor, constant: point.x).active = true
 //            container.topAnchor.constraintEqualToAnchor(canvas.topAnchor, constant: point.y).active = true
             
-            veloTables.append(tvc)
+            veloTables.append(tabula)
 
-        return tvc
+        return tabula
     }
     
     // MARK: User actions
     
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
-            let table = newTable(sender.locationInView(canvas))
+            let tabula = newTabula(sender.locationInView(canvas))
             
-            if let list = storyboard?.instantiateViewControllerWithIdentifier("TableList") as? TableListViewController {
-                
+            if let list = storyboard?.instantiateViewControllerWithIdentifier("CollectionList") as? CollectionListViewController {
                 list.modalPresentationStyle = .FormSheet
-                list.tables = Engine.shared.listTables()
+                list.collections = Engine.shared.getList()
                 
-                list.onSelection = { tableId in
+                list.onSelection = { collectionId in
                     self.dismissViewControllerAnimated(true, completion: nil)
-                    table.tableId = tableId
+                    tabula.collectionId = collectionId
                 }
                 
                 presentViewController(list, animated: true, completion: nil)

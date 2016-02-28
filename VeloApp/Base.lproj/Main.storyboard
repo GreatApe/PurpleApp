@@ -6,10 +6,10 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Table List View Controller-->
+        <!--Collection List View Controller-->
         <scene sceneID="1be-R9-siA">
             <objects>
-                <viewController storyboardIdentifier="TableList" id="fd2-AJ-Nmd" customClass="TableListViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TableList" id="fd2-AJ-Nmd" customClass="CollectionListViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="w6F-cv-DCL"/>
                         <viewControllerLayoutGuide type="bottom" id="Q42-GL-Bob"/>
@@ -33,7 +33,7 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TableListCell" textLabel="3ga-ec-GxT" style="IBUITableViewCellStyleDefault" id="rXA-I1-pRN">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CollectionListCell" textLabel="3ga-ec-GxT" style="IBUITableViewCellStyleDefault" id="rXA-I1-pRN">
                                         <rect key="frame" x="0.0" y="28" width="300" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rXA-I1-pRN" id="1mI-cw-6Hd">

@@ -63,8 +63,8 @@ class DataSync {
             }
 
             let schemaForData = data[2].map(Engine.typeForCell)
-            let schema = Engine.shared.schemaForTable(tableId) ?? schemaForData
-            callback(Table(tableId: tableId, data: data, schema: schema))
+//            let schema = Engine.shared.schemaForTable(tableId) ?? schemaForData
+//            callback(Table(tableId: tableId, data: data, schema: schema))
         })
     }
 }

@@ -8,6 +8,12 @@
 
 import UIKit
 
+// [Int] operations
+
+func *(lhs: [Int], rhs: [Int]) -> Int {
+    return zip(lhs, rhs).map(*).reduce(0, combine: +)
+}
+
 // CGPoint operations
 
 extension CGPoint: CustomStringConvertible {

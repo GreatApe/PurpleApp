@@ -8,11 +8,6 @@
 
 import UIKit
 
-struct TensorHelper {
-    var dimensions: [Int] = [3, 3, 3]
-    
-//    func position(section:)
-}
 
 
 class TableLayout: UICollectionViewLayout {

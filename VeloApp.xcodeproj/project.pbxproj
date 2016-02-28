@@ -15,8 +15,9 @@
 		22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */; };
 		22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1E1C7B65D400E5CE68 /* Extensions.swift */; };
 		22335C231C7DAA0500E5CE68 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22335C221C7DAA0500E5CE68 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2267A7891C7EF3710081AE7F /* TableListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2267A7881C7EF3710081AE7F /* TableListViewController.swift */; };
+		2267A7891C7EF3710081AE7F /* CollectionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2267A7881C7EF3710081AE7F /* CollectionListViewController.swift */; };
 		2267A78B1C7F4B790081AE7F /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2267A78A1C7F4B790081AE7F /* Canvas.swift */; };
+		2267A78D1C81E6580081AE7F /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2267A78C1C81E6580081AE7F /* Tensor.swift */; };
 		22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223CA1C6CB54500F74F81 /* AppDelegate.swift */; };
 		22A223D01C6CB54500F74F81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22A223CE1C6CB54500F74F81 /* Main.storyboard */; };
 		22A223D21C6CB54500F74F81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22A223D11C6CB54500F74F81 /* Assets.xcassets */; };
@@ -102,8 +103,9 @@
 		22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableLayout.swift; sourceTree = "<group>"; };
 		22335C1E1C7B65D400E5CE68 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		22335C221C7DAA0500E5CE68 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Realm.framework; sourceTree = "<group>"; };
-		2267A7881C7EF3710081AE7F /* TableListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableListViewController.swift; sourceTree = "<group>"; };
+		2267A7881C7EF3710081AE7F /* CollectionListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionListViewController.swift; sourceTree = "<group>"; };
 		2267A78A1C7F4B790081AE7F /* Canvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		2267A78C1C81E6580081AE7F /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tensor.swift; sourceTree = "<group>"; };
 		22A223C71C6CB54500F74F81 /* VeloApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VeloApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22A223CA1C6CB54500F74F81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22A223CF1C6CB54500F74F81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -178,7 +180,8 @@
 		22A223C91C6CB54500F74F81 /* VeloApp */ = {
 			isa = PBXGroup;
 			children = (
-				2267A7881C7EF3710081AE7F /* TableListViewController.swift */,
+				2267A78C1C81E6580081AE7F /* Tensor.swift */,
+				2267A7881C7EF3710081AE7F /* CollectionListViewController.swift */,
 				22236B3D1C76A67800F58A86 /* RLMSupport.swift */,
 				22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */,
 				2267A78A1C7F4B790081AE7F /* Canvas.swift */,
@@ -483,10 +486,11 @@
 			files = (
 				22A224011C6D304B00F74F81 /* Models.swift in Sources */,
 				2267A78B1C7F4B790081AE7F /* Canvas.swift in Sources */,
-				2267A7891C7EF3710081AE7F /* TableListViewController.swift in Sources */,
+				2267A7891C7EF3710081AE7F /* CollectionListViewController.swift in Sources */,
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
 				9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */,
+				2267A78D1C81E6580081AE7F /* Tensor.swift in Sources */,
 				22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */,
 				22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */,
 				22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */,

@@ -9,48 +9,56 @@
 import Foundation
 import Realm
 
+
 // MARK: Dynamic models
 
 class CollectionBase: RLMObject {
     dynamic var id = ""
+    dynamic var displayName: String = ""
+
+    //    dynamic var computedColumns = RLMArray(objectClassName: "ComputedColumn")
+    //    dynamic var computedRows = RLMArray(objectClassName: "ComputedRow")
+
     dynamic var categories = RLMArray(objectClassName: "Category")
-    //    dynamic var taggedTables = RLMArray(objectClassName: "TaggedTable")
     dynamic var tables = RLMArray(objectClassName: "TableBase")
-}
-
-//class TaggedTable: RLMObject {
-//    dynamic var categoryValueIds = RLMArray(objectClassName: "RealmString")
-//    dynamic var tableId = ""
-//    
-//    override class func indexedProperties() -> [String] {
-//        return ["tableId"]
+    
+//    class func table(index: [Int], collection: RLMObject, tensor: Tensor) -> RLMObject {
+//        return (collection["tables"] as! RLMArray)[tensor.linear(index)]
 //    }
-//}
-
-class TableBase: RLMObject {
-    dynamic var id: String = ""
-    dynamic var rowType: RowType?
-
-    //        dynamic var sourceTable: TableX?
-    //        dynamic var tableFunction: Function?
-    //        dynamic var elementFunction: Function?
-    
-    dynamic var rows = RLMArray(objectClassName: "RowBase")
-    
-    //    let computedColumns = List<ComputedColumn>()
-    //    let computedRows = List<ComputedRow>()
+//    
+//    class func dimensions(collection: RLMObject) -> [Int] {
+//        return (collection["categories"] as! RLMArray).map(dimension)
+//    }
+//    
+//    class func dimension(category: RLMObject) -> Int {
+//        return (category["values"] as! RLMArray).count
+//    }
     
     override class func primaryKey() -> String {
         return "id"
     }
 }
 
-class RowBase: RLMObject {
-//    dynamic var index: String = ""
-//
+class TableBase: RLMObject {
+    dynamic var id: String = ""
+    
+    //        dynamic var sourceTable: TableX?
+    //        dynamic var tableFunction: Function?
+    //        dynamic var elementFunction: Function?
+    
+    dynamic var rows = RLMArray(objectClassName: "RowBase")
+    
 //    override class func primaryKey() -> String {
-//        return "index"
+//        return "id"
 //    }
+}
+
+class RowBase: RLMObject {
+    //    dynamic var index: String = ""
+    //
+    //    override class func primaryKey() -> String {
+    //        return "index"
+    //    }
 }
 
 // MARK: Fixed models
@@ -61,6 +69,12 @@ class RowType: RLMObject {
     
     override class func primaryKey() -> String {
         return "rowClassName"
+    }
+    
+    class func makeWithRowClass(rowClassName: String) -> RowType {
+        let rowType = RowType()
+        rowType.rowClassName = rowClassName
+        return rowType
     }
     
     class func make(object: RLMObject) -> RowType {
@@ -76,30 +90,41 @@ class RowFieldProperty: RLMObject {
     dynamic var deleted: Bool = false
 }
 
-class TableInfo: RLMObject {
-    dynamic var tableId: String = ""
-    dynamic var tableClass: String = ""
-    dynamic var displayName: String = ""
-
-    class func make(tableId: String, tableClass: String, displayName: String) -> TableInfo {
-        let tableInfo = TableInfo()
-        tableInfo.tableId = tableId
-        tableInfo.tableClass = tableClass
-        tableInfo.displayName = displayName
-        return tableInfo
+class CollectionInfo: RLMObject {
+    dynamic var collectionId: String = ""
+    dynamic var collectionClass: String = ""
+    
+    class func make(collectionId: String, collectionClass: String) -> CollectionInfo {
+        let collectionInfo = CollectionInfo()
+        collectionInfo.collectionId = collectionId
+        collectionInfo.collectionClass = collectionClass
+        return collectionInfo
     }
     
-    class func make(object: RLMObject) -> TableInfo {
-        let tableInfo = TableInfo()
-        tableInfo.tableId = object["tableId"]! as! String
-        tableInfo.tableClass = object["tableClass"]! as! String
-        tableInfo.displayName = object["displayName"]! as! String
-        return tableInfo
+    class func make(object: RLMObject) -> CollectionInfo {
+        let collectionInfo = CollectionInfo()
+        collectionInfo.collectionId = object["collectionId"]! as! String
+        collectionInfo.collectionClass = object["collectionClass"]! as! String
+        return collectionInfo
     }
     
     override class func primaryKey() -> String {
-        return "tableId"
+        return "collectionId"
     }
+}
+
+class Category: RLMObject {
+    dynamic var id = ""
+    
+    dynamic var values = RLMArray(objectClassName: "RealmString")
+    
+    override class func primaryKey() -> String {
+        return "id"
+    }
+}
+
+class RealmString: RLMObject {
+    dynamic var value = ""
 }
 
 //class TableType: RLMObject {
@@ -161,15 +186,6 @@ class TableInfo: RLMObject {
 //    let height = RealmOptional<Int>()
 //    let width = RealmOptional<Int>()
 //}
-
-//class Category: Object {
-//    dynamic var id = ""
-//    let values = List<RealmString>()
-//}
-
-class RealmString: RLMObject {
-    dynamic var value = ""
-}
 
 //class Mapping: Object {
 //    dynamic var id = ""

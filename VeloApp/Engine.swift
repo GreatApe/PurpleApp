@@ -30,10 +30,201 @@ class Engine {
         let schema: RLMSchema? = realmExists("store") ? nil : RLMRealm.defaultRealm().schema
         realm = try! RLMRealm.dynamicRealm("store", schema: schema)
         
-        sync.tableAdded = onTableAdded
-        sync.tableChanged = onTableChanged
-        sync.tableRemoved = onTableRemoved
+//        sync.tableAdded = onTableAdded
+//        sync.tableChanged = onTableChanged
+//        sync.tableRemoved = onTableRemoved
     }
+    
+    // MARK: Collection Retrieval
+    
+    func getList() -> [(id: String, name: String)] {
+        return realm.allObjects("CollectionInfo").map { info in (info["id"] as! String, info["displayName"] as! String) }
+    }
+    
+    func getName(collectionId: String) -> String {
+        return getCollection(collectionId)!["displayName"] as! String
+    }
+    
+    func getHeader(collectionId: String) -> [String] {
+        let rowType = getCollection(collectionId)!["rowType"] as! RLMObject
+        let properties = rowType["properties"] as! RLMArray
+        
+        return properties.map { $0["displayName"] as! String }
+    }
+    
+    func getCategories(collectionId: String) -> [[String]] {
+        let collection = getCollection(collectionId)!
+        let categories = collection["categories"] as! RLMArray
+        
+        func getValues(category: RLMObject) -> [String] {
+            func getValue(string: RLMObject) -> String {
+                return string["value"] as! String
+            }
+            
+            let values = category["values"] as! RLMArray
+            return values.map(getValue)
+        }
+
+        return categories.map(getValues)
+    }
+    
+    func getSchema(collectionId: String) -> [RLMPropertyType] {
+        let tableClass = getCollection(collectionId)!["tableClass"] as! String
+        let rowClass = getRowClassFor(tableClass)
+        
+        return realm.schema[rowClass].properties.map { $0.type }
+    }
+    
+    func getRows(collectionId: String, index: [Int]) -> [[AnyObject]] {
+        let rows = getCollection(collectionId)!["rows"] as! RLMArray
+        return rows.map { row in row.array }
+    }
+
+    // MARK: Collection Helpers
+
+    private func getCollection(collectionId: String) -> RLMObject? {
+        guard let info = getCollectionInfo(collectionId) else { return nil }
+        return realm.objectWithClassName(info.collectionClass, forPrimaryKey: info.collectionId)
+    }
+    
+    private func getCollectionInfo(collectionId: String) -> CollectionInfo? {
+        let collectionInfo: RLMObject? = realm.objectWithClassName("CollectionInfo", forPrimaryKey: collectionId)
+        return collectionInfo.map(CollectionInfo.make)
+    }
+
+    private func getRowClassFor(tableClass: String) -> String {
+        return "Row_" + tableClass
+    }
+
+    private func getCollectionClassFor(tableClass: String) -> String {
+        return "Coll_" + tableClass
+    }
+
+    // MARK: Creation Methods
+    
+    func newCollection() -> RLMObject {
+        let collectionId = sync.getSyncId()
+        let tableClass = newCollectionClass(collectionId)
+        let collectionClass = getCollectionClassFor(tableClass)
+        
+        realm.beginWriteTransaction()
+        let table = realm.createObject(tableClass, withValue: [])
+        let value = ["displayName" : "My data", "tables" : [table], "id" : collectionId]
+        let collection = realm.createObject(collectionClass, withValue: value)
+        try! realm.commitWriteTransaction()
+        
+        return collection
+    }
+    
+    func updateDisplayName(collection: RLMObject, name: String) -> Bool {
+        if collection["displayName"] as! String == name {
+            return false
+        }
+    
+        realm.beginWriteTransaction()
+        collection["displayName"] = name
+        try! realm.commitWriteTransaction()
+        
+        return true
+    }
+    
+    func newCollectionClass(collectionId: String) -> String {
+        let tableClass = "Class" + String(Int(arc4random() % 10000))
+        
+        let rowClass = getRowClassFor(tableClass)
+        let rowSchema = RLMObjectSchema(className: rowClass, objectClass: RowBase.self, properties: realm.schema["RowBase"].properties)
+        
+        let tableBaseProps = realm.schema["TableBase"].properties
+        let rowsProp = RLMProperty(name: "rows", type: .Array, objectClassName: rowClass, indexed: false, optional: false)
+        let tableProps = tableBaseProps.filter { prop in prop.name != "rows" } + [rowsProp]
+        let tableSchema = RLMObjectSchema(className: tableClass, objectClass: TableBase.self, properties: tableProps)
+        
+        let collectionClass = getCollectionClassFor(tableClass)
+        let collectionBaseProps = realm.schema["CollectionBase"].properties
+        let tablesProp = RLMProperty(name: "tables", type: .Array, objectClassName: tableClass, indexed: false, optional: false)
+        let collectionProps = collectionBaseProps.filter { prop in prop.name != "tables" } + [tablesProp]
+        let collectionSchema = RLMObjectSchema(className: collectionClass, objectClass: CollectionBase.self, properties: collectionProps)
+
+        realm.beginWriteTransaction()
+        realm.addObject(RowType.makeWithRowClass(rowClass))
+        realm.addObject(CollectionInfo.make(collectionId, collectionClass: collectionClass))
+        try! realm.commitWriteTransaction()
+        
+        realm.schema.objectSchema += [tableSchema, rowSchema, collectionSchema]
+        
+        printt()
+        print("Table Class Created")
+        print(rowSchema)
+        print(tableSchema)
+        print(collectionSchema)
+        
+        migrate()
+        
+        return tableClass
+    }
+    
+    func migrate() {
+        let config = realm.configuration
+        config.schemaVersion += 1
+        let newVersion = config.schemaVersion
+        config.migrationBlock = { migration, oldVersion in
+            print("Migrating \(oldVersion) -> \(newVersion)")
+        }
+        
+        RLMRealm.migrateRealm(config)
+        realm = try! RLMRealm.dynamicRealm("store")
+    }
+    
+    func addProperty(type: RLMPropertyType, rowClass: String, displayName: String) -> String {
+        let rowTypeProperties = realm.objectWithClassName("RowType", forPrimaryKey: rowClass)["properties"] as! RLMArray
+        let propertyId = "prop" + String(rowTypeProperties.count + 1)
+        
+        realm.beginWriteTransaction()
+        let rowFieldProperty = RowFieldProperty()
+        rowFieldProperty.displayName = displayName
+        rowTypeProperties.addObject(rowFieldProperty)
+        try! realm.commitWriteTransaction()
+        
+        let prop = RLMProperty(name: propertyId, type: type, objectClassName: nil, indexed: false, optional: false)
+        
+        addProperty(prop, to: rowClass)
+        
+        return propertyId
+    }
+    
+    private func addProperty(property: RLMProperty, to rowClass: String, value: AnyObject? = nil) {
+        let objectSchema = realm.schema[rowClass]
+        objectSchema.properties += [property]
+        
+        let config = realm.configuration
+        config.schemaVersion += 1
+        let newVersion = config.schemaVersion
+        config.migrationBlock = { migration, oldVersion in
+            print("Migrating \(oldVersion) -> \(newVersion)")
+            guard let value = value else { return }
+            
+            if oldVersion < newVersion {
+                migration.enumerateObjects(rowClass) { oldObject, newObject in
+                    newObject?[property.name] = value
+                }
+            }
+        }
+        
+        RLMRealm.migrateRealm(config)
+        realm = try! RLMRealm.dynamicRealm("store")
+    }
+    
+//    private func createTable(tableClass: String, tableId: String) -> RLMObject {
+//        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
+//        
+//        realm.beginWriteTransaction()
+//        let collectionInfo = CollectionInfo.make(tableId, tableClass: tableClass)
+//        realm.addObject(collectionInfo)
+//        let object = realm.createObject(tableClass, withValue: ["id" : tableId, "rowType" : rowType])
+//        try! realm.commitWriteTransaction()
+//        
+//        return object
+//    }
     
     // MARK: Sync methods
 
@@ -47,19 +238,19 @@ class Engine {
     }
     
     private func addTable(table: Table) {
-        let tableClass = "TableClass" + String(Int(arc4random() % 10000))
-        newTableClass(tableClass)
-        
-        for (propName, cellValue) in zip(table.headers, table.data[0]) {
-            addProperty(Engine.typeForCell(cellValue), tableClass: tableClass, displayName: propName)
-        }
-        
-        createTable(tableClass, tableId: table.tableId, displayName: table.name)
-        replaceTableRows(table.data, tableId: table.tableId, tableClass: tableClass)
-        
-        printt()
-        print("Table Added")
-        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
+//        let tableClass = "Class" + String(Int(arc4random() % 10000))
+//        newTableClass(tableClass)
+//        
+//        for (propName, cellValue) in zip(table.headers, table.data[0]) {
+//            addProperty(Engine.typeForCell(cellValue), tableClass: tableClass, displayName: propName)
+//        }
+//        
+//        createTable(tableClass, tableId: table.tableId, displayName: table.name)
+//        replaceTableRows(table.data, tableId: table.tableId, tableClass: tableClass)
+//        
+//        printt()
+//        print("Table Added")
+//        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
     }
     
     private func replaceTableRows(data: [[AnyObject]], tableId: String, tableClass: String) {
@@ -83,15 +274,15 @@ class Engine {
     }
 
     private func updateTable(table: Table) {
-        let displayNameChange = updateDisplayName(table.tableId, displayName: table.name)
-        let propertyNameChanges = updatePropertyNames(table.tableId, propertyNames: table.headers)
-        
-        let tableClass = getTableInfo(table.tableId)!.tableClass
-        replaceTableRows(table.data, tableId: table.tableId, tableClass: tableClass)
-
-        printt()
-        print("Table Changed (name: \(displayNameChange), prop names: \(propertyNameChanges))")
-        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
+//        let displayNameChange = updateDisplayName(table.tableId, displayName: table.name)
+//        let propertyNameChanges = updatePropertyNames(table.tableId, propertyNames: table.headers)
+//        
+//        let tableClass = getTableInfo(table.tableId)!.tableClass
+//        replaceTableRows(table.data, tableId: table.tableId, tableClass: tableClass)
+//
+//        printt()
+//        print("Table Changed (name: \(displayNameChange), prop names: \(propertyNameChanges))")
+//        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
     }
     
     func onTableRemoved(table: Table) {
@@ -100,31 +291,13 @@ class Engine {
     
     // MARK: Creation methods
     
-    // MARK: Information methods
 
-    func schemaForTable(tableId: String) -> [RLMPropertyType]? {
-        let tableClass = getTableInfo(tableId)?.tableClass
-        return tableClass.map(schemaForTableClass)
-    }
-
-    private func schemaForTableClass(tableClass: String) -> [RLMPropertyType] {
-        return realm.schema[getRowClassFor(tableClass)].properties.map { $0.type }
-    }
     
-    func listTables() -> [TableInfo] {
-        return realm.allObjects("TableInfo").map(TableInfo.make)
-    }
+    //    func getTableClass(tableId: String) -> String {
+    //        return getTableInfo(tableId)!.tableClass
+    //    }
+
     
-    // MARK: Access methods
-
-    func tableName(tableId: String) -> String {
-        return getTableInfo(tableId)!.displayName
-    }
-
-    func tableHeader(tableId: String) -> [String] {
-        return getRowType(getTableInfo(tableId)!.tableClass).properties.map { $0["displayName"] as! String }
-    }
-
 //    func tableCell(tableId: String, rowIndex: Int, propertyId: String) -> AnyObject {
 //        return tableRowObject(tableId, rowIndex: rowIndex)[propertyId]!
 //    }
@@ -133,25 +306,19 @@ class Engine {
 //        return tableRowObject(tableId, rowIndex: rowIndex).dict
 //    }
     
-    func tableColumn(tableId: String, propertyId: String) -> (type: RLMPropertyType, values: [AnyObject]) {
-        let props = tableProperties(tableId)
-        let columnIndex = props.map { $0.name }.indexOf(propertyId)!
-        let type = props[columnIndex].type
-        let values = tableColumn(tableId, columnIndex: columnIndex)
-        
-        return (type, values)
-    }
+//    func tableColumn(tableId: String, propertyId: String) -> (type: RLMPropertyType, values: [AnyObject]) {
+//        let props = tableProperties(tableId)
+//        let columnIndex = props.map { $0.name }.indexOf(propertyId)!
+//        let type = props[columnIndex].type
+//        let values = tableColumn(tableId, columnIndex: columnIndex)
+//        
+//        return (type, values)
+//    }
 
-    func tableColumn(tableId: String, columnIndex: Int) -> [AnyObject] {
-        return tableRows(tableId).map { row in row[columnIndex] }
-    }
+//    func tableColumn(tableId: String, columnIndex: Int) -> [AnyObject] {
+//        return tableRows(tableId).map { row in row[columnIndex] }
+//    }
     
-    func tableRows(tableId: String) -> [[AnyObject]] {
-        let tableClass = getTableInfo(tableId)!.tableClass
-        let rows = realm.objectWithClassName(tableClass, forPrimaryKey: tableId)["rows"] as! RLMArray
-
-        return rows.map { row in row.array }
-    }
     
     // Internal
     
@@ -159,149 +326,48 @@ class Engine {
 //        return tableRowsArray(tableId)[rowIndex]
 //    }
     
-    func tableRowsArray(tableId: String) -> RLMArray {
-        let tableClass = getTableInfo(tableId)!.tableClass
-        return realm.objectWithClassName(tableClass, forPrimaryKey: tableId)["rows"] as! RLMArray
-    }
+//    func tableRowsArray(tableId: String) -> RLMArray {
+//        let tableClass = getTableInfo(tableId)!.tableClass
+//        return realm.objectWithClassName(tableClass, forPrimaryKey: tableId)["rows"] as! RLMArray
+//    }
+//    
+//    func tableProperties(tableId: String) -> [RLMProperty] {
+//        let rowClass = getRowClassFor(getTableInfo(tableId)!.tableClass)
+//        return realm.schema.schemaForClassName(rowClass)!.properties
+//    }
     
-    func tableProperties(tableId: String) -> [RLMProperty] {
-        let rowClass = getRowClassFor(getTableInfo(tableId)!.tableClass)
-        return realm.schema.schemaForClassName(rowClass)!.properties
-    }
-    
-    // MARK: Schema editing methods
-    
-    func newTableClass(tableClass: String) {
-        let rowClass = getRowClassFor(tableClass)
-        let rowProps = realm.schema["RowBase"].properties
-        let rowSchema = RLMObjectSchema(className: rowClass, objectClass: RowBase.self, properties: rowProps)
 
-        realm.beginWriteTransaction()
-        let rowType = RowType()
-        rowType.rowClassName = rowClass
-        realm.addObject(rowType)
-        try! realm.commitWriteTransaction()
-        
-        let tableBaseProps = realm.schema["TableBase"].properties
-        let rowProp = RLMProperty(name: "rows", type: .Array, objectClassName: rowClass, indexed: false, optional: false)
-        let tableProps = tableBaseProps.filter { prop in prop.name != "rows" } + [rowProp]
-        let tableSchema = RLMObjectSchema(className: tableClass, objectClass: TableBase.self, properties: tableProps)
+    // MARK: Update Methods
 
-        realm.schema.objectSchema += [tableSchema, rowSchema]
-
-        printt()
-        print("Table Class Created")
-        print(rowSchema)
-        print(tableSchema)
-        
-        migrate()
-    }
+//    private func updateDisplayName(collectionId: String, displayName: String) -> Bool {
+//        let tableInfo = getTableInfo(collectionId)!
+//        
+//        if tableInfo.displayName == displayName {
+//            return false
+//        }
+//        
+//        realm.beginWriteTransaction()
+//        tableInfo.displayName = displayName
+//
+//        try! realm.commitWriteTransaction()
+//        
+//        return true
+//    }
     
-    func migrate() {
-        let config = realm.configuration
-        config.schemaVersion += 1
-        let newVersion = config.schemaVersion
-        config.migrationBlock = { migration, oldVersion in
-            print("Migrating \(oldVersion) -> \(newVersion)")
-        }
-
-        RLMRealm.migrateRealm(config)
-        realm = try! RLMRealm.dynamicRealm("store")
-    }
-    
-    func printt() {
-        for _ in 0..<10 { print("*") }
-    }
-    
-    func addProperty(type: RLMPropertyType, tableClass: String, displayName: String, value: AnyObject? = nil) -> String {
-        let rowClassName = getRowClassFor(tableClass)
-        let rowTypeProperties = realm.objectWithClassName("RowType", forPrimaryKey: rowClassName)["properties"] as! RLMArray
-        let propertyId = "prop" + String(rowTypeProperties.count + 1)
-        
-        realm.beginWriteTransaction()
-        let rowFieldProperty = RowFieldProperty()
-        rowFieldProperty.displayName = displayName
-        
-        rowTypeProperties.addObject(rowFieldProperty)
-        try! realm.commitWriteTransaction()
-        
-        let prop = RLMProperty(name: propertyId, type: type, objectClassName: nil, indexed: false, optional: false)
-
-        addProperty(prop, to: tableClass)
-        
-        return propertyId
-    }
-    
-    private func addProperty(property: RLMProperty, to className: String, value: AnyObject? = nil) {
-        let rowClassName = getRowClassFor(className)
-        let objectSchema = realm.schema[rowClassName]
-        objectSchema.properties += [property]
-        
-        let config = realm.configuration
-        config.schemaVersion += 1
-        let newVersion = config.schemaVersion
-        config.migrationBlock = { migration, oldVersion in
-            print("Migrating \(oldVersion) -> \(newVersion)")
-            guard let value = value else { return }
-            
-            if oldVersion < newVersion {
-                migration.enumerateObjects(rowClassName) { oldObject, newObject in
-                    newObject?[property.name] = value
-                }
-            }
-        }
-        
-        RLMRealm.migrateRealm(config)
-        realm = try! RLMRealm.dynamicRealm("store")
-    }
-    
-    // MARK: Helper methods
-    
-    // Table creation
-    
-    private func createTable(tableClass: String, tableId: String, displayName: String) -> RLMObject {
-        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
-
-        realm.beginWriteTransaction()
-        let tableInfo = TableInfo.make(tableId, tableClass: tableClass, displayName: displayName)
-        realm.addObject(tableInfo)
-        let object = realm.createObject(tableClass, withValue: ["id" : tableId, "rowType" : rowType])
-        try! realm.commitWriteTransaction()
-
-        return object
-    }
-
-    // Class names
-
-    private func updateDisplayName(tableId: String, displayName: String) -> Bool {
-        let tableInfo = getTableInfo(tableId)!
-        
-        if tableInfo.displayName == displayName {
-            return false
-        }
-        
-        realm.beginWriteTransaction()
-        tableInfo.displayName = displayName
-
-        try! realm.commitWriteTransaction()
-        
-        return true
-    }
-    
-    private func updatePropertyNames(tableId: String, propertyNames: [String]) -> [Bool] {
-        let tableInfo = getTableInfo(tableId)!
-        let properties = getRowType(tableInfo.tableClass).properties
-        let zipped = zip(properties, propertyNames)
-        let changes = zipped.map { property, newName in newName != property["displayName"] as! String }
-        
-        if changes.contains(idendity) {
-            realm.beginWriteTransaction()
-            zipped.forEach { property, newName in property["displayName"] = newName }
-            try! realm.commitWriteTransaction()
-        }
-        
-        return changes
-    }
+//    private func updatePropertyNames(tableId: String, propertyNames: [String]) -> [Bool] {
+//        let tableInfo = getTableInfo(tableId)!
+//        let properties = getRowType(tableInfo.tableClass).properties
+//        let zipped = zip(properties, propertyNames)
+//        let changes = zipped.map { property, newName in newName != property["displayName"] as! String }
+//        
+//        if changes.contains(idendity) {
+//            realm.beginWriteTransaction()
+//            zipped.forEach { property, newName in property["displayName"] = newName }
+//            try! realm.commitWriteTransaction()
+//        }
+//        
+//        return changes
+//    }
     
     private func updateRows(tableId: String, data: [[AnyObject]]) -> [[Bool]] {
         realm.beginWriteTransaction()
@@ -319,23 +385,19 @@ class Engine {
         return [true]
     }
     
-    private func getTableInfo(tableId: String) -> TableInfo? {
-        let tableInfo: RLMObject? = realm.objectWithClassName("TableInfo", forPrimaryKey: tableId)
-        return tableInfo.map(TableInfo.make)
-    }
-    
-    private func getRowType(tableClass: String) -> RowType {
-        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
-        return RowType.make(rowType)
-    }
+    //    private func getRowType(tableClass: String) -> RowType {
+    //        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
+    //        return RowType.make(rowType)
+    //    }
 
+//    private func getTableInfo(tableId: String) -> TableInfo? {
+//        let tableInfo: RLMObject? = realm.objectWithClassName("TableInfo", forPrimaryKey: tableId)
+//        return tableInfo.map(TableInfo.make)
+//    }
+    
 //    private func rowTypeFor(tableClass: String) -> RLMObject {
 //        return realm.objectWithClassName("RowType", forPrimaryKey: rowClassFor(tableClass))
 //    }
-    
-    private func getRowClassFor(tableClass: String) -> String {
-        return "Row_" + tableClass
-    }
     
     // Property types
     
@@ -367,35 +429,54 @@ class Engine {
         }
     }
     
-//    func createRandomTable(tableClass: String, displayName: String) -> RLMObject {
-//        realm.beginWriteTransaction()
-//        
-//let table = createTable(tableClass, tableId: <#T##String#>, displayName: <#T##String#>)
-//        for _ in 0..<30 {
-//            addRandomRowToTable(t)
-//        }
-//        
-//        try! realm.commitWriteTransaction()
-//        
-//        return t
-//    }
-    
-    func addRandomRowToTable(tableId: String) {
-        let tableClass = getTableInfo(tableId)!.tableClass
-        realm.beginWriteTransaction()
-        let table = realm.objectWithClassName(tableClass, forPrimaryKey: tableId)
-        addRandomRowToTable(table)
-        try! realm.commitWriteTransaction()
+    func printt() {
+        for _ in 0..<10 { print("*") }
     }
 
-    func addRandomRowToTable(table: RLMObject) {
-        let rows = table["rows"] as! RLMArray
+    func createRandomCollection() -> String {
+        let collectionId = sync.getSyncId()
+        let tableClass = newCollectionClass(collectionId)
+        let rowClass = getRowClassFor(tableClass)
         
-        if let row = createRandomRow(rows.objectClassName) {
-            rows.addObject(row)
-        }
-    }
+        addProperty(.String, rowClass: getRowClassFor(tableClass), displayName: "Name")
+        addProperty(.Double, rowClass: getRowClassFor(tableClass), displayName: "Number")
 
+        let collectionClass = getCollectionClassFor(tableClass)
+        
+        realm.beginWriteTransaction()
+        
+        let t = Tensor(size: [2, 3])
+        
+        var cats = [RLMObject]()
+        t.size.enumerate().forEach { i, s in
+            let id = "cat-" + String(i)
+            let values = (0..<s).map { v in
+                realm.createObject(RealmString.className(), withValue: ["value" : id + "_" + String(v)])
+            }
+            cats.append(realm.createObject(Category.className(), withValue: ["values" : values, "id" : id]))
+        }
+        
+        let tables = RLMArray(objectClassName: tableClass)
+        
+        for i in 0..<t.count {
+            let id = "table-" + t.vectorise(i).map(String.init).joinWithSeparator("_")
+            
+            let rows = RLMArray(objectClassName: rowClass)
+            for _ in 0..<(rand() % 5 + 2) {
+                rows.addObject(createRandomRow(rowClass)!)
+            }
+            
+            tables.addObject(realm.createObject(tableClass, withValue: ["id" : id, "rows" : rows]))
+        }
+        
+        let value = ["displayName" : "My random data", "tables" : tables, "id" : collectionId, "categories" : cats]
+        print(realm.createObject(collectionClass, withValue: value))
+        try! realm.commitWriteTransaction()
+        
+        
+        return collectionId
+    }
+    
     func createRandomRow(className: String) -> RLMObject? {
         guard let objectSchema = realm.schema.schemaForClassName(className) else {
             return nil
@@ -404,16 +485,10 @@ class Engine {
         var value = [String : AnyObject]()
         
         for prop in objectSchema.properties {
-            if prop.name == "index" {
-//                value[prop.name] = NSUUID().UUIDString
-                value[prop.name] = "ndx" + String(Int(arc4random() % 10000))
-            }
-            else {
-                switch prop.type {
-                case .Double: value[prop.name] = Double(arc4random() % 100)
-                case .String: value[prop.name] = "str" + String(Int(arc4random() % 1000))
-                default: break
-                }
+            switch prop.type {
+            case .Double: value[prop.name] = Double(arc4random() % 100)
+            case .String: value[prop.name] = "str" + String(Int(arc4random() % 1000))
+            default: break
             }
         }
         
