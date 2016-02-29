@@ -201,6 +201,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.99633866548538208" green="0.96513330936431885" blue="0.96981418132781982" alpha="1" colorSpace="calibratedRGB"/>
                         <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
+                        <label key="backgroundView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fwW-O7-sI1">
+                            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexNameCell" id="Nw5-r7-oGJ" customClass="IndexNameCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
@@ -430,6 +437,7 @@
                             <outlet property="delegate" destination="lqy-bL-fWz" id="yX3-KU-NdB"/>
                         </connections>
                     </collectionView>
+                    <nil key="simulatedStatusBarMetrics"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="J4Q-i2-zLs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

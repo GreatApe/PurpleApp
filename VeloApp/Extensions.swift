@@ -8,12 +8,35 @@
 
 import UIKit
 
+// Composition
+
+infix operator >>> { associativity left }
+func >>><A, B, C>(f: A -> B, g: B-> C) -> A -> C {
+    return { x in g(f(x)) }
+}
+
 // Forward Pipe
 
 infix operator |> { associativity left precedence 80 }
 
 func |> <T, U>(value: T, function: (T -> U)) -> U {
     return function(value)
+}
+
+func |> <T, U, V>(value: T, functions: (T -> U, T -> V)) -> (U, V) {
+    return (functions.0(value), functions.1(value))
+}
+
+func |> <S, T, U, V>(values: (S, T), functions: (S -> U, T -> V)) -> (U, V) {
+    return (functions.0(values.0), functions.1(values.1))
+}
+
+func |> <T, U, V, W>(value: T, functions: (T -> U, T -> V, T -> W)) -> (U, V, W) {
+    return (functions.0(value), functions.1(value), functions.2(value))
+}
+
+func |> <R, S, T, U, V, W>(values: (R, S, T), functions: (R -> U, S -> V, T -> W)) -> (U, V, W) {
+    return (functions.0(values.0), functions.1(values.1), functions.2(values.2))
 }
 
 // [Int] operations
@@ -84,6 +107,16 @@ func * (lhs: CGPoint, rhs: CGFloat) -> CGPoint {
 
 func | (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return rhs*((lhs*rhs)/(rhs*rhs))
+}
+
+func * (lhs: (Int, Int), rhs: CGPoint) -> CGPoint {
+    return CGPoint(x: CGFloat(lhs.0)*rhs.x, y: CGFloat(lhs.1)*rhs.y)
+}
+
+// CGSize
+
+func * (lhs: (Int, Int), rhs: CGSize) -> CGSize {
+    return CGSize(width: CGFloat(lhs.0)*rhs.width, height: CGFloat(lhs.1)*rhs.height)
 }
 
 // Scaling and clamping

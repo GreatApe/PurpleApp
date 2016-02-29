@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1C922276EACEF19DCDD2DF38 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BDF7C8E8419A1EF225D4FB76 /* libPods.a */; };
+		220C732C1C8437DC00FCA89F /* Cells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220C732B1C8437DC00FCA89F /* Cells.swift */; };
+		220C732E1C84380700FCA89F /* LayoutConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220C732D1C84380700FCA89F /* LayoutConfigs.swift */; };
 		22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B3D1C76A67800F58A86 /* RLMSupport.swift */; };
 		22236B481C77AF4E00F58A86 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B471C77AF4E00F58A86 /* Engine.swift */; };
 		22335C021C78E10300E5CE68 /* DataSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C011C78E10300E5CE68 /* DataSources.swift */; };
@@ -96,6 +98,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		220C732B1C8437DC00FCA89F /* Cells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cells.swift; sourceTree = "<group>"; };
+		220C732D1C84380700FCA89F /* LayoutConfigs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutConfigs.swift; sourceTree = "<group>"; };
 		22236B3D1C76A67800F58A86 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		22236B471C77AF4E00F58A86 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
 		22335C011C78E10300E5CE68 /* DataSources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSources.swift; sourceTree = "<group>"; };
@@ -180,6 +184,8 @@
 		22A223C91C6CB54500F74F81 /* VeloApp */ = {
 			isa = PBXGroup;
 			children = (
+				220C732B1C8437DC00FCA89F /* Cells.swift */,
+				220C732D1C84380700FCA89F /* LayoutConfigs.swift */,
 				2267A78C1C81E6580081AE7F /* Tensor.swift */,
 				2267A7881C7EF3710081AE7F /* CollectionListViewController.swift */,
 				22236B3D1C76A67800F58A86 /* RLMSupport.swift */,
@@ -485,7 +491,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				22A224011C6D304B00F74F81 /* Models.swift in Sources */,
+				220C732E1C84380700FCA89F /* LayoutConfigs.swift in Sources */,
 				2267A78B1C7F4B790081AE7F /* Canvas.swift in Sources */,
+				220C732C1C8437DC00FCA89F /* Cells.swift in Sources */,
 				2267A7891C7EF3710081AE7F /* CollectionListViewController.swift in Sources */,
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
