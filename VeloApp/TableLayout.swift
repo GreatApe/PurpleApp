@@ -137,7 +137,7 @@ class TableLayout: UICollectionViewLayout {
         
         return result
     }
-    
+        
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         let section = indexPath.section
         let metaRow = section/metaColumns
@@ -154,14 +154,14 @@ class TableLayout: UICollectionViewLayout {
         let isHeader = row == 0
         
         func adjustY(y: CGFloat) -> CGFloat {
-            let stopScrollY = rowOffsets[section].last! - fieldHeight - largeMargin
+            let stopScrollY = rowOffsets[section].last! - smallMargin - fieldHeight - largeMargin
             return isHeader ? delay(y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : y
         }
         
         let isIndex = column == 0
 
         func adjustX(x: CGFloat) -> CGFloat {
-            let stopScrollX = columnOffsets.last! - indexWidth  - largeMargin
+            let stopScrollX = columnOffsets.last! - largeMargin - indexWidth  - largeMargin
             return isIndex ? delay(x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : x
         }
 
@@ -191,10 +191,6 @@ class TableLayout: UICollectionViewLayout {
         
         return 0
     }
-    
-    //        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
-    //        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
-
 
 //    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
 //        let x = CGFloat(Int(proposedContentOffset.x) % 60)

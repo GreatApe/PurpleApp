@@ -185,11 +185,11 @@
 			isa = PBXGroup;
 			children = (
 				220C732B1C8437DC00FCA89F /* Cells.swift */,
+				22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */,
 				220C732D1C84380700FCA89F /* LayoutConfigs.swift */,
 				2267A78C1C81E6580081AE7F /* Tensor.swift */,
 				2267A7881C7EF3710081AE7F /* CollectionListViewController.swift */,
 				22236B3D1C76A67800F58A86 /* RLMSupport.swift */,
-				22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */,
 				2267A78A1C7F4B790081AE7F /* Canvas.swift */,
 				22335C1E1C7B65D400E5CE68 /* Extensions.swift */,
 				22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */,
