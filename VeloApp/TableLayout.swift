@@ -48,12 +48,24 @@ class TableLayout: UICollectionViewLayout {
     private var tableHeights: [CGFloat] = []
     private var tableOffsets: [CGFloat] = []
     
+    // Scrolling
+    
+    private var scrollingOffset = CGPoint()
+    
 //    var duplicate: TableLayout {
 //        let result = TableLayout()
 //        result.config = config
 //        
 //        return result
 //    }
+    
+    
+    // MARK: Scrolling
+    
+    func scrolled(offset: CGPoint) {
+        scrollingOffset = offset
+        invalidateLayout() // FIXME: Optimise
+    }
     
     // MARK: Callbacks
     
@@ -136,24 +148,58 @@ class TableLayout: UICollectionViewLayout {
         
         let origin = CGPoint(x: columnOffsets[column], y: rowOffsets[section][row])
         let offset = (metaColumn, 1)*CGPoint(x: tableWidth, y: tableOffsets[metaRow])
+        
+        let isHeader = row == 0
+        
+        func adjustY(y: CGFloat) -> CGFloat {
+            let stopScrollY = rowOffsets[section].last! - fieldHeight - largeMargin
+            return isHeader ? delay(y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : y
+        }
+        
+        let isIndex = column == 0
+
+        func adjustX(x: CGFloat) -> CGFloat {
+            let stopScrollX = columnOffsets.last! - indexWidth  - largeMargin
+            return isIndex ? delay(x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : x
+        }
+
+        let pos = CGPoint(x: adjustX(origin.x + offset.x), y: adjustY(origin.y + offset.y))
+        
+        
         let size = CGSize(width: columnWidths[column], height: rowHeights[section][row])
+
+        attr.frame = CGRect(origin: pos, size: size)
         
-        attr.frame = CGRect(origin: origin + offset, size: size)
+        let isEmptyRow = rowConfigs[section].isEmptyRow(row)
+        let isEmptyColumn = columnConfig.isEmptyColumn(column)
         
-        let emptyRow = rowConfigs[section].isEmptyRow(row)
-        let emptyColumn = columnConfig.isEmptyColumn(column)
-        
-        attr.alpha = (emptyRow ? 0 : 0.5) + (emptyColumn ? 0 : 0.5)
+        attr.alpha = (isEmptyRow ? 0 : 0.5) + (isEmptyColumn ? 0 : 0.5)
+        attr.zIndex = (isHeader ? 5 : 0) + (isIndex ? 10 : 0)
         
         return attr
     }
+    
+    func delay(value: CGFloat, untilBelow lowerBound: CGFloat) -> CGFloat {
+        if value > 0 {
+            return value
+        }
+        else if value < lowerBound {
+            return value - lowerBound
+        }
+        
+        return 0
+    }
+    
+    //        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
+    //        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
+
 
 //    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
 //        let x = CGFloat(Int(proposedContentOffset.x) % 60)
 //        return proposedContentOffset
 //    }
     
-    // MARK: Pure functions
+    // MARK: Pure helper functions
     
     private func splice(values: [CGFloat], with value: CGFloat) -> [CGFloat] {
         guard let last = values.last else { return [] }

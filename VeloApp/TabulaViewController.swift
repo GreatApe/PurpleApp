@@ -46,6 +46,14 @@ class TabulaViewController: UICollectionViewController {
     }
     
     // MARK: Collection View Data Source
+
+//    // Supplementary Views
+//    
+//    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+//        fatalError()
+//    }
+    
+    // Cells
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return layout.metaRows*layout.metaColumns
@@ -116,10 +124,14 @@ class TabulaViewController: UICollectionViewController {
     
     // MARK: From containing View Controller
     
-    func canvasScrolled(offset: CGFloat) {
+    override func scrollViewDidScroll(scrollView: UIScrollView) {
+        layout.scrolled(scrollView.contentOffset)
+    }
+    
+//    func canvasScrolled(offset: CGFloat) {
         //        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
 //        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
-    }
+//    }
     
     // MARK: Setters
     
@@ -167,13 +179,13 @@ class TabulaViewController: UICollectionViewController {
     //    }
 }
 
-func clamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
-    if x > lower && x < upper {
-        return x
-    }
-    
-    return min(max(x, lower), upper)
-}
+//func antiClamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
+//    if x > lower && x < upper {
+//        return x
+//    }
+//    
+//    return min(max(x, lower), upper)
+//}
 
 //struct ElementComputation {
 //    let elementType: String

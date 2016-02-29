@@ -201,13 +201,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.99633866548538208" green="0.96513330936431885" blue="0.96981418132781982" alpha="1" colorSpace="calibratedRGB"/>
                         <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
-                        <label key="backgroundView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fwW-O7-sI1">
-                            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexNameCell" id="Nw5-r7-oGJ" customClass="IndexNameCell" customModule="VeloApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
@@ -224,6 +217,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
+                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="Wdr-3V-e4e" firstAttribute="centerX" secondItem="Nw5-r7-oGJ" secondAttribute="centerX" id="DtW-4T-jFY"/>
                                     <constraint firstItem="Wdr-3V-e4e" firstAttribute="top" secondItem="Nw5-r7-oGJ" secondAttribute="topMargin" id="FSO-2l-Gug"/>
@@ -251,7 +245,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <color key="backgroundColor" red="0.88551640510559082" green="0.19617548584938049" blue="0.58994746208190918" alpha="0.0" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="uv6-Hh-Gwo" firstAttribute="centerX" secondItem="Qqx-le-N1g" secondAttribute="centerX" id="I2b-4Z-ueZ"/>
                                     <constraint firstItem="uv6-Hh-Gwo" firstAttribute="leading" secondItem="Qqx-le-N1g" secondAttribute="leadingMargin" id="NcG-nW-jtp"/>
@@ -279,6 +273,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
+                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="goI-wz-VFf" firstAttribute="centerX" secondItem="7sy-Yg-Tlx" secondAttribute="centerX" id="Fq8-PN-Iug"/>
                                     <constraint firstItem="goI-wz-VFf" firstAttribute="centerY" secondItem="7sy-Yg-Tlx" secondAttribute="centerY" id="P7C-aU-uyl"/>

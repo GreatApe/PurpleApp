@@ -12,8 +12,8 @@ struct ColumnConfig: CustomStringConvertible {
     let indexColumns = 1
     var columns = 2
     var emptyColumns = 1
-    var compColumns = 1
-    var emptyCompColumns = 1
+    var compColumns = 0
+    var emptyCompColumns = 0
     
     var totalColumns: Int { return indexColumns + columns + emptyColumns + compColumns + emptyCompColumns }
     
@@ -36,8 +36,7 @@ struct ColumnConfig: CustomStringConvertible {
     }
     
     var description: String {
-        return " Columns: \(columns)\n EmptyColumns: \(emptyColumns)" +
-        "\n indexColumnRange: \(indexColumnRange)\n columnsRange: \(columnsRange)\n emptyColumnsRange: \(emptyColumnsRange)\n compColumnsRange: \(compColumnsRange)\n emptyCompColumnsRange: \(emptyCompColumnsRange)"
+        return " Columns: \(columns)\n EmptyColumns: \(emptyColumns)"
     }
 }
 
@@ -45,7 +44,7 @@ struct RowConfig: CustomStringConvertible {
     let headerRows = 1
     var rows = 2
     var emptyRows = 1
-    var compRows = 2
+    var compRows = 0
     
     var totalRows: Int { return headerRows + rows + emptyRows + compRows }
     
