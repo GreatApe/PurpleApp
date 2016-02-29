@@ -53,7 +53,7 @@ class DataSync {
     
     private func observe(type: FEventType, callback: Table -> Void) {
         refTables.observeEventType(type, withBlock: { snap in
-            let tableId = snap.key
+//            let tableId = snap.key
 
             guard let data = snap.value as? [[AnyObject]] where data.count > 2 else {
                 print("#######")
@@ -62,7 +62,7 @@ class DataSync {
                 return
             }
 
-            let schemaForData = data[2].map(Engine.typeForCell)
+//            let schemaForData = data[2].map(Engine.typeForCell)
 //            let schema = Engine.shared.schemaForTable(tableId) ?? schemaForData
 //            callback(Table(tableId: tableId, data: data, schema: schema))
         })

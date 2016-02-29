@@ -9,16 +9,19 @@
 import UIKit
 
 class TableLayout: UICollectionViewLayout {
+//    var tensor: Tensor!
+    
+    
     var metaColumns = 5
     var metaRows = 6
-    
-//    var tensor: Tensor
+
     
     // Columns
     
     var columnConfig = ColumnConfig()
     
-    var indexWidth: CGFloat { return 100 }
+    var indexWidth: CGFloat = 100
+    
     var mainWidths: [CGFloat] { return Array(count: columnConfig.columns, repeatedValue: 80) }
     var emptyWidths: [CGFloat] { return Array(count: columnConfig.emptyColumns, repeatedValue: 60) }
     var compWidths: [CGFloat] { return Array(count: columnConfig.compColumns, repeatedValue: 80) }
@@ -51,7 +54,14 @@ class TableLayout: UICollectionViewLayout {
     // Scrolling
     
     private var scrollingOffset = CGPoint()
+    private var merelyScrolled = false
     
+    // Supplementary
+
+    var tableNameHeight: CGFloat = 40
+    var metaIndexWidth: CGFloat = 100
+    var metaHeaderHeight: CGFloat = 50
+
 //    var duplicate: TableLayout {
 //        let result = TableLayout()
 //        result.config = config
@@ -59,46 +69,50 @@ class TableLayout: UICollectionViewLayout {
 //        return result
 //    }
     
-    
-    // MARK: Scrolling
-    
-    func scrolled(offset: CGPoint) {
-        scrollingOffset = offset
-        
-        let c = UICollectionViewLayoutInvalidationContext()
-        invalidateLayout() // FIXME:
-    }
-    
     // MARK: Callbacks
     
     override func prepareLayout() {
-        prepareColumns()
-        prepareRows()
-        prepareTableSizes()
+        if !merelyScrolled {
+            prepareColumns()
+            prepareRows()
+            prepareTableSizes()
+        }
+        
+        merelyScrolled = false
     }
     
     private func prepareColumns() {
         let widthsMain = [indexWidth, largeMargin] + splice(mainWidths + emptyWidths, with: smallMargin)
         let widthsComp = [largeMargin] + splice(compWidths + emptyCompWidths, with: smallMargin)
-        
+
         columnOffsets = cumulate(widthsMain + widthsComp, from: borderMargin)
-        columnWidths = [indexWidth] + mainWidths + emptyWidths + compWidths + emptyCompWidths
+        columnWidths = [indexWidth]
+        columnWidths.appendContentsOf(mainWidths)
+        columnWidths.appendContentsOf(emptyWidths)
+        columnWidths.appendContentsOf(compWidths)
+        columnWidths.appendContentsOf(emptyCompWidths)
+        //        columnWidths = [indexWidth] + mainWidths + emptyWidths + compWidths + emptyCompWidths
     }
 
     private func prepareRows() {
         let compHeights = Array(count: rowConfigs.first!.compRows, repeatedValue: compHeight)
         rowOffsets = []
         rowHeights = []
-        
+
         for rowConfig in rowConfigs {
             let mainHeights = Array(count: rowConfig.rows, repeatedValue: cellHeight)
             let emptyHeights = Array(count: rowConfig.emptyRows, repeatedValue: cellHeight)
-            
+
             let heightsMain = [fieldHeight, 0] + splice(mainHeights + emptyHeights, with: smallMargin)
             let heightsComp = [largeMargin] + splice(compHeights, with: smallMargin)
             
             rowOffsets.append(cumulate(heightsMain + heightsComp, from: borderMargin))
-            rowHeights.append([fieldHeight] + mainHeights + emptyHeights + compHeights)
+            var theseRowHeights = [fieldHeight]
+            theseRowHeights.appendContentsOf(mainHeights)
+            theseRowHeights.appendContentsOf(emptyHeights)
+            theseRowHeights.appendContentsOf(compHeights)
+            rowHeights.append(theseRowHeights)
+            //            rowHeights.append([fieldHeight] + mainHeights + emptyHeights + compHeights)
         }
     }
     
@@ -126,7 +140,9 @@ class TableLayout: UICollectionViewLayout {
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var result = [UICollectionViewLayoutAttributes]()
         
-        for section in 0..<metaRows*metaColumns {
+        let tableCount = metaRows*metaColumns
+        
+        for section in 0..<tableCount {
             for item in 0..<rowHeights[section].count*columnWidths.count {
                 let indexPath = NSIndexPath(forItem: item, inSection: section)
                 if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
@@ -137,7 +153,7 @@ class TableLayout: UICollectionViewLayout {
         
         return result
     }
-        
+
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         let section = indexPath.section
         let metaRow = section/metaColumns
@@ -154,19 +170,18 @@ class TableLayout: UICollectionViewLayout {
         let isHeader = row == 0
         
         func adjustY(y: CGFloat) -> CGFloat {
-            let stopScrollY = rowOffsets[section].last! - smallMargin - fieldHeight - largeMargin
+            let stopScrollY = rowOffsets[section].last! - smallMargin - cellHeight
             return isHeader ? delay(y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : y
         }
         
         let isIndex = column == 0
 
         func adjustX(x: CGFloat) -> CGFloat {
-            let stopScrollX = columnOffsets.last! - largeMargin - indexWidth  - largeMargin
+            let stopScrollX = columnOffsets.last! - indexWidth - borderMargin - smallMargin
             return isIndex ? delay(x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : x
         }
 
         let pos = CGPoint(x: adjustX(origin.x + offset.x), y: adjustY(origin.y + offset.y))
-        
         
         let size = CGSize(width: columnWidths[column], height: rowHeights[section][row])
 
@@ -181,6 +196,27 @@ class TableLayout: UICollectionViewLayout {
         return attr
     }
     
+    // Supplementary
+    
+    
+//    override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+//        
+//    }
+    
+    override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+        scrollingOffset = newBounds.origin
+//        merelyScrolled = true
+
+        return true
+    }
+    
+//    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
+//        let x = CGFloat(Int(proposedContentOffset.x) % 60)
+//        return proposedContentOffset
+//    }
+    
+    // MARK: Pure helper functions
+    
     func delay(value: CGFloat, untilBelow lowerBound: CGFloat) -> CGFloat {
         if value > 0 {
             return value
@@ -192,13 +228,6 @@ class TableLayout: UICollectionViewLayout {
         return 0
     }
 
-//    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
-//        let x = CGFloat(Int(proposedContentOffset.x) % 60)
-//        return proposedContentOffset
-//    }
-    
-    // MARK: Pure helper functions
-    
     private func splice(values: [CGFloat], with value: CGFloat) -> [CGFloat] {
         guard let last = values.last else { return [] }
         

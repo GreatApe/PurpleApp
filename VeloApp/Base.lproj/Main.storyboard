@@ -226,7 +226,7 @@
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
                                 <connections>
-                                    <outlet property="label" destination="Wdr-3V-e4e" id="TwG-8p-kFs"/>
+                                    <outlet property="label" destination="Wdr-3V-e4e" id="rot-We-sKw"/>
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FieldNameCell" id="Qqx-le-N1g" customClass="FieldNameCell" customModule="VeloApp" customModuleProvider="target">
@@ -342,7 +342,7 @@
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompColumnCell" id="67E-Ub-EJ0" customClass="CompColumnCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="121" y="70" width="139" height="50"/>
+                                <rect key="frame" x="132" y="70" width="139" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
@@ -370,7 +370,7 @@
                                 </connections>
                             </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompCell" id="N83-hL-BZ1" customClass="CompCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="270" y="60" width="139" height="70"/>
+                                <rect key="frame" x="293" y="60" width="139" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="139" height="70"/>
@@ -416,8 +416,28 @@
                                     <outlet property="titleLabel" destination="J38-t6-iSz" id="IoR-ul-5ja"/>
                                 </connections>
                             </collectionViewCell>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MetaLabel" id="iNY-kJ-Qyl" customClass="MetaLabelCell" customModule="VeloApp" customModuleProvider="target">
+                                <rect key="frame" x="453" y="78" width="147" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="MetaLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9ri-2m-vs1">
+                                            <rect key="frame" x="8" y="1" width="131" height="33"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <size key="customSize" width="147" height="35"/>
+                                <connections>
+                                    <outlet property="label" destination="9ri-2m-vs1" id="Tkr-rw-FBh"/>
+                                </connections>
+                            </collectionViewCell>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SpacerCell" id="zAs-Pw-joI">
-                                <rect key="frame" x="419" y="70" width="44" height="50"/>
+                                <rect key="frame" x="0.0" y="140" width="44" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>

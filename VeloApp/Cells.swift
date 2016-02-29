@@ -10,6 +10,10 @@ protocol LabeledCell {
     var label: UILabel! { get }
 }
 
+class MetaLabelCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
 class IndexNameCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }

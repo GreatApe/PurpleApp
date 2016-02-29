@@ -9,8 +9,7 @@
 import UIKit
 
 class TabulaViewController: UICollectionViewController {
-    var collectionId: String! { didSet { collectionIdChanged() } }
-    var collectionIndex: [Int] = []
+    var collectionId: String! { didSet { didSetCollectionId() } }
     
     private var layout: TableLayout { return collectionViewLayout as! TableLayout }
     
@@ -19,6 +18,13 @@ class TabulaViewController: UICollectionViewController {
     private var categories: [[String]] = []
     private var rows: [[AnyObject]] = [["ndx0", "val0"]]
     
+    private var metaRowCategory = 0
+    private var metaColumnCategory = 1
+
+    private var expanded = false
+    
+    var tensor = Tensor(size: [])
+
     override func viewDidLoad() {
         var cs = [RowConfig]()
         for _ in 0..<layout.metaRows*layout.metaColumns {
@@ -34,15 +40,29 @@ class TabulaViewController: UICollectionViewController {
         collectionView?.reloadData()
     }
     
-    private func collectionIdChanged() {
+    private func didSetCollectionId() {
         (name, header, categories) = Engine.shared.getCollectionData(collectionId)
         
         print("Header: \(header)")
 
-        collectionIndex = Array(count: categories.count, repeatedValue: 0)
+//        collectionIndex = Array(count: categories.count, repeatedValue: 0)
         
+//        layout.rowConfigs = cs
+
 //        layout.config.columns = header.count - 1
 //        layout.config.rows = rows.count
+    }
+    
+    func expandTable() {
+        layout.metaRows = categories[metaRowCategory].count
+        layout.metaColumns = categories[metaColumnCategory].count
+        
+        var cs = [RowConfig]()
+        for _ in 0..<layout.metaRows*layout.metaColumns {
+            var c = RowConfig()
+            c.rows = 3 + Int(rand() % 7)
+            cs.append(c)
+        }
     }
     
     // MARK: Collection View Data Source
@@ -60,11 +80,27 @@ class TabulaViewController: UICollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let tableCount = layout.metaRows*layout.metaColumns
+        
+        if section == tableCount { return layout.metaColumns }
+        else if section == tableCount + 1 { return layout.metaRows }
+        
         return layout.columnConfig.totalColumns*layout.rowConfigs[section].totalRows
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let tableCount = layout.metaRows*layout.metaColumns
+        
+        guard indexPath.section < tableCount else {
+            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MetaLabel", forIndexPath: indexPath) as! MetaLabelCell
+
+            let category = categories[indexPath.section == tableCount ? metaColumnCategory : metaRowCategory]
+            cell.label.text = category[indexPath.item]
+            return cell
+        }
+
         let totalColumns = layout.columnConfig.totalColumns
+        
         let rowConfig = layout.rowConfigs[indexPath.section]
         
         let row = indexPath.item / totalColumns
@@ -124,15 +160,6 @@ class TabulaViewController: UICollectionViewController {
     
     // MARK: From containing View Controller
     
-    override func scrollViewDidScroll(scrollView: UIScrollView) {
-        layout.scrolled(scrollView.contentOffset)
-    }
-    
-//    func canvasScrolled(offset: CGFloat) {
-        //        let stopWidth = addComputedColumnsWidth.constant + (computedColumns.frame.width == 0 ? mainStack.spacing : 0)
-//        leftIndexColumnOffset.constant = clamp(offset, 0, view.frame.width - leftIndexTableView.frame.width - stopWidth)
-//    }
-    
     // MARK: Setters
     
     private func changedSelected() {
@@ -178,14 +205,6 @@ class TabulaViewController: UICollectionViewController {
     //        collectionView!.deleteItemsAtIndexPaths(paths)
     //    }
 }
-
-//func antiClamp<T: Comparable>(x: T, _ lower: T, _ upper: T) -> T {
-//    if x > lower && x < upper {
-//        return x
-//    }
-//    
-//    return min(max(x, lower), upper)
-//}
 
 //struct ElementComputation {
 //    let elementType: String

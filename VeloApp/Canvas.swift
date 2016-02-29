@@ -81,7 +81,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
                 list.onSelection = { collectionId in
                     self.dismissViewControllerAnimated(true, completion: nil)
                     tabula.collectionId = collectionId
-                    tabula.collectionIndex = [0, 0, 0]
+//                    tabula.collectionIndex = [0, 0, 0]
                     tabula.reload()
                 }
                 
@@ -92,7 +92,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedButton() {
         veloTables.forEach { tabula in
-            tabula.collectionIndex = [0, 0, 0]
+//            tabula.collectionIndex = [0, 0, 0]
             tabula.reload()
 //            tabula.addRow(1)
         }
@@ -100,7 +100,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            tabula.collectionIndex = [0, 1, 0]
+//            tabula.collectionIndex = [0, 1, 0]
             tabula.reload()
 
 //            tabula.deleteRow(1)
@@ -109,7 +109,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
-            tabula.collectionIndex = [1, 2, 3]
+//            tabula.collectionIndex = [1, 2, 3]
             tabula.reload()
 
 //            tabula.addColumn(1)
