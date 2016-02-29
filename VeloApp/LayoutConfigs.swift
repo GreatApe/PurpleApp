@@ -10,7 +10,7 @@ import UIKit
 
 struct ColumnConfig: CustomStringConvertible {
     let indexColumns = 1
-    var columns = 2
+    var columns = 4
     var emptyColumns = 1
     var compColumns = 0
     var emptyCompColumns = 0

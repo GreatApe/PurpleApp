@@ -9,8 +9,8 @@
 import UIKit
 
 class TableLayout: UICollectionViewLayout {
-    var metaColumns = 3
-    var metaRows = 4
+    var metaColumns = 5
+    var metaRows = 6
     
 //    var tensor: Tensor
     
@@ -64,7 +64,9 @@ class TableLayout: UICollectionViewLayout {
     
     func scrolled(offset: CGPoint) {
         scrollingOffset = offset
-        invalidateLayout() // FIXME: Optimise
+        
+        let c = UICollectionViewLayoutInvalidationContext()
+        invalidateLayout() // FIXME:
     }
     
     // MARK: Callbacks

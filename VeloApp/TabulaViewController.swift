@@ -21,9 +21,9 @@ class TabulaViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         var cs = [RowConfig]()
-        for _ in 0..<12 {
+        for _ in 0..<layout.metaRows*layout.metaColumns {
             var c = RowConfig()
-            c.rows = 2 + Int(rand() % 5)
+            c.rows = 3 + Int(rand() % 7)
             cs.append(c)
         }
 
