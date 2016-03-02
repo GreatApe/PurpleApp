@@ -468,7 +468,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <color key="backgroundColor" red="0.99633866550000005" green="0.96513330939999997" blue="0.96981418129999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="ByG-8y-gQt" firstAttribute="top" secondItem="Afn-by-Lpa" secondAttribute="top" constant="1" id="8Tz-it-FRK"/>
                                     <constraint firstItem="ByG-8y-gQt" firstAttribute="leading" secondItem="Afn-by-Lpa" secondAttribute="leading" constant="8" id="UWQ-fE-Zlg"/>

@@ -45,7 +45,7 @@ class TableLayout: UICollectionViewLayout {
 
     private var tableNameHeight: CGFloat = 40
     private var metaIndexWidth: CGFloat = 100
-    private var metaHeaderHeight: CGFloat = 50
+    private var metaHeaderHeight: CGFloat = 40
     
     // MARK: Initialisation
 
@@ -113,7 +113,7 @@ class TableLayout: UICollectionViewLayout {
     
     // Meta labels
 
-    private var startGuide: CGPoint { return CGPoint(x: borderMargin + metaIndexWidth, y: borderMargin + metaHeaderHeight) }
+    private var startGuide: CGPoint { return CGPoint(x: metaIndexWidth, y: metaHeaderHeight + tableNameHeight) }
     private var permanentGuide: CGPoint { return CGPoint(x: 0, y: tableNameHeight) }
     
     // MARK: Callbacks
@@ -262,6 +262,17 @@ class TableLayout: UICollectionViewLayout {
         }
     }
     
+    func adjust(p: CGPoint, stopScroll: CGPoint, dimension: (x: Bool, y: Bool)) -> CGPoint {
+        let subtractAdd = permanentGuide + scrollingOffset
+        let x = dimension.x ? adjust(p.x, stopScroll: stopScroll.x, subtractAdd: subtractAdd.x) : p.x
+        let y = dimension.y ? adjust(p.y, stopScroll: stopScroll.y, subtractAdd: subtractAdd.y) : p.y
+        return CGPoint(x: x, y: y)
+    }
+    
+    func adjust(r: CGFloat, stopScroll: CGFloat, subtractAdd: CGFloat) -> CGFloat {
+        return delay(r - subtractAdd, untilBelow: -stopScroll) + subtractAdd
+    }
+
     func layoutAttributesForCell(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
         let section = indexPath.section
         let metaRow = section/metaColumns
@@ -270,27 +281,19 @@ class TableLayout: UICollectionViewLayout {
         let row = indexPath.item/tableConfig.totalColumns
         let column = indexPath.item % tableConfig.totalColumns
         
-        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-        
-        let origin = CGPoint(x: columnOffsets[column], y: rowOffsets[section][row])
-        
-        let offsetX = squeezeColumns ? 0 : CGFloat(metaColumn)*tableWidth
-        let offsetY = squeezeRows ? 0 : tableOffsets[metaRow]
-        let offset = CGPoint(x: offsetX, y: offsetY)
-        
         let isHeader = row == 0
         let isIndex = column == 0
         
-        func adjust(p: CGPoint) -> CGPoint {
-            let stopScrollY = rowOffsets[section].last! - smallMargin - cellHeight
-            let y = isHeader ? delay(p.y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : p.y
-
-            let stopScrollX = columnOffsets.last! - indexWidth - borderMargin - smallMargin
-            let x = isIndex ? delay(p.x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : p.x
-            return CGPoint(x: x, y: y)
-        }
-    
-        let pos = adjust(origin + offset + startGuide - permanentGuide) + permanentGuide
+        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        
+        let cellOffset = CGPoint(x: columnOffsets[column], y: rowOffsets[section][row])
+        let tableOffset = CGPoint(x: CGFloat(metaColumn)*tableWidth, y: tableOffsets[metaRow])
+        
+        let stopX = columnOffsets.last! - indexWidth - borderMargin - smallMargin
+        let stopY = rowOffsets[section].last! - smallMargin - cellHeight
+        
+        let pos = adjust(cellOffset + tableOffset + startGuide, stopScroll: CGPoint(x: stopX, y: stopY), dimension: (isIndex, isHeader))
+        
         let size = CGSize(width: columnWidths[column], height: rowHeights[section][row])
         
         attr.frame = CGRect(origin: pos, size: size)
@@ -312,27 +315,30 @@ class TableLayout: UICollectionViewLayout {
 
         if let order = tensor.ordering.indexOf(dimension) {
             if order == 0 {
-                let x = CGFloat(value)*tableWidth + startGuide.x + borderMargin
-                let y = scrollingOffset.y + metaHeaderHeight
+                let preX = CGFloat(value)*tableWidth + startGuide.x + borderMargin
+                let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
+                let x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + scrollingOffset.x)
+                let y = scrollingOffset.y + tableNameHeight
                 attr.frame.origin = CGPoint(x: x, y: y)
+                attr.zIndex = 25
             }
             else {
-                let x: CGFloat = scrollingOffset.x
-                let y = tableOffsets[value] + startGuide.y + borderMargin
+                let x = scrollingOffset.x
+                let preY = tableOffsets[value] + startGuide.y + borderMargin
+                let stopScrollY = tableHeights[value] - metaHeaderHeight - 2*borderMargin
+                let y = adjust(preY, stopScroll: stopScrollY, subtractAdd: permanentGuide.y + scrollingOffset.y)
                 attr.frame.origin = CGPoint(x: x, y: y)
+                attr.zIndex = 30
             }
         }
         else {
             let x = CGFloat(dimension + 3)*100
-            let y = CGFloat(indexPath.item)*50
+            let y = CGFloat(indexPath.item)*0
             let pos = CGPoint(x: x, y: y)
-            
+            attr.zIndex = 50
             attr.frame.origin = scrollingOffset + pos
-            
         }
         attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)
-        
-        attr.zIndex = 30
         return attr
     }
 
@@ -340,7 +346,7 @@ class TableLayout: UICollectionViewLayout {
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attr.frame.origin = scrollingOffset
         attr.frame.size = CGSize(width: 1000, height: tableNameHeight)
-        attr.zIndex = 20
+        attr.zIndex = 40
         return attr
     }
     
