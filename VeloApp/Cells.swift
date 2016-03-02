@@ -80,7 +80,7 @@ enum CellType {
         }
     }
     
-    init(rowConfig r: RowConfig, columnConfig c: ColumnConfig, row: Int, column: Int) {
+    init(rowConfig r: RowConfig, tableConfig c: TableConfig, row: Int, column: Int) {
         switch (row, column) {
         case (r.headerRowRange, c.indexColumnRange): self = .IndexName(column: column)
         case (r.headerRowRange, c.columnsRange): self = .FieldName(column: column)

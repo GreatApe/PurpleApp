@@ -12,6 +12,28 @@ struct Slice {
     let slicing: [Int?]
     let ordering: [Int]
     
+    init(index: [Int]) {
+        self.ordering = []
+        self.slicing = index.map { $0 }
+    }
+    
+    func freeing(dimension: Int) -> Slice {
+        var newSlicing = slicing
+        newSlicing[dimension] = nil
+        
+        let newOrdering = ordering + [dimension]
+        return Slice(slicing: newSlicing, ordering: newOrdering)
+    }
+    
+    func fixing(dimension: Int, at value: Int) -> Slice {
+        var newSlicing = slicing
+        newSlicing[dimension] = value
+        
+        var newOrdering = ordering
+        newOrdering.removeAtIndex(newOrdering.indexOf(dimension)!)
+        return Slice(slicing: newSlicing, ordering: newOrdering)
+    }
+    
     init(slicing: [Int?], ordering: [Int]) {
         self.ordering = ordering
         self.slicing = slicing
@@ -27,15 +49,24 @@ struct Slice {
     }
 }
 
-struct Tensor {
+struct Tensor: CustomStringConvertible {
     // MARK: Public
 
     let size: [Int]
-    let slice: Slice
+    private var slice: Slice
     
     init(size: [Int]) {
+        self.init(size: size, sliceToOne: false)
+    }
+    
+    init(size: [Int], sliceToOne: Bool) {
         self.size = size
-        self.slice = Slice(slicing: Array(count: size.count, repeatedValue: nil), ordering: Array(0..<size.count))
+        if sliceToOne {
+            self.slice = Slice(index: Array(count: size.count, repeatedValue: 0))
+        }
+        else {
+            self.slice = Slice(slicing: Array(count: size.count, repeatedValue: nil), ordering: Array(0..<size.count))
+        }
     }
 
     init(size: [Int], slicing: [Int?], ordering: [Int]) {
@@ -43,7 +74,21 @@ struct Tensor {
         self.slice = Slice(slicing: slicing, ordering: ordering)
     }
     
+    // MARK: Public Mutation Methods
+    
+    mutating func free(dimension: Int) {
+        slice = slice.freeing(dimension)
+    }
+    
+    mutating func fix(dimension: Int, at value: Int) {
+        slice = slice.fixing(dimension, at: value)
+    }
+    
     // MARK: Public Convenience Methods
+
+    func isFree(dimension: Int) -> Bool {
+        return slice.slicing[dimension] == nil
+    }
 
     var count: Int {
         return size.reduce(1, combine: *)
@@ -57,12 +102,17 @@ struct Tensor {
         return slice(size)
     }
 
-    var slicedTensor: Tensor {
+    var sliced: Tensor {
         return Tensor(size: slicedSize)
     }
 
     // MARK: Public Operative Methods
 
+    func normalise(index: [Int]) -> [Int] {
+        let padded = index + Array(count: max(0, dimension - index.count), repeatedValue: 0)
+        return Array(padded[0..<dimension])
+    }
+    
     func coords(s: Slice) -> [[Int]] {
         return (0..<count).map(vectorise).filter(s.contains)
     }
@@ -76,6 +126,10 @@ struct Tensor {
         zip(s, slice.ordering).forEach { si, o in k[o] = si }
         
         return k.map { $0! }
+    }
+    
+    func unslice(k: Int) -> Int {
+        return k |> sliced.vectorise |> unslice |> linearise
     }
     
 //    func unslice(s: [Int]) -> [Int] {
@@ -95,4 +149,12 @@ struct Tensor {
     private var multiplier: [Int] {
         return size.dropLast().reduce([1]) { result, dim in result + [result.last!*dim] }
     }
+    
+    var description: String {
+        return "T(size: \(size), slicing: [\(slice.slicing.map { $0 == nil ? ":" : String($0!) }.joinWithSeparator(", "))], order: \(slice.ordering))"
+    }
 }
+
+
+
+

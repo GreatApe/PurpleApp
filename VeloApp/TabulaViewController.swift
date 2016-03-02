@@ -16,53 +16,88 @@ class TabulaViewController: UICollectionViewController {
     private var name: String = "Table"
     private var header: [String] = ["Field0", "Field1"]
     private var categories: [[String]] = []
-    private var rows: [[AnyObject]] = [["ndx0", "val0"]]
     
-    private var metaRowCategory = 0
-    private var metaColumnCategory = 1
+//    private var metaRowCategory = 0
+//    private var metaColumnCategory = 1
 
-    private var expanded = false
-    
-    var tensor = Tensor(size: [])
-
-    override func viewDidLoad() {
-        var cs = [RowConfig]()
-        for _ in 0..<layout.metaRows*layout.metaColumns {
-            var c = RowConfig()
-            c.rows = 3 + Int(rand() % 7)
-            cs.append(c)
-        }
-
-        layout.rowConfigs = cs
-    }
+//    private var expanded = false
     
     func reload() {
         collectionView?.reloadData()
     }
     
     private func didSetCollectionId() {
-        (name, header, categories) = Engine.shared.getCollectionData(collectionId)
+        let rowCounts: [Int]
+        (name, header, categories, rowCounts) = Engine.shared.getCollectionData(collectionId)
         
-        print("Header: \(header)")
-
-//        collectionIndex = Array(count: categories.count, repeatedValue: 0)
+        let size = categories |> getSize
+        let config = TableConfig(columns: header.count)
         
-//        layout.rowConfigs = cs
-
-//        layout.config.columns = header.count - 1
-//        layout.config.rows = rows.count
+        layout.update(size, tableConfig: config, rowCounts: rowCounts)
+        collectionView?.reloadData()
+        layout.updateScrollOffset(collectionView!.contentOffset)
+        
+        print("Old layout: \(layout)")
     }
     
     func expandTable() {
-        layout.metaRows = categories[metaRowCategory].count
-        layout.metaColumns = categories[metaColumnCategory].count
-        
-        var cs = [RowConfig]()
-        for _ in 0..<layout.metaRows*layout.metaColumns {
-            var c = RowConfig()
-            c.rows = 3 + Int(rand() % 7)
-            cs.append(c)
+        free(0)
+    }
+    
+    func expandTable2() {
+        free(1)
+    }
+    
+    func expandTable3() {
+        fix(0, at: 0)
+    }
+    
+    func contractTable() {
+        fix(1, at: 0)
+    }
+    
+    func fix(dimension: Int, at value: Int) {
+        if layout.tensor.isFree(dimension) {
+            layout.tensor.fix(dimension, at: value)
+            
+            collectionView?.reloadData()
+            
+            print("---------------------------------------------------------------------------")
+            print("Fixed \(dimension) : columns: \(layout.metaColumns) - rows: \(layout.metaRows)")
+            print("Tensor: \(layout.tensor)")
+            print("Sliced: \(layout.tensor.sliced)")
         }
+    }
+    
+    func free(dimension: Int) {
+        if !layout.tensor.isFree(dimension) {
+            layout.tensor.free(dimension)
+            collectionView?.reloadData()
+            
+            print("---------------------------------------------------------------------------")
+            print("Freed \(dimension) : columns: \(layout.metaColumns) - rows: \(layout.metaRows)")
+            print("Tensor: \(layout.tensor)")
+            print("Sliced: \(layout.tensor.sliced)")
+        }
+        
+        //        let dimensionCountPre = layout.tensor.slicedSize.count
+//        layout.tensor.free(dimension)
+//        let dimensionCountPost = layout.tensor.slicedSize.count
+//        
+//        layout.squeezeRows = true
+//        layout.squeezeColumns = dimensionCountPre == 0
+//        
+//        collectionView?.reloadData()
+//        
+//        let newLayout = layout.duplicate
+//        newLayout.squeezeRows = dimensionCountPost == 1
+//        
+//        print("New layout: \(newLayout)")
+//
+//        collectionView?.performBatchUpdates({
+//            self.layout.invalidateLayout()
+//            self.collectionView?.setCollectionViewLayout(newLayout, animated: true)
+//            }, completion: nil)
     }
     
     // MARK: Collection View Data Source
@@ -80,32 +115,34 @@ class TabulaViewController: UICollectionViewController {
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let tableCount = layout.metaRows*layout.metaColumns
+//        let tableCount = layout.metaRows*layout.metaColumns
+//
+//        if section == tableCount { return layout.metaColumns }
+//        else if section == tableCount + 1 { return layout.metaRows }
         
-        if section == tableCount { return layout.metaColumns }
-        else if section == tableCount + 1 { return layout.metaRows }
+//        print("rows in section \(section) = \(section |> layout.tensor.unslice) : \(layout.rowConfigs[section |> layout.tensor.unslice].totalRows)")
         
-        return layout.columnConfig.totalColumns*layout.rowConfigs[section].totalRows
+        return layout.tableConfig.totalColumns*layout.rowConfigs[section |> layout.tensor.unslice].totalRows
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let tableCount = layout.metaRows*layout.metaColumns
+//        let tableCount = layout.metaRows*layout.metaColumns
         
-        guard indexPath.section < tableCount else {
-            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MetaLabel", forIndexPath: indexPath) as! MetaLabelCell
+//        guard indexPath.section < tableCount else {
+//            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MetaLabel", forIndexPath: indexPath) as! MetaLabelCell
+//
+//            let category = categories[indexPath.section == tableCount ? metaColumnCategory : metaRowCategory]
+//            cell.label.text = category[indexPath.item]
+//            return cell
+//        }
 
-            let category = categories[indexPath.section == tableCount ? metaColumnCategory : metaRowCategory]
-            cell.label.text = category[indexPath.item]
-            return cell
-        }
-
-        let totalColumns = layout.columnConfig.totalColumns
+        let totalColumns = layout.tableConfig.totalColumns
         
-        let rowConfig = layout.rowConfigs[indexPath.section]
+        let rowConfig = layout.rowConfigs[indexPath.section |> layout.tensor.unslice]
         
         let row = indexPath.item / totalColumns
         let column = indexPath.item % totalColumns
-        let cellType = CellType(rowConfig: rowConfig, columnConfig: layout.columnConfig, row: row, column: column)
+        let cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, row: row, column: column)
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         

@@ -39,6 +39,10 @@ func |> <R, S, T, U, V, W>(values: (R, S, T), functions: (R -> U, S -> V, T -> W
     return (functions.0(values.0), functions.1(values.1), functions.2(values.2))
 }
 
+func |> <T, U, V, W, X>(value: T, functions: (T -> U, T -> V, T -> W, T -> X)) -> (U, V, W, X) {
+    return (functions.0(value), functions.1(value), functions.2(value), functions.3(value))
+}
+
 // [Int] operations
 
 func *(lhs: [Int], rhs: [Int]) -> Int {

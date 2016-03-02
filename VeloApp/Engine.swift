@@ -54,11 +54,12 @@ class Engine {
         return realm.schema[rowClass].properties.map { $0.type }
     }
     
-    func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [[String]]) {
+    func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [[String]], rowCounts: [Int]) {
         let collection = (collectionId |> getCollection)!
         
+        let getRowCounts = getTables >>> map(getRowCount)
 //        return (getName(collection), getHeader(getRowType(getRowClass(getTableClass(collection)))), getCategories(collection))
-        return collection |> (getName, getTableClass >>> getRowClass >>> getRowType >>> getHeader, getCategories)
+        return collection |> (getName, getTableClass >>> getRowClass >>> getRowType >>> getHeader, getCategories, getRowCounts)
     }
     
     func getCollection(collectionId: String) -> RLMObject? {
@@ -469,6 +470,10 @@ class Engine {
 
 // MARK: Pure functions
 
+func map<T>(f: RLMObject -> T) -> RLMArray -> [T] {
+    return { $0.map(f) }
+}
+
 func getName(collection: RLMObject) -> String {
     return collection["displayName"] as! String
 }
@@ -500,6 +505,10 @@ func getSize(collection: RLMObject) -> [Int] {
     }
     
     return categories.map(getValueCount)
+}
+
+func getSize<T>(arrayOfArrays: [[T]]) -> [Int] {
+    return arrayOfArrays.map { $0.count }
 }
 
 func getTables(collection: RLMObject) -> RLMArray {

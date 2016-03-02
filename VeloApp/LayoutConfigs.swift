@@ -8,12 +8,32 @@
 
 import UIKit
 
-struct ColumnConfig: CustomStringConvertible {
-    let indexColumns = 1
-    var columns = 4
-    var emptyColumns = 1
-    var compColumns = 0
-    var emptyCompColumns = 0
+struct TableConfig: CustomStringConvertible {
+    let indexColumns: Int
+    let columns: Int
+    let emptyColumns: Int
+    let compColumns: Int
+    let emptyCompColumns: Int
+    
+    private let headerRows: Int
+    private let emptyRows: Int
+    private let compRows: Int
+    
+    init(columns: Int) {
+        self.indexColumns = 1
+        self.columns = columns
+        self.emptyColumns = 1
+        self.compColumns = 0
+        self.emptyCompColumns = 0
+        
+        self.headerRows = 1
+        self.emptyRows = 1
+        self.compRows = 0
+    }
+    
+    func rowConfig(rowCount: Int) -> RowConfig {
+        return RowConfig(headerRows: headerRows, rows: rowCount, emptyRows: emptyRows, compRows: compRows)
+    }
     
     var totalColumns: Int { return indexColumns + columns + emptyColumns + compColumns + emptyCompColumns }
     
@@ -41,10 +61,17 @@ struct ColumnConfig: CustomStringConvertible {
 }
 
 struct RowConfig: CustomStringConvertible {
-    let headerRows = 1
-    var rows = 2
-    var emptyRows = 1
-    var compRows = 0
+    init(headerRows: Int, rows: Int, emptyRows: Int, compRows: Int) {
+        self.headerRows = headerRows
+        self.rows = rows
+        self.emptyRows = emptyRows
+        self.compRows = compRows
+    }
+    
+    let headerRows: Int
+    let rows: Int
+    let emptyRows: Int
+    let compRows: Int
     
     var totalRows: Int { return headerRows + rows + emptyRows + compRows }
     
@@ -68,4 +95,3 @@ struct RowConfig: CustomStringConvertible {
         return "Rows:\(rows), EmptyRows:\(emptyRows), CompRows: \(compRows)"
     }
 }
-
