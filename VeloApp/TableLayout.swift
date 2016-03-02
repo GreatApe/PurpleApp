@@ -43,9 +43,9 @@ class TableLayout: UICollectionViewLayout {
     private let largeMargin: CGFloat = 7
     private let smallMargin: CGFloat = 2
 
-    private var tableNameHeight: CGFloat = 40
+    private var tableNameHeight: CGFloat = 30
     private var metaIndexWidth: CGFloat = 100
-    private var metaHeaderHeight: CGFloat = 40
+    private var metaHeaderHeight: CGFloat = 30
     
     // MARK: Initialisation
 
@@ -207,8 +207,8 @@ class TableLayout: UICollectionViewLayout {
         for metaRow in 0..<metaRows {
             for metaColumn in 0..<metaColumns {
                 let s = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
-//
-//                let n = [metaColumn, metaRow] |> tensor.sliced.normalise
+
+                //                let n = [metaColumn, metaRow] |> tensor.sliced.normalise
 //                let j = n |> tensor.unslice
 //                let jj = j |> tensor.linearise
                 

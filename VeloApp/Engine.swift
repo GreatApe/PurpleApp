@@ -57,8 +57,11 @@ class Engine {
     func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [[String]], rowCounts: [Int]) {
         let collection = (collectionId |> getCollection)!
         
+//        printt()
+//        print(collection |> getTableClass >>> getRowClass >>> getRowType)
+//        print((collection |> getTables).firstObject())
+        
         let getRowCounts = getTables >>> map(getRowCount)
-//        return (getName(collection), getHeader(getRowType(getRowClass(getTableClass(collection)))), getCategories(collection))
         return collection |> (getName, getTableClass >>> getRowClass >>> getRowType >>> getHeader, getCategories, getRowCounts)
     }
     

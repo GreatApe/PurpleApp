@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Realm
 
 class TabulaViewController: UICollectionViewController {
     var collectionId: String! { didSet { didSetCollectionId() } }
@@ -17,26 +18,25 @@ class TabulaViewController: UICollectionViewController {
     private var header: [String] = ["Field0", "Field1"]
     private var categories: [[String]] = []
     
-//    private var metaRowCategory = 0
-//    private var metaColumnCategory = 1
-
-//    private var expanded = false
-    
     override func viewDidLoad() {
     }
-        
+    
+    var collection: RLMObject?
+    
     private func didSetCollectionId() {
         let rowCounts: [Int]
         (name, header, categories, rowCounts) = Engine.shared.getCollectionData(collectionId)
         
+        collection = Engine.shared.getCollection(collectionId)
+        
         let size = categories |> getSize
-        let config = TableConfig(columns: header.count)
+        let config = TableConfig(columns: header.count - 1)
         
         layout.update(size, tableConfig: config, rowCounts: rowCounts)
         collectionView?.reloadData()
         layout.updateScrollOffset(collectionView!.contentOffset)
         
-        print("Old layout: \(layout)")
+        print("Did setup: \(header)")
     }
     
     func expandTable() {
@@ -150,8 +150,8 @@ class TabulaViewController: UICollectionViewController {
         switch cellType {
         case .CollectionName: text = name
         case let .CategoryValue(category: category, value: value): text = categories[category][value]
-        case let .IndexName(column: c): text = "c: \(c)" // text = header[c]
-        case let .FieldName(column: c): text = "c: \(c)" // text = header[c]
+        case let .IndexName(column: c): text = header[c]
+        case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
         case let .Index(row: r): text = "r: \(r)" // text = String(rows[r][0])
         case let .Cell(row: r, column: c): text = "\(r):\(c)" // text = String(rows[r][c])
@@ -164,6 +164,12 @@ class TabulaViewController: UICollectionViewController {
         
         return cell
     }
+    
+//    func cellData(table: Int, row: Int, column: Int) -> String {
+////        if let collection = collection {
+//////            collection |> getTable(table) |> getRows
+////        }
+//    }
     //        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
     
 //    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
