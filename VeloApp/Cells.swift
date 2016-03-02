@@ -10,6 +10,10 @@ protocol LabeledCell {
     var label: UILabel! { get }
 }
 
+class NameCell: UICollectionViewCell, LabeledCell {
+    @IBOutlet weak var label: UILabel!
+}
+
 class MetaLabelCell: UICollectionViewCell, LabeledCell {
     @IBOutlet weak var label: UILabel!
 }
@@ -45,6 +49,8 @@ class CompCell: UICollectionViewCell, LabeledCell {
 }
 
 enum CellType {
+    case CollectionName
+    case CategoryValue(category: Int, value: Int)
     case IndexName(column: Int)
     case FieldName(column: Int)
     case EmptyFieldName
@@ -62,6 +68,8 @@ enum CellType {
     
     var id: String {
         switch self {
+        case CollectionName: return "Name"
+        case CategoryValue: return "MetaLabel"
         case IndexName: return "IndexNameCell"
         case FieldName, EmptyFieldName: return "FieldNameCell"
         case CompFieldName, EmptyCompFieldName: return "CompFieldNameCell"

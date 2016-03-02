@@ -113,9 +113,8 @@ class TableLayout: UICollectionViewLayout {
     
     // Meta labels
 
-    private var leftGuide: CGFloat { return borderMargin + metaIndexWidth }
-    private var topGuide: CGFloat { return borderMargin + tableNameHeight + metaHeaderHeight }
-    private var guide: CGPoint { return CGPoint(x: leftGuide, y: topGuide) }
+    private var startGuide: CGPoint { return CGPoint(x: borderMargin + metaIndexWidth, y: borderMargin + metaHeaderHeight) }
+    private var permanentGuide: CGPoint { return CGPoint(x: 0, y: tableNameHeight) }
     
     // MARK: Callbacks
     
@@ -193,15 +192,17 @@ class TableLayout: UICollectionViewLayout {
     }
     
     override func collectionViewContentSize() -> CGSize {
-        return CGSize(width: guide.x + CGFloat(metaColumns)*tableWidth, height: guide.y + tableOffsets.last! + tableHeights.last!)
+        let width = startGuide.x + permanentGuide.x + CGFloat(metaColumns)*tableWidth
+        let height = startGuide.y + permanentGuide.y + tableOffsets.last! + tableHeights.last!
+        return CGSize(width: width, height: height)
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var result = [UICollectionViewLayoutAttributes]()
 
-        print("self: \(self)")
-        print("tensor: \(tensor)")
-        print("columns: \(columnOffsets.count), rows: \(rowOffsets.count) - \(rowOffsets.map { $0.count })")
+//        print("self: \(self)")
+//        print("tensor: \(tensor)")
+//        print("columns: \(columnOffsets.count), rows: \(rowOffsets.count) - \(rowOffsets.map { $0.count })")
         
         for metaRow in 0..<metaRows {
             for metaColumn in 0..<metaColumns {
@@ -218,18 +219,50 @@ class TableLayout: UICollectionViewLayout {
                     if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
                         result.append(attr)
                     }
+                    else {
+                        print("Invalid cell indexPath: \(indexPath)")
+                    }
                 }
             }
+        }
+        
+        let tableCount = metaRows*metaColumns
+        
+        for (category, categorySize) in tensor.size.enumerate() {
+            for value in 0..<categorySize {
+                let indexPath = NSIndexPath(forItem: value, inSection: tableCount + category)
+                if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
+                    result.append(attr)
+                }
+                else {
+                    print("Invalid category indexPath: \(indexPath)")
+                }
+            }
+        }
+        
+        let indexPath = NSIndexPath(forItem: 0, inSection: tableCount + tensor.dimension)
+        if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
+            result.append(attr)
+        }
+        else {
+            print("Invalid name indexPath: \(indexPath)")
         }
 
         return result
     }
 
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        return layoutAttributes(indexPath)
+        let tableCount = metaRows*metaColumns
+        
+        switch indexPath.section {
+        case 0..<tableCount: return layoutAttributesForCell(indexPath)
+        case tableCount..<tableCount + tensor.dimension: return layoutAttributesForCategory(indexPath)
+        case tableCount + tensor.dimension: return layoutAttributesForName(indexPath)
+        default: fatalError("Impossible section")
+        }
     }
     
-    func layoutAttributes(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
+    func layoutAttributesForCell(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
         let section = indexPath.section
         let metaRow = section/metaColumns
         let metaColumn = section % metaColumns
@@ -246,21 +279,18 @@ class TableLayout: UICollectionViewLayout {
         let offset = CGPoint(x: offsetX, y: offsetY)
         
         let isHeader = row == 0
-        
-        func adjustY(y: CGFloat) -> CGFloat {
-            let stopScrollY = rowOffsets[section].last! - smallMargin - cellHeight
-            return isHeader ? delay(y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : y
-        }
-        
         let isIndex = column == 0
         
-        func adjustX(x: CGFloat) -> CGFloat {
+        func adjust(p: CGPoint) -> CGPoint {
+            let stopScrollY = rowOffsets[section].last! - smallMargin - cellHeight
+            let y = isHeader ? delay(p.y - scrollingOffset.y, untilBelow: -stopScrollY) + scrollingOffset.y : p.y
+
             let stopScrollX = columnOffsets.last! - indexWidth - borderMargin - smallMargin
-            return isIndex ? delay(x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : x
+            let x = isIndex ? delay(p.x - scrollingOffset.x, untilBelow: -stopScrollX) + scrollingOffset.x : p.x
+            return CGPoint(x: x, y: y)
         }
-        
-        let pos = guide + CGPoint(x: adjustX(origin.x + offset.x), y: adjustY(origin.y + offset.y))
-        
+    
+        let pos = adjust(origin + offset + startGuide - permanentGuide) + permanentGuide
         let size = CGSize(width: columnWidths[column], height: rowHeights[section][row])
         
         attr.frame = CGRect(origin: pos, size: size)
@@ -274,11 +304,45 @@ class TableLayout: UICollectionViewLayout {
         return attr
     }
     
-    // Supplementary
-    
-//    override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-//        
-//    }
+    func layoutAttributesForCategory(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
+        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        
+        let dimension = indexPath.section - metaRows*metaColumns
+        let value = indexPath.item
+
+        if let order = tensor.ordering.indexOf(dimension) {
+            if order == 0 {
+                let x = CGFloat(value)*tableWidth + startGuide.x + borderMargin
+                let y = scrollingOffset.y + metaHeaderHeight
+                attr.frame.origin = CGPoint(x: x, y: y)
+            }
+            else {
+                let x: CGFloat = scrollingOffset.x
+                let y = tableOffsets[value] + startGuide.y + borderMargin
+                attr.frame.origin = CGPoint(x: x, y: y)
+            }
+        }
+        else {
+            let x = CGFloat(dimension + 3)*100
+            let y = CGFloat(indexPath.item)*50
+            let pos = CGPoint(x: x, y: y)
+            
+            attr.frame.origin = scrollingOffset + pos
+            
+        }
+        attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)
+        
+        attr.zIndex = 30
+        return attr
+    }
+
+    func layoutAttributesForName(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
+        let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        attr.frame.origin = scrollingOffset
+        attr.frame.size = CGSize(width: 1000, height: tableNameHeight)
+        attr.zIndex = 20
+        return attr
+    }
     
     override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
         scrollingOffset = newBounds.origin

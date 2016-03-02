@@ -76,6 +76,10 @@ struct Tensor: CustomStringConvertible {
     
     // MARK: Public Mutation Methods
     
+    var ordering: [Int] {
+        return slice.ordering
+    }
+    
     mutating func free(dimension: Int) {
         slice = slice.freeing(dimension)
     }

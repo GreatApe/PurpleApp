@@ -22,10 +22,9 @@ class TabulaViewController: UICollectionViewController {
 
 //    private var expanded = false
     
-    func reload() {
-        collectionView?.reloadData()
+    override func viewDidLoad() {
     }
-    
+        
     private func didSetCollectionId() {
         let rowCounts: [Int]
         (name, header, categories, rowCounts) = Engine.shared.getCollectionData(collectionId)
@@ -101,86 +100,71 @@ class TabulaViewController: UICollectionViewController {
     }
     
     // MARK: Collection View Data Source
-
-//    // Supplementary Views
-//    
-//    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-//        fatalError()
-//    }
-    
-    // Cells
     
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return layout.metaRows*layout.metaColumns
+        return layout.metaRows*layout.metaColumns + layout.tensor.dimension + 1
     }
     
     override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        let tableCount = layout.metaRows*layout.metaColumns
-//
-//        if section == tableCount { return layout.metaColumns }
-//        else if section == tableCount + 1 { return layout.metaRows }
+        let tableCount = layout.metaRows*layout.metaColumns
         
-//        print("rows in section \(section) = \(section |> layout.tensor.unslice) : \(layout.rowConfigs[section |> layout.tensor.unslice].totalRows)")
-        
-        return layout.tableConfig.totalColumns*layout.rowConfigs[section |> layout.tensor.unslice].totalRows
+        switch section {
+        case 0..<tableCount: return layout.tableConfig.totalColumns*layout.rowConfigs[section |> layout.tensor.unslice].totalRows
+        case tableCount..<tableCount + layout.tensor.dimension: return layout.tensor.size[section - tableCount]
+        case tableCount + layout.tensor.dimension: return 1
+        default: fatalError()
+        }
     }
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-//        let tableCount = layout.metaRows*layout.metaColumns
+        let tableCount = layout.metaRows*layout.metaColumns
         
-//        guard indexPath.section < tableCount else {
-//            let cell = collectionView.dequeueReusableCellWithReuseIdentifier("MetaLabel", forIndexPath: indexPath) as! MetaLabelCell
-//
-//            let category = categories[indexPath.section == tableCount ? metaColumnCategory : metaRowCategory]
-//            cell.label.text = category[indexPath.item]
-//            return cell
-//        }
-
-        let totalColumns = layout.tableConfig.totalColumns
+        let cellType: CellType
         
-        let rowConfig = layout.rowConfigs[indexPath.section |> layout.tensor.unslice]
-        
-        let row = indexPath.item / totalColumns
-        let column = indexPath.item % totalColumns
-        let cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, row: row, column: column)
+        switch indexPath.section {
+        case 0..<tableCount:
+            let totalColumns = layout.tableConfig.totalColumns
+            let rowConfig = layout.rowConfigs[indexPath.section |> layout.tensor.unslice]
+            
+            let row = indexPath.item / totalColumns
+            let column = indexPath.item % totalColumns
+            cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, row: row, column: column)
+            
+        case tableCount..<tableCount + layout.tensor.dimension:
+            cellType = .CategoryValue(category: indexPath.section - tableCount, value: indexPath.item)
+            
+        case tableCount + layout.tensor.dimension:
+            cellType = .CollectionName
+            
+        default: fatalError()
+        }
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         
-//        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
-        
-//        print("Wants cell: \(row)\(column)")
-        
-        switch (cellType, cell) {
-        case (let .IndexName(column: c), let cell as IndexNameCell):
-//            cell.label.text = header[c]
-            cell.label.text = "c: \(c)"
-        case (let .FieldName(column: c), let cell as FieldNameCell):
-//            cell.label.text = header[c]
-            cell.label.text = "c: \(c)"
-        case (let .CompFieldName(column: c), let cell as CompFieldNameCell):
-            cell.label.text = "c: \(c)"
-            
-        case (let .Index(row: r), let cell as IndexCell):
-//            cell.label.text = String(rows[r][0])
-            cell.label.text = "r: \(r)"
-
-        case (let .Cell(row: r, column: c), let cell as Cell):
-//            cell.label.text = String(rows[r][c])
-            cell.label.text = "\(r):\(c)"
-        case (let .CompColumnCell(row: r, column: c), let cell as CompColumnCell):
-            cell.label.text = "\(r):\(c)"
-
-        case (let .CompCell(row: r, column: c), let cell as CompCell):
-            cell.label.text = "\(r):\(c)"
-            
-        case (_, let cell as LabeledCell):
-            cell.label.text = ""
-        
-        default: break
+        guard let labeledCell = cell as? LabeledCell else {
+            return cell
         }
+        
+        let text: String?
+        
+        switch cellType {
+        case .CollectionName: text = name
+        case let .CategoryValue(category: category, value: value): text = categories[category][value]
+        case let .IndexName(column: c): text = "c: \(c)" // text = header[c]
+        case let .FieldName(column: c): text = "c: \(c)" // text = header[c]
+        case let .CompFieldName(column: c): text = "c: \(c)"
+        case let .Index(row: r): text = "r: \(r)" // text = String(rows[r][0])
+        case let .Cell(row: r, column: c): text = "\(r):\(c)" // text = String(rows[r][c])
+        case let .CompColumnCell(row: r, column: c): text = "\(r):\(c)"
+        case let .CompCell(row: r, column: c): text = "\(r):\(c)"
+        default: text = nil
+        }
+        
+        labeledCell.label.text = text
         
         return cell
     }
+    //        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
     
 //    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 //        let totalColumns = layout.config.totalColumns
