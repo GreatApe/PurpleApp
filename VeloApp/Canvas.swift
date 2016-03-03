@@ -27,23 +27,23 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //        let tensor = Tensor(size: size)
 //        
 //        func pp(s: Slice, t: Tensor) {
-//            print("Coords of \(s.slicing): \(t.coords(s).map(t.linearise))")
-//        }
+        //            print("Coords of \(s.slicing): \(t.coords(s).map(t.linearise))")
+        //        }
     }
     
-    func newTabula(point: CGPoint) -> TabulaViewController {
+    func addNewTabula(point: CGPoint) -> TabulaViewController {
         let tabula = storyboard!.instantiateViewControllerWithIdentifier("Tabula") as! TabulaViewController
-            let container = UIView()
-            
-            canvas.addSubview(container)
-            tabula.willMoveToParentViewController(self)
-            container.addSubview(tabula.view)
-            addChildViewController(tabula)
-            tabula.didMoveToParentViewController(self)
+        let container = UIView()
+        
+        canvas.addSubview(container)
+        tabula.willMoveToParentViewController(self)
+        container.addSubview(tabula.view)
+        addChildViewController(tabula)
+        tabula.didMoveToParentViewController(self)
 
-            container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
-            tabula.view.frame = container.bounds
-            
+        container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
+        tabula.view.frame = container.bounds
+        
 //            container.translatesAutoresizingMaskIntoConstraints = false
 //            tvc.view.translatesAutoresizingMaskIntoConstraints = false
             
@@ -60,9 +60,25 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //            
 //            container.leftAnchor.constraintEqualToAnchor(canvas.leftAnchor, constant: point.x).active = true
 //            container.topAnchor.constraintEqualToAnchor(canvas.topAnchor, constant: point.y).active = true
+        
+        
+        veloTables.append(tabula)
+        
+        if let list = storyboard?.instantiateViewControllerWithIdentifier("CollectionList") as? CollectionListViewController {
+            list.modalPresentationStyle = .FormSheet
+            list.collections = Engine.shared.getList()
             
-            veloTables.append(tabula)
-
+            list.onSelection = { collectionId in
+                self.dismissViewControllerAnimated(true, completion: nil)
+                
+                if let collectionId = collectionId {
+                    tabula.collectionId = collectionId
+                }
+            }
+            
+            presentViewController(list, animated: true, completion: nil)
+        }
+        
         return tabula
     }
     
@@ -70,24 +86,25 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
-            let tabula = newTabula(sender.locationInView(canvas))
+            addNewTabula(sender.locationInView(canvas))
             
-            if let list = storyboard?.instantiateViewControllerWithIdentifier("CollectionList") as? CollectionListViewController {
-                list.modalPresentationStyle = .FormSheet
-                list.collections = Engine.shared.getList()
-                
-                list.onSelection = { collectionId in
-                    self.dismissViewControllerAnimated(true, completion: nil)
-
-                    if let collectionId = collectionId {
-                        tabula.collectionId = collectionId
-                    }
-                }
-                
-                presentViewController(list, animated: true, completion: nil)
-            }
         }
     }
+    
+    func tripleTouched(sender: UITapGestureRecognizer) {
+//        print("Touched: \(sender.locationInView(view))")
+//        
+//        for tabula in veloTables {
+//            print("--Tabula: \(sender.locationInView(tabula.view)) - \(tabula.view.bounds)")
+//            updateTableBounds(tabula)
+//        }
+    }
+    
+//    func updateTableBounds(tabula: TabulaViewController) {
+//        let container = tabula.view.superview!
+//        container.frame.size = tabula.intrinsicSize
+//        tabula.view.frame.size = tabula.intrinsicSize
+//    }
     
     @IBAction func tappedButton() {
         Engine.shared.createRandomCollection()

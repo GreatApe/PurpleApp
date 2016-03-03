@@ -124,7 +124,6 @@ class TableLayout: UICollectionViewLayout {
     
     override func prepareLayout() {
         if !merelyScrolled {
-            print("Prepared layout")
             prepareColumns()
             prepareRows()
             prepareTableSizes()
@@ -196,14 +195,18 @@ class TableLayout: UICollectionViewLayout {
         tableOffsets.removeLast()
     }
     
-    var contentSize: CGSize {
+    var contentSize: CGSize? {
+        guard let lastTableOffset = tableOffsets.last, lastTableHeight = tableHeights.last else {
+            return nil
+        }
+        
         let width = startGuide.x + permanentGuide.x + CGFloat(metaColumns)*tableWidth
-        let height = startGuide.y + permanentGuide.y + tableOffsets.last! + tableHeights.last!
+        let height = startGuide.y + permanentGuide.y + lastTableOffset + lastTableHeight
         return CGSize(width: width, height: height)
     }
     
     override func collectionViewContentSize() -> CGSize {
-        return contentSize
+        return contentSize ?? CGSize()
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
@@ -249,10 +252,6 @@ class TableLayout: UICollectionViewLayout {
         return CGPoint(x: x, y: y)
     }
     
-    func adjust(r: CGFloat, stopScroll: CGFloat, subtractAdd: CGFloat) -> CGFloat {
-        return delay(r - subtractAdd, untilBelow: -stopScroll) + subtractAdd
-    }
-
     func layoutAttributesForCell(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
         let section = indexPath.section
         let metaRow = section/metaColumns
@@ -295,30 +294,35 @@ class TableLayout: UICollectionViewLayout {
 
         let x, y: CGFloat
         let z: Int
+        let a: CGFloat
         if value >= 0, let order = tensor.ordering.indexOf(dimension) {
             if order == 0 {
                 let preX = CGFloat(value)*tableWidth + startGuide.x + borderMargin
                 let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
-                x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + scrollingOffset.x)
+                x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + startGuide.x + borderMargin + scrollingOffset.x)
                 y = scrollingOffset.y + tableNameHeight
                 z = 25
+                a = ease(metaIndexWidth/2, to: metaIndexWidth + borderMargin)(x: x - scrollingOffset.x - permanentGuide.x)
             }
             else {
                 x = scrollingOffset.x
                 let preY = tableOffsets[value] + startGuide.y + borderMargin
                 let stopScrollY = tableHeights[value] - metaHeaderHeight - 2*borderMargin
-                y = adjust(preY, stopScroll: stopScrollY, subtractAdd: permanentGuide.y + scrollingOffset.y)
+                y = adjust(preY, stopScroll: stopScrollY, subtractAdd: scrollingOffset.y + startGuide.y + borderMargin)
                 z = 30
+                a = ease(metaHeaderHeight/2 - borderMargin, to: metaHeaderHeight + borderMargin)(x: y - scrollingOffset.y - permanentGuide.y)
             }
         }
         else {
             x = visibleSize.width - CGFloat(tensor.dimension - dimension)*metaIndexWidth + scrollingOffset.x
             y = (dimension == menuCategory ? CGFloat(value + 1)*metaHeaderHeight : 0) + scrollingOffset.y
             z = 50 + (value == tensor.slicing[dimension] ? 1 : 0) + (tensor.isFree(dimension) && value == -1 ? 1 : 0)
+            a = 1
         }
         attr.frame.origin = CGPoint(x: x, y: y)
         attr.zIndex = z
         attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)
+        attr.alpha = a
         return attr
     }
 
@@ -344,6 +348,10 @@ class TableLayout: UICollectionViewLayout {
     
     // MARK: Pure helper functions
     
+    func adjust(r: CGFloat, stopScroll: CGFloat, subtractAdd: CGFloat) -> CGFloat {
+        return delay(r - subtractAdd, untilBelow: -stopScroll) + subtractAdd
+    }
+
     func delay(value: CGFloat, untilBelow lowerBound: CGFloat) -> CGFloat {
         if value > 0 {
             return value
@@ -376,3 +384,23 @@ class TableLayout: UICollectionViewLayout {
         return result
     }
 }
+
+func ease(from: CGFloat, to: CGFloat)(x: CGFloat) -> CGFloat {
+    return ease(clamp((x - from)/(to - from)))
+}
+
+func ease(x: CGFloat) -> CGFloat {
+    return x < 0.5 ? 4*pow(x, 3) : pow(2*x - 2, 3)/2 + 1
+}
+
+func clamp(x: CGFloat) -> CGFloat {
+    if x < 0 {
+        return 0
+    }
+    else if x > 1 {
+        return 1
+    }
+    
+    return x
+}
+

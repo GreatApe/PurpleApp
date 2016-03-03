@@ -18,9 +18,18 @@ class TabulaViewController: UICollectionViewController {
     private var header: [String] = ["Field0", "Field1"]
     private var categories: [Cat] = []
     
-    override func viewDidLoad() {
+    private var fullScreen = true
+    
+    override func viewDidLayoutSubviews() {
         layout.visibleSize = view.frame.size
     }
+    
+//    func updateContainer() {
+//        guard let container = view.superview, contentSize = layout.contentSize else { return }
+//        
+//        container.frame.size = contentSize
+//        view.frame.size = contentSize
+//    }
     
     var collection: RLMObject?
     
@@ -38,52 +47,6 @@ class TabulaViewController: UICollectionViewController {
 
         collectionView?.reloadData()
         layout.updateScrollOffset(collectionView!.contentOffset)
-        
-        print("Did setup: \(header)")
-    }
-    
-    func fix(dimension: Int, at value: Int) {
-        if layout.tensor.isFree(dimension) {
-            layout.tensor.fix(dimension, at: value)
-            
-            collectionView?.reloadData()
-            
-            print("---------------------------------------------------------------------------")
-            print("Fixed \(dimension) : columns: \(layout.metaColumns) - rows: \(layout.metaRows)")
-            print("Tensor: \(layout.tensor)")
-            print("Sliced: \(layout.tensor.sliced)")
-        }
-    }
-    
-    func free(dimension: Int) {
-        if !layout.tensor.isFree(dimension) {
-            layout.tensor.free(dimension)
-            collectionView?.reloadData()
-            
-            print("---------------------------------------------------------------------------")
-            print("Freed \(dimension) : columns: \(layout.metaColumns) - rows: \(layout.metaRows)")
-            print("Tensor: \(layout.tensor)")
-            print("Sliced: \(layout.tensor.sliced)")
-        }
-        
-        //        let dimensionCountPre = layout.tensor.slicedSize.count
-//        layout.tensor.free(dimension)
-//        let dimensionCountPost = layout.tensor.slicedSize.count
-//        
-//        layout.squeezeRows = true
-//        layout.squeezeColumns = dimensionCountPre == 0
-//        
-//        collectionView?.reloadData()
-//        
-//        let newLayout = layout.duplicate
-//        newLayout.squeezeRows = dimensionCountPost == 1
-//        
-//        print("New layout: \(newLayout)")
-//
-//        collectionView?.performBatchUpdates({
-//            self.layout.invalidateLayout()
-//            self.collectionView?.setCollectionViewLayout(newLayout, animated: true)
-//            }, completion: nil)
     }
     
     // MARK: Collection View Data Source
@@ -137,7 +100,12 @@ class TabulaViewController: UICollectionViewController {
         case .CollectionName: text = name
         case let .CategoryValue(category: c, value: v):
             let cat = categories[c]
-            text = v >= 0 ? cat.values[v] : (layout.tensor.isFree(c) ? "⊖ " : "⊕ ") + cat.name
+            if v == -1 {
+                text = (fullScreen ? (layout.tensor.isFree(c) ? "⊖ " : "⊕ ") : "") + cat.name
+            }
+            else {
+                text = cat.values[v]
+            }
         case let .IndexName(column: c): text = header[c]
         case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
@@ -153,11 +121,11 @@ class TabulaViewController: UICollectionViewController {
         return cell
     }
     
-//    func cellData(table: Int, row: Int, column: Int) -> String {
-////        if let collection = collection {
-//////            collection |> getTable(table) |> getRows
-////        }
-//    }
+    //    func cellData(table: Int, row: Int, column: Int) -> String {
+    ////        if let collection = collection {
+    //////            collection |> getTable(table) |> getRows
+    ////        }
+    //    }
     //        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -165,19 +133,19 @@ class TabulaViewController: UICollectionViewController {
             print("Selected name")
         }
         else if indexPath.section >= layout.metaColumns*layout.metaRows {
-
             let category = indexPath.section - layout.metaColumns*layout.metaRows
-
+            
             if category == layout.menuCategory {
                 if indexPath.item == 0 {
-                    if layout.tensor.ordering.count == 2 {
-                        layout.tensor.fix(layout.tensor.ordering[0], at: 0)
+                    if fullScreen {
+                        if layout.tensor.ordering.count == 2 {
+                            layout.tensor.fix(layout.tensor.ordering[0], at: 0)
+                        }
+                        layout.tensor.free(category)
                     }
-                    layout.tensor.free(category)
                 }
                 else {
-                    let value = indexPath.item - 1
-                    layout.tensor.fix(category, at: value)
+                    layout.tensor.fix(category, at: indexPath.item - 1)
                 }
                 layout.menuCategory = nil
             }
