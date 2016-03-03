@@ -133,7 +133,7 @@ class TabulaViewController: UICollectionViewController {
             cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, row: row, column: column)
             
         case tableCount..<tableCount + layout.tensor.dimension:
-            cellType = .CategoryValue(category: indexPath.section - tableCount, value: indexPath.item)
+            cellType = .CategoryValue(category: indexPath.section - tableCount, value: indexPath.item - 1)
             
         case tableCount + layout.tensor.dimension:
             cellType = .CollectionName
@@ -143,8 +143,6 @@ class TabulaViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         
-//        cell.layer.cornerRadius = 5
-        
         guard let labeledCell = cell as? LabeledCell else {
             return cell
         }
@@ -153,8 +151,7 @@ class TabulaViewController: UICollectionViewController {
         
         switch cellType {
         case .CollectionName: text = name
-        case let .CategoryValue(category: category, value: value):
-            text = value < categories[category].count ? categories[category][value] : "Show all"
+        case let .CategoryValue(category: c, value: v): text = v >= 0 ? categories[c][v] : (layout.tensor.isFree(c) ? "Contract" : "Show all")
         case let .IndexName(column: c): text = header[c]
         case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
@@ -182,28 +179,33 @@ class TabulaViewController: UICollectionViewController {
             print("Selected name")
         }
         else if indexPath.section >= layout.metaColumns*layout.metaRows {
-//            if layout.tensor.slicedSize.count
+
             let category = indexPath.section - layout.metaColumns*layout.metaRows
 
             if category == layout.menuCategory {
-                let value = indexPath.item
-                if value == layout.tensor.size[category] {
+                if indexPath.item == 0 {
                     print("Show all")
                     layout.tensor.free(category)
                 }
                 else {
+                    let value = indexPath.item - 1
                     layout.tensor.fix(category, at: value)
                 }
                 layout.menuCategory = nil
             }
             else {
-                layout.menuCategory = category
+                if indexPath.item == 0 {
+                    print("Contract")
+                    layout.tensor.fix(category, at: 0)
+                }
+                else {
+                    layout.menuCategory = category
+                }
             }
 
             print("Slicing: \(layout.tensor)")
             
             collectionView.reloadData()
-            //            layout.invalidateLayout()
         }
         
         //        let totalColumns = layout.config.totalColumns

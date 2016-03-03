@@ -40,7 +40,7 @@ class TableLayout: UICollectionViewLayout {
     // General
     
     private let borderMargin: CGFloat = 10
-    private let largeMargin: CGFloat = 7
+    private let largeMargin: CGFloat = 2
     private let smallMargin: CGFloat = 2
 
     private var tableNameHeight: CGFloat = 30
@@ -291,11 +291,11 @@ class TableLayout: UICollectionViewLayout {
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         
         let dimension = indexPath.section - metaRows*metaColumns
-        let value = indexPath.item
+        let value = indexPath.item - 1
 
         let x, y: CGFloat
         let z: Int
-        if value < tensor.size[dimension], let order = tensor.ordering.indexOf(dimension) {
+        if value >= 0, let order = tensor.ordering.indexOf(dimension) {
             if order == 0 {
                 let preX = CGFloat(value)*tableWidth + startGuide.x + borderMargin
                 let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
@@ -313,8 +313,8 @@ class TableLayout: UICollectionViewLayout {
         }
         else {
             x = visibleSize.width - CGFloat(tensor.dimension - dimension)*metaIndexWidth + scrollingOffset.x
-            y = (dimension == menuCategory ? CGFloat(value)*metaHeaderHeight : 0) + scrollingOffset.y
-            z = 50 + (value == tensor.slicing[dimension] ? 1 : 0) + (tensor.isFree(dimension) && value == tensor.size[dimension] ? 1 : 0)
+            y = (dimension == menuCategory ? CGFloat(value + 1)*metaHeaderHeight : 0) + scrollingOffset.y
+            z = 50 + (value == tensor.slicing[dimension] ? 1 : 0) + (tensor.isFree(dimension) && value == -1 ? 1 : 0)
         }
         attr.frame.origin = CGPoint(x: x, y: y)
         attr.zIndex = z
