@@ -474,11 +474,6 @@
                                     <constraint firstAttribute="trailing" secondItem="9ri-2m-vs1" secondAttribute="trailing" constant="8" id="sZ5-fA-7C2"/>
                                 </constraints>
                                 <size key="customSize" width="147" height="35"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="9ri-2m-vs1" id="Tkr-rw-FBh"/>
                                 </connections>

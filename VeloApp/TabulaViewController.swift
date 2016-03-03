@@ -16,7 +16,7 @@ class TabulaViewController: UICollectionViewController {
     
     private var name: String = "Table"
     private var header: [String] = ["Field0", "Field1"]
-    private var categories: [[String]] = []
+    private var categories: [Cat] = []
     
     override func viewDidLoad() {
         layout.visibleSize = view.frame.size
@@ -29,10 +29,10 @@ class TabulaViewController: UICollectionViewController {
         (name, header, categories, rowCounts) = Engine.shared.getCollectionData(collectionId)
         
         collection = Engine.shared.getCollection(collectionId)
-        
-        let size = categories |> getSize
+    
+        let size = categories.map { $0.values.count }
         let config = TableConfig(columns: header.count - 1)
-        
+    
         layout.update(size, tableConfig: config, rowCounts: rowCounts)
         layout.visibleSize = view.frame.size
 
@@ -40,22 +40,6 @@ class TabulaViewController: UICollectionViewController {
         layout.updateScrollOffset(collectionView!.contentOffset)
         
         print("Did setup: \(header)")
-    }
-    
-    func expandTable() {
-        free(0)
-    }
-    
-    func expandTable2() {
-        free(1)
-    }
-    
-    func expandTable3() {
-        fix(0, at: 0)
-    }
-    
-    func contractTable() {
-        fix(1, at: 0)
     }
     
     func fix(dimension: Int, at value: Int) {
@@ -151,7 +135,9 @@ class TabulaViewController: UICollectionViewController {
         
         switch cellType {
         case .CollectionName: text = name
-        case let .CategoryValue(category: c, value: v): text = v >= 0 ? categories[c][v] : (layout.tensor.isFree(c) ? "Contract" : "Show all")
+        case let .CategoryValue(category: c, value: v):
+            let cat = categories[c]
+            text = v >= 0 ? cat.values[v] : (layout.tensor.isFree(c) ? "⊖ " : "⊕ ") + cat.name
         case let .IndexName(column: c): text = header[c]
         case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"

@@ -72,8 +72,6 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         if sender.state == .Began {
             let tabula = newTabula(sender.locationInView(canvas))
             
-//            tabula.collectionId = Engine.shared.createRandomCollection()
-            
             if let list = storyboard?.instantiateViewControllerWithIdentifier("CollectionList") as? CollectionListViewController {
                 list.modalPresentationStyle = .FormSheet
                 list.collections = Engine.shared.getList()
@@ -92,35 +90,24 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction func tappedButton() {
+        Engine.shared.createRandomCollection()
+
         veloTables.forEach { tabula in
-//            tabula.collectionIndex = [0, 0, 0]
-            tabula.expandTable()
-//            tabula.addRow(1)
         }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-//            tabula.reload()
-            tabula.expandTable2()
-
-//            tabula.deleteRow(1)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
-//            tabula.collectionIndex = [1, 2, 3]
-            tabula.expandTable3()
-
-//            tabula.addColumn(1)
         }
     }
 
     @IBAction func tappedFourthButton() {
         veloTables.forEach { tabula in
-//            tabula.deleteColumn(1)
-            tabula.contractTable()
         }
     }
 

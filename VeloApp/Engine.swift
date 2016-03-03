@@ -26,6 +26,8 @@ class Engine {
     
     private var realm: RLMRealm
     
+    private var cache = [String : RLMObject]()
+    
     private init() {
         let schema: RLMSchema? = realmExists("store") ? nil : RLMRealm.defaultRealm().schema
         realm = try! RLMRealm.dynamicRealm("store", schema: schema)
@@ -54,20 +56,25 @@ class Engine {
         return realm.schema[rowClass].properties.map { $0.type }
     }
     
-    func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [[String]], rowCounts: [Int]) {
+    func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [Cat], rowCounts: [Int]) {
         let collection = (collectionId |> getCollection)!
-        
-//        printt()
-//        print(collection |> getTableClass >>> getRowClass >>> getRowType)
-//        print((collection |> getTables).firstObject())
         
         let getRowCounts = getTables >>> map(getRowCount)
         return collection |> (getName, getTableClass >>> getRowClass >>> getRowType >>> getHeader, getCategories, getRowCounts)
     }
     
     func getCollection(collectionId: String) -> RLMObject? {
-        guard let info = getCollectionInfo(collectionId) else { return nil }
-        return realm.objectWithClassName(info.collectionClass, forPrimaryKey: info.collectionId)
+        if let cached = cache[collectionId] {
+            return cached
+        }
+        
+        guard let info = getCollectionInfo(collectionId) else {
+            return nil
+        }
+        
+        let collection = realm.objectWithClassName(info.collectionClass, forPrimaryKey: info.collectionId)
+        cache[collectionId] = collection
+        return collection
     }
     
     private func getCollectionInfo(collectionId: String) -> CollectionInfo? {
@@ -133,8 +140,10 @@ class Engine {
         print(tableSchema)
         print(collectionSchema)
         
-        migrate()
+        cache.removeAll()
         
+        migrate()
+
         return tableClass
     }
     
@@ -414,13 +423,15 @@ class Engine {
         let rowClass = tableClass |> getRowClass
         
         addProperty(.String, rowClass: rowClass, displayName: "Name")
+        addProperty(.String, rowClass: rowClass, displayName: "School")
         addProperty(.Double, rowClass: rowClass, displayName: "Number")
+        addProperty(.Double, rowClass: rowClass, displayName: "Age")
 
         let collectionClass = tableClass |> getCollectionClass
         
         realm.beginWriteTransaction()
         
-        let t = Tensor(size: [2, 3, 4])
+        let t = Tensor(size: [Int(1 + rand() % 5), Int(1 + rand() % 5), Int(1 + rand() % 5)])
         
         var cats = [RLMObject]()
         t.size.enumerate().forEach { i, s in
@@ -478,6 +489,10 @@ func map<T>(f: RLMObject -> T) -> RLMArray -> [T] {
     return { $0.map(f) }
 }
 
+func map<S, T>(f: S -> T) -> [S] -> [T] {
+    return { $0.map(f) }
+}
+
 func getName(collection: RLMObject) -> String {
     return collection["displayName"] as! String
 }
@@ -486,22 +501,30 @@ func getHeader(rowType: RLMObject) -> [String] {
     return (rowType["properties"] as! RLMArray).map { $0["displayName"] as! String }
 }
 
-func getCategories(collection: RLMObject) -> [[String]] {
-    let categories = collection["categories"] as! RLMArray
-    
-    func getValues(category: RLMObject) -> [String] {
-        func getValue(string: RLMObject) -> String {
-            return string["value"] as! String
-        }
-        
-        let values = category["values"] as! RLMArray
-        return values.map(getValue)
+//func getCategories(collection: RLMObject) -> [[String]] {
+//    let categories = collection["categories"] as! RLMArray
+//    
+//    func getValues(category: RLMObject) -> [String] {
+//        func getValue(string: RLMObject) -> String {
+//            return string["value"] as! String
+//        }
+//        
+//        let values = category["values"] as! RLMArray
+//        return values.map(getValue)
+//    }
+//    
+//    return categories.map(getValues)
+//}
+
+func getString(key: String) -> RLMObject -> String {
+    return { obj in
+        return obj[key] as! String
     }
-    
-    return categories.map(getValues)
 }
 
-func getCategories(collection: RLMObject) -> [(name: String, values: [String])] {
+typealias Cat = (id: String, name: String, values: [String])
+
+func getCategories(collection: RLMObject) -> [Cat] {
     let categories = collection["categories"] as! RLMArray
     
     func getValues(category: RLMObject) -> [String] {
@@ -513,7 +536,7 @@ func getCategories(collection: RLMObject) -> [(name: String, values: [String])] 
         return values.map(getValue)
     }
     
-    return categories.map(getValues)
+    return categories.map { cat in cat |> (getString("id"), getString("displayName"), getValues) }
 }
 
 func getSize(collection: RLMObject) -> [Int] {
@@ -526,9 +549,9 @@ func getSize(collection: RLMObject) -> [Int] {
     return categories.map(getValueCount)
 }
 
-func getSize<T>(arrayOfArrays: [[T]]) -> [Int] {
-    return arrayOfArrays.map { $0.count }
-}
+//func getSize<T>(arrayOfArrays: [[T]]) -> [Int] {
+//    return arrayOfArrays.map { $0.count }
+//}
 
 func getTables(collection: RLMObject) -> RLMArray {
     return collection["tables"] as! RLMArray
@@ -536,9 +559,7 @@ func getTables(collection: RLMObject) -> RLMArray {
 
 func getTable(index: [Int]) -> RLMObject -> RLMObject {
     return { collection  in
-        let tensor = collection |> getSize |> Tensor.init
-        let tables = collection |> getTables
-        
+        let (tensor, tables) = collection |> (getSize >>> Tensor.init, getTables)
         return tables[index |> tensor.linearise]
     }
 }
