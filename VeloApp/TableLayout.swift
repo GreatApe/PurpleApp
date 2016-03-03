@@ -18,9 +18,6 @@ class TableLayout: UICollectionViewLayout {
     var tableConfig: TableConfig
     var rowConfigs: [RowConfig] // Indexed by the unsliced index, unlike other arrays
     
-    var visibleSize = CGSize()
-    var menuCategory: Int?
-    
     // Row heights
     
     var fieldHeight: CGFloat = 30
@@ -43,7 +40,6 @@ class TableLayout: UICollectionViewLayout {
     private let largeMargin: CGFloat = 2
     private let smallMargin: CGFloat = 2
 
-    private var tableNameHeight: CGFloat = 30
     private var metaIndexWidth: CGFloat = 100
     private var metaHeaderHeight: CGFloat = 30
     
@@ -57,17 +53,16 @@ class TableLayout: UICollectionViewLayout {
         super.init(coder: aDecoder)
     }
     
-    init(tensor: Tensor, tableConfig: TableConfig, rowConfigs: [RowConfig], size: CGSize) {
+    init(tensor: Tensor, tableConfig: TableConfig, rowConfigs: [RowConfig]) {
         self.tensor = tensor
         self.tableConfig = tableConfig
         self.rowConfigs = rowConfigs
-        self.visibleSize = size
         super.init()
     }
 
     // MARK: Convenience methods
     
-    var duplicate: TableLayout { return TableLayout(tensor: tensor, tableConfig: tableConfig, rowConfigs: rowConfigs, size: visibleSize) }
+    var duplicate: TableLayout { return TableLayout(tensor: tensor, tableConfig: tableConfig, rowConfigs: rowConfigs) }
 
     // MARK: Updating input parameters
 
@@ -114,11 +109,10 @@ class TableLayout: UICollectionViewLayout {
     
     // Meta labels
 
-    private var startGuide: CGPoint {
-        return CGPoint(x: metaRows > 1 ? metaIndexWidth : 0, y: (metaColumns > 1 ? metaHeaderHeight : 0) + tableNameHeight)
-    }
+    private var showMetaHeader: Bool { return tensor.slicedSize.count > 0 }
+    private var showMetaIndex: Bool { return tensor.slicedSize.count > 1 }
     
-    private var permanentGuide: CGPoint { return CGPoint(x: 0, y: tableNameHeight) }
+    private var guide: CGPoint { return CGPoint(x: showMetaIndex ? metaIndexWidth : 0, y: showMetaHeader ? metaHeaderHeight : 0) }
     
     // MARK: Callbacks
     
@@ -200,8 +194,8 @@ class TableLayout: UICollectionViewLayout {
             return nil
         }
         
-        let width = startGuide.x + permanentGuide.x + CGFloat(metaColumns)*tableWidth
-        let height = startGuide.y + permanentGuide.y + lastTableOffset + lastTableHeight
+        let width = guide.x + CGFloat(metaColumns)*tableWidth
+        let height = guide.y + lastTableOffset + lastTableHeight
         return CGSize(width: width, height: height)
     }
     
@@ -224,12 +218,13 @@ class TableLayout: UICollectionViewLayout {
         let tableCount = metaRows*metaColumns
         
         for (category, categorySize) in tensor.size.enumerate() {
-            for value in 0...categorySize {
+            for value in 0..<categorySize {
                 paths.append(NSIndexPath(forItem: value, inSection: tableCount + category))
             }
         }
         
         paths.append(NSIndexPath(forItem: 0, inSection: tableCount + tensor.dimension))
+        paths.append(NSIndexPath(forItem: 1, inSection: tableCount + tensor.dimension))
 
         return paths.flatMap(layoutAttributesForItemAtIndexPath)
     }
@@ -240,13 +235,13 @@ class TableLayout: UICollectionViewLayout {
         switch indexPath.section {
         case 0..<tableCount: return layoutAttributesForCell(indexPath)
         case tableCount..<tableCount + tensor.dimension: return layoutAttributesForCategory(indexPath)
-        case tableCount + tensor.dimension: return layoutAttributesForName(indexPath)
+        case tableCount + tensor.dimension..<tableCount + tensor.dimension + 2: return layoutAttributesForMasks(indexPath)
         default: fatalError("Impossible section")
         }
     }
     
     func adjust(p: CGPoint, stopScroll: CGPoint, dimension: (x: Bool, y: Bool)) -> CGPoint {
-        let subtractAdd = permanentGuide + scrollingOffset
+        let subtractAdd = guide + scrollingOffset
         let x = dimension.x ? adjust(p.x, stopScroll: stopScroll.x, subtractAdd: subtractAdd.x) : p.x
         let y = dimension.y ? adjust(p.y, stopScroll: stopScroll.y, subtractAdd: subtractAdd.y) : p.y
         return CGPoint(x: x, y: y)
@@ -271,7 +266,7 @@ class TableLayout: UICollectionViewLayout {
         let stopX = columnOffsets.last! - indexWidth - borderMargin - smallMargin
         let stopY = rowOffsets[section].last! - smallMargin - cellHeight
         
-        let pos = adjust(cellOffset + tableOffset + startGuide, stopScroll: CGPoint(x: stopX, y: stopY), dimension: (isIndex, isHeader))
+        let pos = adjust(cellOffset + tableOffset + guide, stopScroll: CGPoint(x: stopX, y: stopY), dimension: (isIndex, isHeader))
         
         let size = CGSize(width: columnWidths[column], height: rowHeights[section][row])
         
@@ -290,46 +285,60 @@ class TableLayout: UICollectionViewLayout {
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         
         let dimension = indexPath.section - metaRows*metaColumns
-        let value = indexPath.item - 1
+        let value = indexPath.item
+        
+        if let order = tensor.ordering.indexOf(dimension) {
+            let x, y: CGFloat
+            let z: Int
+            let a: CGFloat
 
-        let x, y: CGFloat
-        let z: Int
-        let a: CGFloat
-        if value >= 0, let order = tensor.ordering.indexOf(dimension) {
+            let subtractAdd = guide + scrollingOffset
+            
             if order == 0 {
-                let preX = CGFloat(value)*tableWidth + startGuide.x + borderMargin
+                let preX = CGFloat(value)*tableWidth + guide.x + borderMargin
                 let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
-                x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + startGuide.x + borderMargin + scrollingOffset.x)
-                y = scrollingOffset.y + tableNameHeight
-                z = 25
-                a = ease(metaIndexWidth/2, to: metaIndexWidth + borderMargin)(x: x - scrollingOffset.x - permanentGuide.x)
+                x = adjust(preX, stopScroll: stopScrollX, subtractAdd: subtractAdd.x)
+                y = scrollingOffset.y
+                z = 50
+                a = ease(guide.x - metaIndexWidth/2, to: guide.x)(x: x - scrollingOffset.x)
             }
             else {
                 x = scrollingOffset.x
-                let preY = tableOffsets[value] + startGuide.y + borderMargin
+                let preY = tableOffsets[value] + guide.y + borderMargin
                 let stopScrollY = tableHeights[value] - metaHeaderHeight - 2*borderMargin
-                y = adjust(preY, stopScroll: stopScrollY, subtractAdd: scrollingOffset.y + startGuide.y + borderMargin)
-                z = 30
-                a = ease(metaHeaderHeight/2 - borderMargin, to: metaHeaderHeight + borderMargin)(x: y - scrollingOffset.y - permanentGuide.y)
+                y = adjust(preY, stopScroll: stopScrollY, subtractAdd: subtractAdd.y)
+                z = 55
+                a = ease(guide.y - metaHeaderHeight/2, to: guide.y)(x: y - scrollingOffset.y)
             }
+            
+            attr.frame.origin = CGPoint(x: x, y: y)
+            attr.zIndex = z
+            attr.alpha = tensor.ordering.count == 2 ? a : 1
         }
         else {
-            x = visibleSize.width - CGFloat(tensor.dimension - dimension)*metaIndexWidth + scrollingOffset.x
-            y = (dimension == menuCategory ? CGFloat(value + 1)*metaHeaderHeight : 0) + scrollingOffset.y
-            z = 50 + (value == tensor.slicing[dimension] ? 1 : 0) + (tensor.isFree(dimension) && value == -1 ? 1 : 0)
-            a = 1
+            attr.zIndex = 0
+            attr.frame.origin = CGPoint(x: -100, y: -100)
         }
-        attr.frame.origin = CGPoint(x: x, y: y)
-        attr.zIndex = z
+        
         attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)
-        attr.alpha = a
+        
         return attr
     }
 
-    func layoutAttributesForName(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
+    func layoutAttributesForMasks(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        
+        guard let size = collectionView?.frame.size else { return attr }
+        
         attr.frame.origin = scrollingOffset
-        attr.frame.size = CGSize(width: visibleSize.width, height: tableNameHeight)
+        
+        if indexPath.item == 0 {
+            attr.frame.size = CGSize(width: guide.x, height: size.height)
+        }
+        else if indexPath.item == 1 {
+            attr.frame.size = CGSize(width: size.width, height: guide.y)
+        }
+        
         attr.zIndex = 40
         return attr
     }

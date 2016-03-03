@@ -42,12 +42,12 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         tabula.didMoveToParentViewController(self)
 
         container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
-        tabula.view.frame = container.bounds
+        tabula.view.frame = CGRect(origin: CGPoint(x: 0, y: 30), size: CGSize(width: 800, height: 500 - 30))
         
 //            container.translatesAutoresizingMaskIntoConstraints = false
 //            tvc.view.translatesAutoresizingMaskIntoConstraints = false
             
-            container.backgroundColor = UIColor.redColor()
+            container.backgroundColor = UIColor.grayColor()
 //            tvc.view.leftAnchor.constraintEqualToAnchor(container.leftAnchor, constant: 10).active = true
 //            tvc.view.rightAnchor.constraintEqualToAnchor(container.rightAnchor, constant: -10).active = true
 //            tvc.view.topAnchor.constraintEqualToAnchor(container.topAnchor, constant: 10).active = true
@@ -87,7 +87,6 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
             addNewTabula(sender.locationInView(canvas))
-            
         }
     }
     
@@ -108,23 +107,23 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedButton() {
         Engine.shared.createRandomCollection()
-
-        veloTables.forEach { tabula in
-        }
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
+            tabula.toggle(0)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
+            tabula.toggle(1)
         }
     }
 
     @IBAction func tappedFourthButton() {
         veloTables.forEach { tabula in
+            tabula.toggle(2)
         }
     }
 

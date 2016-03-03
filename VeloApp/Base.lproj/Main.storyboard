@@ -466,7 +466,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <color key="backgroundColor" red="0.74022394418716431" green="0.73836040496826172" blue="0.84904146194458008" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.84244978429999995" green="0.73808324339999998" blue="0.75108122830000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="9ri-2m-vs1" secondAttribute="bottom" constant="1" id="UNL-mh-H9n"/>
                                     <constraint firstItem="9ri-2m-vs1" firstAttribute="top" secondItem="iNY-kJ-Qyl" secondAttribute="top" constant="1" id="eeL-ll-3pp"/>
@@ -488,31 +488,16 @@
                                 </view>
                                 <size key="customSize" width="44" height="50"/>
                             </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Name" id="Afn-by-Lpa" customClass="NameCell" customModule="VeloApp" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Mask" id="Afn-by-Lpa">
                                 <rect key="frame" x="54" y="148" width="147" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="NAME" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ByG-8y-gQt">
-                                            <rect key="frame" x="8" y="1" width="131" height="33"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="ByG-8y-gQt" firstAttribute="top" secondItem="Afn-by-Lpa" secondAttribute="top" constant="1" id="8Tz-it-FRK"/>
-                                    <constraint firstItem="ByG-8y-gQt" firstAttribute="leading" secondItem="Afn-by-Lpa" secondAttribute="leading" constant="8" id="UWQ-fE-Zlg"/>
-                                    <constraint firstAttribute="bottom" secondItem="ByG-8y-gQt" secondAttribute="bottom" constant="1" id="mNa-w6-pFE"/>
-                                </constraints>
+                                <color key="backgroundColor" red="0.99633866550000005" green="0.96513330939999997" blue="0.96981418129999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <size key="customSize" width="147" height="35"/>
-                                <connections>
-                                    <outlet property="label" destination="ByG-8y-gQt" id="6bX-DJ-PYk"/>
-                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>
