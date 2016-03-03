@@ -184,7 +184,9 @@ class TabulaViewController: UICollectionViewController {
 
             if category == layout.menuCategory {
                 if indexPath.item == 0 {
-                    print("Show all")
+                    if layout.tensor.ordering.count == 2 {
+                        layout.tensor.fix(layout.tensor.ordering[0], at: 0)
+                    }
                     layout.tensor.free(category)
                 }
                 else {
@@ -195,7 +197,6 @@ class TabulaViewController: UICollectionViewController {
             }
             else {
                 if indexPath.item == 0 {
-                    print("Contract")
                     layout.tensor.fix(category, at: 0)
                 }
                 else {

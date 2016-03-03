@@ -424,11 +424,12 @@ class Engine {
         
         var cats = [RLMObject]()
         t.size.enumerate().forEach { i, s in
-            let id = "cat-" + String(i)
+            let id = sync.getSyncId()
+            let name = "cat-" + String(i)
             let values = (0..<s).map { v in
-                realm.createObject(RealmString.className(), withValue: ["value" : id + "_" + String(v)])
+                realm.createObject(RealmString.className(), withValue: ["value" : name + "_" + String(v)])
             }
-            cats.append(realm.createObject(Category.className(), withValue: ["values" : values, "id" : id]))
+            cats.append(realm.createObject(Category.className(), withValue: ["values" : values, "id" : id, "displayName" : name]))
         }
         
         let tables = RLMArray(objectClassName: tableClass)
@@ -486,6 +487,21 @@ func getHeader(rowType: RLMObject) -> [String] {
 }
 
 func getCategories(collection: RLMObject) -> [[String]] {
+    let categories = collection["categories"] as! RLMArray
+    
+    func getValues(category: RLMObject) -> [String] {
+        func getValue(string: RLMObject) -> String {
+            return string["value"] as! String
+        }
+        
+        let values = category["values"] as! RLMArray
+        return values.map(getValue)
+    }
+    
+    return categories.map(getValues)
+}
+
+func getCategories(collection: RLMObject) -> [(name: String, values: [String])] {
     let categories = collection["categories"] as! RLMArray
     
     func getValues(category: RLMObject) -> [String] {

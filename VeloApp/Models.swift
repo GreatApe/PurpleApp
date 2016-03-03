@@ -115,7 +115,7 @@ class CollectionInfo: RLMObject {
 
 class Category: RLMObject {
     dynamic var id = ""
-    
+    dynamic var displayName = ""
     dynamic var values = RLMArray(objectClassName: "RealmString")
     
     override class func primaryKey() -> String {
