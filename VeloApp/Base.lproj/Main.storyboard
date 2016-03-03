@@ -225,6 +225,11 @@
                                     <constraint firstItem="Wdr-3V-e4e" firstAttribute="centerY" secondItem="Nw5-r7-oGJ" secondAttribute="centerY" id="zqg-0E-Znk"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="Wdr-3V-e4e" id="rot-We-sKw"/>
                                 </connections>
@@ -253,6 +258,11 @@
                                     <constraint firstItem="uv6-Hh-Gwo" firstAttribute="centerY" secondItem="Qqx-le-N1g" secondAttribute="centerY" id="sXE-zq-ppl"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="uv6-Hh-Gwo" id="EEC-o3-dwC"/>
                                 </connections>
@@ -281,6 +291,11 @@
                                     <constraint firstItem="goI-wz-VFf" firstAttribute="top" secondItem="7sy-Yg-Tlx" secondAttribute="topMargin" id="iTw-95-1m5"/>
                                 </constraints>
                                 <size key="customSize" width="136" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="goI-wz-VFf" id="dkO-QE-obh"/>
                                 </connections>
@@ -309,6 +324,11 @@
                                     <constraint firstItem="4uk-A3-YgB" firstAttribute="centerX" secondItem="LuH-O5-4JJ" secondAttribute="centerX" id="cas-Ly-NMw"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="4uk-A3-YgB" id="hre-t1-Gmp"/>
                                 </connections>
@@ -337,6 +357,11 @@
                                     <constraint firstItem="vHO-WF-fu0" firstAttribute="centerX" secondItem="pEg-Z6-35m" secondAttribute="centerX" id="sma-3r-G0j"/>
                                 </constraints>
                                 <size key="customSize" width="111" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="vHO-WF-fu0" id="XxV-oG-aL8"/>
                                 </connections>
@@ -365,6 +390,11 @@
                                     <constraint firstItem="rgE-Qb-AyA" firstAttribute="leading" secondItem="67E-Ub-EJ0" secondAttribute="leadingMargin" id="xeT-ib-rpd"/>
                                 </constraints>
                                 <size key="customSize" width="139" height="50"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="rgE-Qb-AyA" id="paQ-xS-xFm"/>
                                 </connections>
@@ -410,6 +440,11 @@
                                     <constraint firstItem="J38-t6-iSz" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="yQw-5E-AKe"/>
                                 </constraints>
                                 <size key="customSize" width="139" height="70"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="iconLabel" destination="wxT-WG-GvH" id="89Y-tB-7Pe"/>
                                     <outlet property="label" destination="xdb-hz-axw" id="K4E-ws-3wg"/>
@@ -439,6 +474,11 @@
                                     <constraint firstAttribute="trailing" secondItem="9ri-2m-vs1" secondAttribute="trailing" constant="8" id="sZ5-fA-7C2"/>
                                 </constraints>
                                 <size key="customSize" width="147" height="35"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="label" destination="9ri-2m-vs1" id="Tkr-rw-FBh"/>
                                 </connections>

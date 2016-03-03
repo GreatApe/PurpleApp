@@ -19,6 +19,7 @@ class TabulaViewController: UICollectionViewController {
     private var categories: [[String]] = []
     
     override func viewDidLoad() {
+        layout.visibleSize = view.frame.size
     }
     
     var collection: RLMObject?
@@ -33,6 +34,8 @@ class TabulaViewController: UICollectionViewController {
         let config = TableConfig(columns: header.count - 1)
         
         layout.update(size, tableConfig: config, rowCounts: rowCounts)
+        layout.visibleSize = view.frame.size
+
         collectionView?.reloadData()
         layout.updateScrollOffset(collectionView!.contentOffset)
         
@@ -110,7 +113,7 @@ class TabulaViewController: UICollectionViewController {
         
         switch section {
         case 0..<tableCount: return layout.tableConfig.totalColumns*layout.rowConfigs[section |> layout.tensor.unslice].totalRows
-        case tableCount..<tableCount + layout.tensor.dimension: return layout.tensor.size[section - tableCount]
+        case tableCount..<tableCount + layout.tensor.dimension: return layout.tensor.size[section - tableCount] + 1
         case tableCount + layout.tensor.dimension: return 1
         default: fatalError()
         }
@@ -118,7 +121,6 @@ class TabulaViewController: UICollectionViewController {
     
     override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let tableCount = layout.metaRows*layout.metaColumns
-        
         let cellType: CellType
         
         switch indexPath.section {
@@ -141,6 +143,8 @@ class TabulaViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(cellType.id, forIndexPath: indexPath)
         
+//        cell.layer.cornerRadius = 5
+        
         guard let labeledCell = cell as? LabeledCell else {
             return cell
         }
@@ -149,7 +153,8 @@ class TabulaViewController: UICollectionViewController {
         
         switch cellType {
         case .CollectionName: text = name
-        case let .CategoryValue(category: category, value: value): text = categories[category][value]
+        case let .CategoryValue(category: category, value: value):
+            text = value < categories[category].count ? categories[category][value] : "Show all"
         case let .IndexName(column: c): text = header[c]
         case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
@@ -172,8 +177,36 @@ class TabulaViewController: UICollectionViewController {
 //    }
     //        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
     
-//    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-//        let totalColumns = layout.config.totalColumns
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == layout.metaColumns*layout.metaRows + layout.tensor.dimension {
+            print("Selected name")
+        }
+        else if indexPath.section >= layout.metaColumns*layout.metaRows {
+//            if layout.tensor.slicedSize.count
+            let category = indexPath.section - layout.metaColumns*layout.metaRows
+
+            if category == layout.menuCategory {
+                let value = indexPath.item
+                if value == layout.tensor.size[category] {
+                    print("Show all")
+                    layout.tensor.free(category)
+                }
+                else {
+                    layout.tensor.fix(category, at: value)
+                }
+                layout.menuCategory = nil
+            }
+            else {
+                layout.menuCategory = category
+            }
+
+            print("Slicing: \(layout.tensor)")
+            
+            collectionView.reloadData()
+            //            layout.invalidateLayout()
+        }
+        
+        //        let totalColumns = layout.config.totalColumns
 //        let row = indexPath.item / totalColumns
 //        let column = indexPath.item % totalColumns
 //        
@@ -183,17 +216,11 @@ class TabulaViewController: UICollectionViewController {
 //            newLayout.config.columns += 1
 //            collectionView.setCollectionViewLayout(newLayout, animated: true)
 //        }
-//    }
+    }
     
     // MARK: From containing View Controller
     
     // MARK: Setters
-    
-    private func changedSelected() {
-        //        let newLayout = layout.duplicate
-        //        newLayout.selected = selected
-        //        collectionView!.setCollectionViewLayout(newLayout, animated: true)
-    }
     
 //    private func pathsForRow(row: Int) -> [NSIndexPath] {
 //        let totalColumns = layout.config.totalColumns

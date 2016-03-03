@@ -30,7 +30,9 @@ struct Slice {
         newSlicing[dimension] = value
         
         var newOrdering = ordering
-        newOrdering.removeAtIndex(newOrdering.indexOf(dimension)!)
+        if let oldFreeOrder = ordering.indexOf(dimension) {
+            newOrdering.removeAtIndex(oldFreeOrder)
+        }
         return Slice(slicing: newSlicing, ordering: newOrdering)
     }
     
@@ -76,10 +78,6 @@ struct Tensor: CustomStringConvertible {
     
     // MARK: Public Mutation Methods
     
-    var ordering: [Int] {
-        return slice.ordering
-    }
-    
     mutating func free(dimension: Int) {
         slice = slice.freeing(dimension)
     }
@@ -89,6 +87,14 @@ struct Tensor: CustomStringConvertible {
     }
     
     // MARK: Public Convenience Methods
+
+    var ordering: [Int] {
+        return slice.ordering
+    }
+    
+    var slicing: [Int?] {
+        return slice.slicing
+    }
 
     func isFree(dimension: Int) -> Bool {
         return slice.slicing[dimension] == nil

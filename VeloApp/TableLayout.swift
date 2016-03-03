@@ -18,8 +18,8 @@ class TableLayout: UICollectionViewLayout {
     var tableConfig: TableConfig
     var rowConfigs: [RowConfig] // Indexed by the unsliced index, unlike other arrays
     
-    var squeezeRows = false
-    var squeezeColumns = false
+    var visibleSize = CGSize()
+    var menuCategory: Int?
     
     // Row heights
     
@@ -57,16 +57,17 @@ class TableLayout: UICollectionViewLayout {
         super.init(coder: aDecoder)
     }
     
-    init(tensor: Tensor, tableConfig: TableConfig, rowConfigs: [RowConfig]) {
+    init(tensor: Tensor, tableConfig: TableConfig, rowConfigs: [RowConfig], size: CGSize) {
         self.tensor = tensor
         self.tableConfig = tableConfig
         self.rowConfigs = rowConfigs
+        self.visibleSize = size
         super.init()
     }
 
     // MARK: Convenience methods
     
-    var duplicate: TableLayout { return TableLayout(tensor: tensor, tableConfig: tableConfig, rowConfigs: rowConfigs) }
+    var duplicate: TableLayout { return TableLayout(tensor: tensor, tableConfig: tableConfig, rowConfigs: rowConfigs, size: visibleSize) }
 
     // MARK: Updating input parameters
 
@@ -123,6 +124,7 @@ class TableLayout: UICollectionViewLayout {
     
     override func prepareLayout() {
         if !merelyScrolled {
+            print("Prepared layout")
             prepareColumns()
             prepareRows()
             prepareTableSizes()
@@ -156,7 +158,7 @@ class TableLayout: UICollectionViewLayout {
                 let mainHeights = Array(count: rowConfig.rows, repeatedValue: cellHeight)
                 let emptyHeights = Array(count: rowConfig.emptyRows, repeatedValue: cellHeight)
                 
-                let heightsMain = [fieldHeight, 0] + splice(mainHeights + emptyHeights, with: smallMargin)
+                let heightsMain = [fieldHeight, smallMargin] + splice(mainHeights + emptyHeights, with: smallMargin)
                 let heightsComp = [largeMargin] + splice(compHeights, with: smallMargin)
                 
                 rowOffsets.append(cumulate(heightsMain + heightsComp, from: borderMargin))
@@ -174,7 +176,7 @@ class TableLayout: UICollectionViewLayout {
             }
         }
 
-        print("Made rows \(rowHeights.map { $0.count } ) - \(self)")
+//        print("Made rows \(rowHeights.map { $0.count } ) - \(self)")
     }
     
     private func prepareTableSizes() {
@@ -194,37 +196,24 @@ class TableLayout: UICollectionViewLayout {
         tableOffsets.removeLast()
     }
     
-    override func collectionViewContentSize() -> CGSize {
+    var contentSize: CGSize {
         let width = startGuide.x + permanentGuide.x + CGFloat(metaColumns)*tableWidth
         let height = startGuide.y + permanentGuide.y + tableOffsets.last! + tableHeights.last!
         return CGSize(width: width, height: height)
     }
     
+    override func collectionViewContentSize() -> CGSize {
+        return contentSize
+    }
+    
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        var result = [UICollectionViewLayoutAttributes]()
-
-//        print("self: \(self)")
-//        print("tensor: \(tensor)")
-//        print("columns: \(columnOffsets.count), rows: \(rowOffsets.count) - \(rowOffsets.map { $0.count })")
+        var paths = [NSIndexPath]()
         
         for metaRow in 0..<metaRows {
             for metaColumn in 0..<metaColumns {
                 let s = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
-
-                //                let n = [metaColumn, metaRow] |> tensor.sliced.normalise
-//                let j = n |> tensor.unslice
-//                let jj = j |> tensor.linearise
-                
-//                print("- (\([metaColumn, metaRow]) > \(n) > \(j) > \(jj))  --- cells[\(s)] : rows:\(rowHeights[s].count)")
-                
                 for item in 0..<rowHeights[s].count*columnWidths.count {
-                    let indexPath = NSIndexPath(forItem: item, inSection: s)
-                    if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
-                        result.append(attr)
-                    }
-                    else {
-                        print("Invalid cell indexPath: \(indexPath)")
-                    }
+                    paths.append(NSIndexPath(forItem: item, inSection: s))
                 }
             }
         }
@@ -232,26 +221,14 @@ class TableLayout: UICollectionViewLayout {
         let tableCount = metaRows*metaColumns
         
         for (category, categorySize) in tensor.size.enumerate() {
-            for value in 0..<categorySize {
-                let indexPath = NSIndexPath(forItem: value, inSection: tableCount + category)
-                if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
-                    result.append(attr)
-                }
-                else {
-                    print("Invalid category indexPath: \(indexPath)")
-                }
+            for value in 0...categorySize {
+                paths.append(NSIndexPath(forItem: value, inSection: tableCount + category))
             }
         }
         
-        let indexPath = NSIndexPath(forItem: 0, inSection: tableCount + tensor.dimension)
-        if let attr = layoutAttributesForItemAtIndexPath(indexPath) {
-            result.append(attr)
-        }
-        else {
-            print("Invalid name indexPath: \(indexPath)")
-        }
+        paths.append(NSIndexPath(forItem: 0, inSection: tableCount + tensor.dimension))
 
-        return result
+        return paths.flatMap(layoutAttributesForItemAtIndexPath)
     }
 
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
@@ -316,31 +293,31 @@ class TableLayout: UICollectionViewLayout {
         let dimension = indexPath.section - metaRows*metaColumns
         let value = indexPath.item
 
-        if let order = tensor.ordering.indexOf(dimension) {
+        let x, y: CGFloat
+        let z: Int
+        if value < tensor.size[dimension], let order = tensor.ordering.indexOf(dimension) {
             if order == 0 {
                 let preX = CGFloat(value)*tableWidth + startGuide.x + borderMargin
                 let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
-                let x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + scrollingOffset.x)
-                let y = scrollingOffset.y + tableNameHeight
-                attr.frame.origin = CGPoint(x: x, y: y)
-                attr.zIndex = 25
+                x = adjust(preX, stopScroll: stopScrollX, subtractAdd: permanentGuide.x + scrollingOffset.x)
+                y = scrollingOffset.y + tableNameHeight
+                z = 25
             }
             else {
-                let x = scrollingOffset.x
+                x = scrollingOffset.x
                 let preY = tableOffsets[value] + startGuide.y + borderMargin
                 let stopScrollY = tableHeights[value] - metaHeaderHeight - 2*borderMargin
-                let y = adjust(preY, stopScroll: stopScrollY, subtractAdd: permanentGuide.y + scrollingOffset.y)
-                attr.frame.origin = CGPoint(x: x, y: y)
-                attr.zIndex = 30
+                y = adjust(preY, stopScroll: stopScrollY, subtractAdd: permanentGuide.y + scrollingOffset.y)
+                z = 30
             }
         }
         else {
-            let x = CGFloat(dimension + 3)*100
-            let y = CGFloat(indexPath.item)*0
-            let pos = CGPoint(x: x, y: y)
-            attr.zIndex = 50
-            attr.frame.origin = scrollingOffset + pos
+            x = visibleSize.width - CGFloat(tensor.dimension - dimension)*metaIndexWidth + scrollingOffset.x
+            y = (dimension == menuCategory ? CGFloat(value)*metaHeaderHeight : 0) + scrollingOffset.y
+            z = 50 + (value == tensor.slicing[dimension] ? 1 : 0) + (tensor.isFree(dimension) && value == tensor.size[dimension] ? 1 : 0)
         }
+        attr.frame.origin = CGPoint(x: x, y: y)
+        attr.zIndex = z
         attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)
         return attr
     }
@@ -348,7 +325,7 @@ class TableLayout: UICollectionViewLayout {
     func layoutAttributesForName(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes {
         let attr = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attr.frame.origin = scrollingOffset
-        attr.frame.size = CGSize(width: 1000, height: tableNameHeight)
+        attr.frame.size = CGSize(width: visibleSize.width, height: tableNameHeight)
         attr.zIndex = 40
         return attr
     }
