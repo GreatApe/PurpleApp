@@ -113,7 +113,10 @@ class TableLayout: UICollectionViewLayout {
     
     // Meta labels
 
-    private var startGuide: CGPoint { return CGPoint(x: metaIndexWidth, y: metaHeaderHeight + tableNameHeight) }
+    private var startGuide: CGPoint {
+        return CGPoint(x: metaRows > 1 ? metaIndexWidth : 0, y: (metaColumns > 1 ? metaHeaderHeight : 0) + tableNameHeight)
+    }
+    
     private var permanentGuide: CGPoint { return CGPoint(x: 0, y: tableNameHeight) }
     
     // MARK: Callbacks
