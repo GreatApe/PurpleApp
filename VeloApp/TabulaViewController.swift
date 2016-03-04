@@ -9,147 +9,6 @@
 import UIKit
 import Realm
 
-class DropDown: UIView {
-    typealias Item = (text: String, image: UIImage?, selectable: Bool)
-    
-    // MARK: Public variables
-
-    var selection: Int?
-    var expanded = false
-    
-    weak var bar: MenuBar?
-    
-    // MARK: Private variables
-
-    private var size: CGSize
-    private var action: (DropDown, Int?) -> Void
-    private var buttons = [(btn: UIButton, hide: Bool, selectable: Bool)]()
-
-    // MARK: Public methods
-
-    func hide(index: Int) {
-        buttons[index].hide = true
-    }
-    
-    func show(index: Int) {
-        buttons[index].hide = false
-    }
-
-    init(frame: CGRect, items: [Item], action: (DropDown, Int?) -> Void) {
-        self.size = frame.size
-        self.action = action
-        super.init(frame: frame)
-        items.forEach(addItem)
-        backgroundColor = UIColor.menu()
-        layer.cornerRadius = 3
-        collapse()
-    }
-    
-    // MARK: Private methods
-
-    func boldString(text: String) -> NSAttributedString {
-        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(17)]
-        return NSMutableAttributedString(string:text, attributes:attrs)
-    }
-    
-    func normalString(text: String) -> NSAttributedString {
-        let attrs = [NSFontAttributeName : UIFont.systemFontOfSize(17)]
-        return NSMutableAttributedString(string:text, attributes:attrs)
-    }
-    
-    private func addItem(item: Item) {
-        let button = UIButton()
-        button.frame.size = self.frame.size
-        button.addTarget(self, action: "tappedButton:", forControlEvents: .TouchUpInside)
-        button.setAttributedTitle(normalString(item.text), forState: .Normal)
-        button.setAttributedTitle(boldString(item.text), forState: .Selected)
-        button.imageView?.image = item.image
-        button.tag = buttons.count
-        button.backgroundColor = UIColor.menu()
-        button.setTitleColor(UIColor.cellText(), forState: .Normal)
-        button.layer.cornerRadius = 3
-        buttons.append((button, false, item.selectable))
-        self.addSubview(button)
-    }
-    
-    func tappedButton(sender: UIButton!) {
-        if expanded {
-            let selectedButton = buttons[sender.tag]
-            selection = selectedButton.selectable ? sender.tag : selection
-            action(self, sender.tag)
-            collapse()
-        }
-        else {
-            expand()
-        }
-
-        print("Selected----")
-
-        buttons.forEach { button in
-            button.btn.selected = button.btn.tag == selection
-            print("\(button.btn.tag): \(button.btn.selected)")
-        }
-    }
-    
-    private func expand() {
-        let visibleButtons = buttons.filter({ !$0.hide })
-        
-        UIView.animateWithDuration(0.1) {
-            for (index, button) in visibleButtons.enumerate() {
-                button.btn.frame.origin.y = CGFloat(index)*self.size.height
-            }
-            self.frame.size.height = CGFloat(visibleButtons.count)*self.size.height
-        }
-        expanded = true
-        bar?.expanded(self)
-    }
-    
-    private func collapse() {
-        UIView.animateWithDuration(0.1) {
-            for (index, button) in self.buttons.enumerate() {
-                button.btn.layer.zPosition = 100 + (index == self.selection ? 10 : 0) + (index == 0 ? 5 : 0)
-                button.btn.frame.origin.y = 0
-                //            button.btn.alpha = index == selection ? 1 : 0.5
-            }
-
-            self.frame.size.height = self.size.height
-        }
-        expanded = false
-        bar?.collapsed(self)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-class MenuBar: UIView {
-    private var dropDowns = [DropDown]()
-    
-    @IBOutlet weak var barHeight: NSLayoutConstraint!
-    
-    func addDropDown(dropDown: DropDown) {
-        dropDown.bar = self
-        addSubview(dropDown)
-        dropDown.tag = dropDowns.count
-        dropDowns.append(dropDown)
-    }
-    
-    func expanded(dropDown: DropDown) {
-        dropDowns.filter { $0.expanded && $0.tag != dropDown.tag }.forEach { $0.collapse() }
-        updateHeight()
-    }
-    
-    func collapsed(dropDown: DropDown) {
-        updateHeight()
-    }
-    
-    private func updateHeight() {
-        barHeight.constant = dropDowns.contains { $0.expanded } ? superview!.frame.height : 40
-        layoutIfNeeded()
-    }
-}
-
 class TabulaViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     @IBOutlet weak var nameLabel: UILabel!
     
@@ -181,27 +40,6 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 //        view.frame.size = contentSize
 //    }
     
-    private func setupCategory(index: Int, cat: Cat) {
-        let size = CGSize(width: 100, height: 40)
-        let pos = CGPoint(x: CGFloat(index)*size.width, y: 0)
-        
-        let catItem: DropDown.Item = (cat.name, nil, false)
-        let expandItem: DropDown.Item = ("Show all", nil, false)
-        let valueItems: [DropDown.Item] = cat.values.map { ($0, nil, true) }
-        let items = [catItem, expandItem] + valueItems
-        
-        let action: (DropDown, Int?) -> Void = { d, i in
-            if i == 1 {
-                d.hide(1)
-                d.selection = nil
-            }
-            else {
-                d.show(1)
-            }
-        }
-        menuBar.addDropDown(DropDown(frame: CGRect(origin: pos, size: size), items: items, action: action))
-    }
-    
     private func didSetCollectionId() {
         let rowCounts: [Int]
         (name, header, categories, rowCounts) = Engine.shared.getMetaData(collectionId)
@@ -218,6 +56,50 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         layout.updateScrollOffset(collectionView.contentOffset)
     }
     
+    private func setupCategory(index: Int, cat: Cat) {
+        let size = CGSize(width: 100, height: 40)
+        let pos = CGPoint(x: CGFloat(index)*size.width, y: 0)
+        
+        let catItem: DropDown.Item = (cat.name, nil, false)
+        let expandItem: DropDown.Item = ("Show all", nil, false)
+        let valueItems: [DropDown.Item] = cat.values.map { ($0, nil, true) }
+        let items = [catItem, expandItem] + valueItems
+        
+        let action: (DropDown, Int) -> Bool = { [unowned self] dropDown, i in
+            switch i {
+            case 0: return false
+            case 1:
+                dropDown.hide(1)
+                dropDown.selection = nil
+                self.free(dropDown.tag)
+                return false
+            default:
+                dropDown.show(1)
+                self.fix(dropDown.tag, atValue: i - 2)
+                return true
+            }
+        }
+        let dropDown = DropDown(frame: CGRect(origin: pos, size: size), items: items, shouldSelectAction: action)
+        dropDown.selection = 2
+        menuBar.addDropDown(dropDown)
+    }
+
+    private func free(dimension: Int) {
+        if layout.tensor.ordering.count == 2 {
+            let freeDimension = layout.tensor.ordering[0]
+            layout.tensor.fix(freeDimension, at: 0)
+            menuBar.dropDowns[freeDimension].show(1)
+            menuBar.dropDowns[freeDimension].selection = 2
+        }
+        layout.tensor.free(dimension)
+        collectionView.reloadData()
+    }
+    
+    private func fix(dimension: Int, atValue value: Int) {
+        layout.tensor.fix(dimension, at: value)
+        collectionView.reloadData()
+    }
+
     // MARK: Collection View Data Source
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -266,8 +148,6 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
         
         let text: String?
-        
-// ? "⊖ " : "⊕ ") : "") + cat.name
         
         switch cellType {
         case let .CategoryValue(category: c, value: v): text = categories[c].values[v]

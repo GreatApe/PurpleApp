@@ -26,6 +26,7 @@
 		22A223E01C6CB54500F74F81 /* VeloAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223DF1C6CB54500F74F81 /* VeloAppTests.swift */; };
 		22A223EB1C6CB54500F74F81 /* VeloAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A223EA1C6CB54500F74F81 /* VeloAppUITests.swift */; };
 		22A224011C6D304B00F74F81 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A224001C6D304A00F74F81 /* Models.swift */; };
+		22CB658C1C8A3A4C00234BA1 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CB658B1C8A3A4C00234BA1 /* Menu.swift */; };
 		9FF17E591C7CB38300563266 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FF17E581C7CB38300563266 /* GoogleService-Info.plist */; };
 		9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */; };
 /* End PBXBuildFile section */
@@ -121,6 +122,7 @@
 		22A223EA1C6CB54500F74F81 /* VeloAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeloAppUITests.swift; sourceTree = "<group>"; };
 		22A223EC1C6CB54500F74F81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22A224001C6D304A00F74F81 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		22CB658B1C8A3A4C00234BA1 /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		5D88CECD828078C913561124 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF17E571C7CB2AC00563266 /* VeloApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VeloApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		9FF17E581C7CB38300563266 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 		22A223C91C6CB54500F74F81 /* VeloApp */ = {
 			isa = PBXGroup;
 			children = (
+				22CB658B1C8A3A4C00234BA1 /* Menu.swift */,
 				220C732B1C8437DC00FCA89F /* Cells.swift */,
 				22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */,
 				220C732D1C84380700FCA89F /* LayoutConfigs.swift */,
@@ -489,6 +492,7 @@
 			files = (
 				22A224011C6D304B00F74F81 /* Models.swift in Sources */,
 				220C732E1C84380700FCA89F /* LayoutConfigs.swift in Sources */,
+				22CB658C1C8A3A4C00234BA1 /* Menu.swift in Sources */,
 				2267A78B1C7F4B790081AE7F /* Canvas.swift in Sources */,
 				220C732C1C8437DC00FCA89F /* Cells.swift in Sources */,
 				2267A7891C7EF3710081AE7F /* CollectionListViewController.swift in Sources */,
