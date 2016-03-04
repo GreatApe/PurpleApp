@@ -52,13 +52,13 @@ enum CellType {
     case EmptyFieldName
     case CompFieldName(column: Int)
     case EmptyCompFieldName
-    case Index(row: Int)
+    case Index(index: [Int], row: Int)
     case EmptyIndex
-    case Cell(row: Int, column: Int)
+    case Cell(index: [Int], row: Int, column: Int)
     case EmptyCell
-    case CompColumnCell(row: Int, column: Int)
+    case CompColumnCell(index: [Int], row: Int, column: Int)
     case EmptyCompColumnCell
-    case CompCell(row: Int, column: Int)
+    case CompCell(index: [Int], row: Int, column: Int)
     case EmptyCompCell
     case Spacer
     
@@ -84,7 +84,7 @@ enum CellType {
         }
     }
     
-    init(rowConfig r: RowConfig, tableConfig c: TableConfig, row: Int, column: Int) {
+    init(rowConfig r: RowConfig, tableConfig c: TableConfig, index: [Int], row: Int, column: Int) {
         switch (row, column) {
         case (r.headerRowRange, c.indexColumnRange): self = .IndexName(column: column)
         case (r.headerRowRange, c.columnsRange): self = .FieldName(column: column)
@@ -92,10 +92,10 @@ enum CellType {
         case (r.headerRowRange, c.compColumnsRange): self = .CompFieldName(column: column - c.firstCompColumn)
         case (r.headerRowRange, c.emptyCompColumnsRange): self = .EmptyCompFieldName
             
-        case (r.rowsRange, c.indexColumnRange): self = .Index(row: row - r.firstRow)
-        case (r.rowsRange, c.columnsRange): self = .Cell(row: row - r.firstRow, column: column)
+        case (r.rowsRange, c.indexColumnRange): self = .Index(index: index, row: row - r.firstRow)
+        case (r.rowsRange, c.columnsRange): self = .Cell(index: index, row: row - r.firstRow, column: column)
         case (r.rowsRange, c.emptyColumnsRange): self = .EmptyCell
-        case (r.rowsRange, c.compColumnsRange): self = .CompColumnCell(row: row - r.firstRow, column: column - c.firstCompColumn)
+        case (r.rowsRange, c.compColumnsRange): self = .CompColumnCell(index: index, row: row - r.firstRow, column: column - c.firstCompColumn)
         case (r.rowsRange, c.emptyCompColumnsRange): self = .EmptyCompColumnCell
             
         case (r.emptyRowsRange, c.indexColumnRange): self = .EmptyIndex
@@ -105,9 +105,9 @@ enum CellType {
         case (r.emptyRowsRange, c.emptyCompColumnsRange): self = .Spacer
             
         case (r.compRowsRange, c.indexColumnRange): self = .Spacer
-        case (r.compRowsRange, c.columnsRange): self = .CompCell(row: row - r.firstCompRow, column: column)
+        case (r.compRowsRange, c.columnsRange): self = .CompCell(index: index, row: row - r.firstCompRow, column: column)
         case (r.compRowsRange, c.emptyColumnsRange): self = .Spacer
-        case (r.compRowsRange, c.compColumnsRange): self = .CompCell(row: row - r.firstCompRow, column: column - c.firstCompColumn)
+        case (r.compRowsRange, c.compColumnsRange): self = .CompCell(index: index, row: row - r.firstCompRow, column: column - c.firstCompColumn)
         case (r.compRowsRange, c.emptyCompColumnsRange): self = .Spacer
             
         default: fatalError("Cell error")

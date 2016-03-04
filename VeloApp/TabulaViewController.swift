@@ -30,14 +30,10 @@ class TabulaViewController: UICollectionViewController {
 //        view.frame.size = contentSize
 //    }
     
-    var collection: RLMObject?
-    
     private func didSetCollectionId() {
         let rowCounts: [Int]
-        (name, header, categories, rowCounts) = Engine.shared.getCollectionData(collectionId)
+        (name, header, categories, rowCounts) = Engine.shared.getMetaData(collectionId)
         
-        collection = Engine.shared.getCollection(collectionId)
-    
         let size = categories.map { $0.values.count }
         let config = TableConfig(columns: header.count - 1)
     
@@ -68,14 +64,17 @@ class TabulaViewController: UICollectionViewController {
         let tableCount = layout.metaRows*layout.metaColumns
         let cellType: CellType
         
+        
         switch indexPath.section {
         case 0..<tableCount:
+            let index = indexPath.section |> layout.tensor.sliced.vectorise |> layout.tensor.unslice
+
             let totalColumns = layout.tableConfig.totalColumns
-            let rowConfig = layout.rowConfigs[indexPath.section |> layout.tensor.unslice]
+            let rowConfig = layout.rowConfigs[index |> layout.tensor.linearise]
             
             let row = indexPath.item / totalColumns
             let column = indexPath.item % totalColumns
-            cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, row: row, column: column)
+            cellType = CellType(rowConfig: rowConfig, tableConfig: layout.tableConfig, index: index, row: row, column: column)
             
         case tableCount..<tableCount + layout.tensor.dimension:
             cellType = .CategoryValue(category: indexPath.section - tableCount, value: indexPath.item)
@@ -94,17 +93,21 @@ class TabulaViewController: UICollectionViewController {
         
         let text: String?
         
-//        text = (fullScreen ? (layout.tensor.isFree(c) ? "⊖ " : "⊕ ") : "") + cat.name
+// ? "⊖ " : "⊕ ") : "") + cat.name
         
         switch cellType {
         case let .CategoryValue(category: c, value: v): text = categories[c].values[v]
         case let .IndexName(column: c): text = header[c]
         case let .FieldName(column: c): text = header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
-        case let .Index(row: r): text = "r: \(r)" // text = String(rows[r][0])
-        case let .Cell(row: r, column: c): text = "\(r):\(c)" // text = String(rows[r][c])
-        case let .CompColumnCell(row: r, column: c): text = "\(r):\(c)"
-        case let .CompCell(row: r, column: c): text = "\(r):\(c)"
+        case let .Index(index: i, row: r):
+            guard let id = collectionId else { text = nil; break }
+            text = String(Engine.shared.getData(id, index: i, row: r, column: 0))
+        case let .Cell(index: i, row: r, column: c):
+            guard let id = collectionId else { text = nil; break }
+            text = String(Engine.shared.getData(id, index: i, row: r, column: c))
+        case let .CompColumnCell(index: i, row: r, column: c): text = "\(i):\(r):\(c)"
+        case let .CompCell(index: i, row: r, column: c): text = "\(i):\(r):\(c)"
         default: text = nil
         }
         

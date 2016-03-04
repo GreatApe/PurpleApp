@@ -56,7 +56,7 @@ class Engine {
         return realm.schema[rowClass].properties.map { $0.type }
     }
     
-    func getCollectionData(collectionId: String) -> (name: String, header: [String], categories: [Cat], rowCounts: [Int]) {
+    func getMetaData(collectionId: String) -> (name: String, header: [String], categories: [Cat], rowCounts: [Int]) {
         let collection = (collectionId |> getCollection)!
         
         let getRowCounts = getTables >>> map(getRowCount)
@@ -75,6 +75,12 @@ class Engine {
         let collection = realm.objectWithClassName(info.collectionClass, forPrimaryKey: info.collectionId)
         cache[collectionId] = collection
         return collection
+    }
+    
+    func getData(collectionId: String, index: [Int], row: Int, column: Int) -> AnyObject {
+        guard let c = getCollection(collectionId) else { return 0 }
+        
+        return c |> getTable(index) >>> getRows >>> getCell(row, column: column)
     }
     
     private func getCollectionInfo(collectionId: String) -> CollectionInfo? {
@@ -562,6 +568,10 @@ func getTable(index: [Int]) -> RLMObject -> RLMObject {
         let (tensor, tables) = collection |> (getSize >>> Tensor.init, getTables)
         return tables[index |> tensor.linearise]
     }
+}
+
+func getCell<T>(row: Int, column: Int) -> [[T]] -> T {
+    return { $0[row][column] }
 }
 
 func getRows(table: RLMObject) -> [[AnyObject]] {
