@@ -112,7 +112,7 @@ class TableLayout: UICollectionViewLayout {
     private var showMetaHeader: Bool { return tensor.slicedSize.count > 0 }
     private var showMetaIndex: Bool { return tensor.slicedSize.count > 1 }
     
-    private var guide: CGPoint { return CGPoint(x: showMetaIndex ? metaIndexWidth : 0, y: showMetaHeader ? metaHeaderHeight : 0) }
+    private var guide: CGPoint { return CGPoint(x: showMetaIndex ? metaHeaderHeight : 0, y: showMetaHeader ? metaHeaderHeight : 0) }
     
     // MARK: Callbacks
     
@@ -291,27 +291,34 @@ class TableLayout: UICollectionViewLayout {
             let x, y: CGFloat
             let z: Int
             let a: CGFloat
+            let r: CGFloat
+            let o: CGPoint
 
             let subtractAdd = guide + scrollingOffset
             
             if order == 0 {
-                let preX = CGFloat(value)*tableWidth + guide.x + borderMargin
-                let stopScrollX = tableWidth - metaIndexWidth - 2*borderMargin
+                let preX = (CGFloat(value) + 1/2)*tableWidth + guide.x - metaIndexWidth/2
+                let stopScrollX = tableWidth/2 - metaIndexWidth/2 - borderMargin
                 x = adjust(preX, stopScroll: stopScrollX, subtractAdd: subtractAdd.x)
-                y = scrollingOffset.y
+                y = max(scrollingOffset.y, 0)
                 z = 50
                 a = ease(guide.x - metaIndexWidth/2, to: guide.x)(x: x - scrollingOffset.x)
+                r = 0
+                o = CGPoint()
             }
             else {
-                x = scrollingOffset.x
-                let preY = tableOffsets[value] + guide.y + borderMargin
-                let stopScrollY = tableHeights[value] - metaHeaderHeight - 2*borderMargin
+                x = max(scrollingOffset.x, 0)
+                let preY = tableOffsets[value] + tableHeights[value]/2 + guide.y - metaIndexWidth/2
+                let stopScrollY = tableHeights[value]/2 - metaIndexWidth/2 - borderMargin
                 y = adjust(preY, stopScroll: stopScrollY, subtractAdd: subtractAdd.y)
                 z = 55
-                a = ease(guide.y - metaHeaderHeight/2, to: guide.y)(x: y - scrollingOffset.y)
+                a = ease(guide.y - metaIndexWidth/2, to: guide.y)(x: y - scrollingOffset.y)
+                r = -π/2
+                o = CGPoint(x: (metaHeaderHeight - metaIndexWidth)/2, y: (metaIndexWidth - metaHeaderHeight)/2)
             }
             
-            attr.frame.origin = CGPoint(x: x, y: y)
+            attr.transform = CGAffineTransformMakeRotation(r)
+            attr.frame.origin = CGPoint(x: x, y: y) + o
             attr.zIndex = z
             attr.alpha = tensor.ordering.count == 2 ? a : 1
         }

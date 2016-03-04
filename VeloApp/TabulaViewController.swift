@@ -9,10 +9,17 @@
 import UIKit
 import Realm
 
-class TabulaViewController: UICollectionViewController {
+class TabulaViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    
+    @IBOutlet weak var bar: UIView!
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    
     var collectionId: String! { didSet { didSetCollectionId() } }
     
-    private var layout: TableLayout { return collectionViewLayout as! TableLayout }
+    private var layout: TableLayout { return collectionView.collectionViewLayout as! TableLayout }
     
     private var name: String = "Table"
     private var header: [String] = ["Field0", "Field1"]
@@ -45,11 +52,11 @@ class TabulaViewController: UICollectionViewController {
     
     // MARK: Collection View Data Source
     
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return layout.metaRows*layout.metaColumns + layout.tensor.dimension + 1
     }
     
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let tableCount = layout.metaRows*layout.metaColumns
         
         switch section {
@@ -60,7 +67,7 @@ class TabulaViewController: UICollectionViewController {
         }
     }
     
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let tableCount = layout.metaRows*layout.metaColumns
         let cellType: CellType
         

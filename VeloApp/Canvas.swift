@@ -42,7 +42,7 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         tabula.didMoveToParentViewController(self)
 
         container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
-        tabula.view.frame = CGRect(origin: CGPoint(x: 0, y: 30), size: CGSize(width: 800, height: 500 - 30))
+        tabula.view.frame = container.bounds
         
 //            container.translatesAutoresizingMaskIntoConstraints = false
 //            tvc.view.translatesAutoresizingMaskIntoConstraints = false

@@ -193,323 +193,365 @@
             <point key="canvasLocation" x="-348" y="2406"/>
         </scene>
         <!--Tabula View Controller-->
-        <scene sceneID="UiE-J9-Ece">
+        <scene sceneID="wkG-ZZ-w7P">
             <objects>
-                <collectionViewController storyboardIdentifier="Tabula" id="lqy-bL-fWz" customClass="TabulaViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="Hal-CE-Tnb">
+                <viewController storyboardIdentifier="Tabula" id="hjM-Xm-KBs" customClass="TabulaViewController" customModule="VeloApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="cdz-2V-IRw"/>
+                        <viewControllerLayoutGuide type="bottom" id="Zmk-Go-VqG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XoV-1o-VhG">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.99633866548538208" green="0.96513330936431885" blue="0.96981418132781982" alpha="1" colorSpace="calibratedRGB"/>
-                        <collectionViewLayout key="collectionViewLayout" id="WWP-ps-qt3" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
-                        <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexNameCell" id="Nw5-r7-oGJ" customClass="IndexNameCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IndexName" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wdr-3V-e4e">
-                                            <rect key="frame" x="8" y="8" width="94" height="33"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1TL-fG-UTI">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Table name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QHW-kg-QL6">
+                                        <rect key="frame" x="16" y="11" width="89" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.67505192756652832" green="0.48204320669174194" blue="0.80978715419769287" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstItem="Wdr-3V-e4e" firstAttribute="centerX" secondItem="Nw5-r7-oGJ" secondAttribute="centerX" id="DtW-4T-jFY"/>
-                                    <constraint firstItem="Wdr-3V-e4e" firstAttribute="top" secondItem="Nw5-r7-oGJ" secondAttribute="topMargin" id="FSO-2l-Gug"/>
-                                    <constraint firstItem="Wdr-3V-e4e" firstAttribute="leading" secondItem="Nw5-r7-oGJ" secondAttribute="leadingMargin" id="oEZ-aZ-VfM"/>
-                                    <constraint firstItem="Wdr-3V-e4e" firstAttribute="centerY" secondItem="Nw5-r7-oGJ" secondAttribute="centerY" id="zqg-0E-Znk"/>
+                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="leading" secondItem="1TL-fG-UTI" secondAttribute="leading" constant="16" id="7UD-Cj-Ygw"/>
+                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="top" constant="11" id="UEi-6Y-Uoj"/>
+                                    <constraint firstAttribute="bottom" secondItem="QHW-kg-QL6" secondAttribute="bottom" constant="12" id="bvw-QB-PpB"/>
+                                    <constraint firstAttribute="height" constant="44" id="zEt-Um-IfH"/>
                                 </constraints>
-                                <size key="customSize" width="111" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="Wdr-3V-e4e" id="rot-We-sKw"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FieldNameCell" id="Qqx-le-N1g" customClass="FieldNameCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="155" y="0.0" width="111" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uv6-Hh-Gwo">
-                                            <rect key="frame" x="8" y="8" width="94" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="uv6-Hh-Gwo" firstAttribute="centerX" secondItem="Qqx-le-N1g" secondAttribute="centerX" id="I2b-4Z-ueZ"/>
-                                    <constraint firstItem="uv6-Hh-Gwo" firstAttribute="leading" secondItem="Qqx-le-N1g" secondAttribute="leadingMargin" id="NcG-nW-jtp"/>
-                                    <constraint firstItem="uv6-Hh-Gwo" firstAttribute="top" secondItem="Qqx-le-N1g" secondAttribute="topMargin" id="l8c-nk-Gkr"/>
-                                    <constraint firstItem="uv6-Hh-Gwo" firstAttribute="centerY" secondItem="Qqx-le-N1g" secondAttribute="centerY" id="sXE-zq-ppl"/>
-                                </constraints>
-                                <size key="customSize" width="111" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="uv6-Hh-Gwo" id="EEC-o3-dwC"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompFieldNameCell" id="7sy-Yg-Tlx" customClass="CompFieldNameCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="309" y="0.0" width="136" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="136" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="goI-wz-VFf">
-                                            <rect key="frame" x="8" y="8" width="120" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="goI-wz-VFf" firstAttribute="centerX" secondItem="7sy-Yg-Tlx" secondAttribute="centerX" id="Fq8-PN-Iug"/>
-                                    <constraint firstItem="goI-wz-VFf" firstAttribute="centerY" secondItem="7sy-Yg-Tlx" secondAttribute="centerY" id="P7C-aU-uyl"/>
-                                    <constraint firstItem="goI-wz-VFf" firstAttribute="leading" secondItem="7sy-Yg-Tlx" secondAttribute="leadingMargin" id="aXQ-nb-Pg9"/>
-                                    <constraint firstItem="goI-wz-VFf" firstAttribute="top" secondItem="7sy-Yg-Tlx" secondAttribute="topMargin" id="iTw-95-1m5"/>
-                                </constraints>
-                                <size key="customSize" width="136" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="goI-wz-VFf" id="dkO-QE-obh"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexCell" id="LuH-O5-4JJ" customClass="IndexCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="489" y="0.0" width="111" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Index" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4uk-A3-YgB">
-                                            <rect key="frame" x="8" y="8" width="94" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.90312445159999999" green="0.54486668110000003" blue="0.57182466980000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="4uk-A3-YgB" firstAttribute="top" secondItem="LuH-O5-4JJ" secondAttribute="topMargin" id="CGe-Dn-bpt"/>
-                                    <constraint firstItem="4uk-A3-YgB" firstAttribute="centerY" secondItem="LuH-O5-4JJ" secondAttribute="centerY" id="FTo-1Z-d6S"/>
-                                    <constraint firstItem="4uk-A3-YgB" firstAttribute="leading" secondItem="LuH-O5-4JJ" secondAttribute="leadingMargin" id="TxO-69-itr"/>
-                                    <constraint firstItem="4uk-A3-YgB" firstAttribute="centerX" secondItem="LuH-O5-4JJ" secondAttribute="centerX" id="cas-Ly-NMw"/>
-                                </constraints>
-                                <size key="customSize" width="111" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="4uk-A3-YgB" id="hre-t1-Gmp"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="pEg-Z6-35m" customClass="Cell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="70" width="111" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vHO-WF-fu0">
-                                            <rect key="frame" x="8" y="8" width="94" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.87478065490722656" green="0.66943103075027466" blue="0.68983340263366699" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="vHO-WF-fu0" firstAttribute="top" secondItem="pEg-Z6-35m" secondAttribute="topMargin" id="hVr-aP-ge4"/>
-                                    <constraint firstItem="vHO-WF-fu0" firstAttribute="centerY" secondItem="pEg-Z6-35m" secondAttribute="centerY" id="kUv-Fo-CSw"/>
-                                    <constraint firstItem="vHO-WF-fu0" firstAttribute="leading" secondItem="pEg-Z6-35m" secondAttribute="leadingMargin" id="mex-Xt-jE5"/>
-                                    <constraint firstItem="vHO-WF-fu0" firstAttribute="centerX" secondItem="pEg-Z6-35m" secondAttribute="centerX" id="sma-3r-G0j"/>
-                                </constraints>
-                                <size key="customSize" width="111" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="vHO-WF-fu0" id="XxV-oG-aL8"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompColumnCell" id="67E-Ub-EJ0" customClass="CompColumnCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="132" y="70" width="139" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgE-Qb-AyA">
-                                            <rect key="frame" x="8" y="8" width="123" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.67352668540000005" green="0.79694942059999996" blue="0.77149348360000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="centerY" secondItem="67E-Ub-EJ0" secondAttribute="centerY" id="fbL-FW-YwH"/>
-                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="top" secondItem="67E-Ub-EJ0" secondAttribute="topMargin" id="me7-UL-5rJ"/>
-                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="centerX" secondItem="67E-Ub-EJ0" secondAttribute="centerX" id="pCk-bn-GwY"/>
-                                    <constraint firstItem="rgE-Qb-AyA" firstAttribute="leading" secondItem="67E-Ub-EJ0" secondAttribute="leadingMargin" id="xeT-ib-rpd"/>
-                                </constraints>
-                                <size key="customSize" width="139" height="50"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="label" destination="rgE-Qb-AyA" id="paQ-xS-xFm"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompCell" id="N83-hL-BZ1" customClass="CompCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="293" y="60" width="139" height="70"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="139" height="70"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J38-t6-iSz" userLabel="Label">
-                                            <rect key="frame" x="19" y="8" width="112" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xdb-hz-axw">
-                                            <rect key="frame" x="8" y="31" width="123" height="33"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="∑" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wxT-WG-GvH" userLabel="Label">
-                                            <rect key="frame" x="8" y="8" width="11" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.673526685377836" green="0.79694942062857155" blue="0.77149348359559577" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="centerX" secondItem="N83-hL-BZ1" secondAttribute="centerX" id="6SN-4J-zi7"/>
-                                    <constraint firstAttribute="leadingMargin" secondItem="wxT-WG-GvH" secondAttribute="leading" id="DBh-ok-W9L"/>
-                                    <constraint firstItem="wxT-WG-GvH" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="EWK-Gf-Mq6"/>
-                                    <constraint firstItem="J38-t6-iSz" firstAttribute="leading" secondItem="wxT-WG-GvH" secondAttribute="trailing" id="HJf-wT-ZTJ"/>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" constant="23" id="NdQ-Ww-yGb"/>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="leading" secondItem="N83-hL-BZ1" secondAttribute="leadingMargin" id="eAk-Wm-kU9"/>
-                                    <constraint firstItem="xdb-hz-axw" firstAttribute="centerY" secondItem="N83-hL-BZ1" secondAttribute="centerY" constant="12.5" id="fy2-M9-sA1"/>
-                                    <constraint firstAttribute="trailingMargin" secondItem="J38-t6-iSz" secondAttribute="trailing" id="nxr-1b-HI1"/>
-                                    <constraint firstItem="J38-t6-iSz" firstAttribute="top" secondItem="N83-hL-BZ1" secondAttribute="topMargin" id="yQw-5E-AKe"/>
-                                </constraints>
-                                <size key="customSize" width="139" height="70"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <outlet property="iconLabel" destination="wxT-WG-GvH" id="89Y-tB-7Pe"/>
-                                    <outlet property="label" destination="xdb-hz-axw" id="K4E-ws-3wg"/>
-                                    <outlet property="titleLabel" destination="J38-t6-iSz" id="IoR-ul-5ja"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MetaLabel" id="iNY-kJ-Qyl" customClass="MetaLabelCell" customModule="VeloApp" customModuleProvider="target">
-                                <rect key="frame" x="453" y="78" width="147" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MetaLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9ri-2m-vs1">
-                                            <rect key="frame" x="8" y="1" width="131" height="33"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <color key="backgroundColor" red="0.84244978429999995" green="0.73808324339999998" blue="0.75108122830000001" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="9ri-2m-vs1" secondAttribute="bottom" constant="1" id="UNL-mh-H9n"/>
-                                    <constraint firstItem="9ri-2m-vs1" firstAttribute="top" secondItem="iNY-kJ-Qyl" secondAttribute="top" constant="1" id="eeL-ll-3pp"/>
-                                    <constraint firstItem="9ri-2m-vs1" firstAttribute="leading" secondItem="iNY-kJ-Qyl" secondAttribute="leading" constant="8" id="rZ0-cl-a89"/>
-                                    <constraint firstAttribute="trailing" secondItem="9ri-2m-vs1" secondAttribute="trailing" constant="8" id="sZ5-fA-7C2"/>
-                                </constraints>
-                                <size key="customSize" width="147" height="35"/>
-                                <connections>
-                                    <outlet property="label" destination="9ri-2m-vs1" id="Tkr-rw-FBh"/>
-                                </connections>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SpacerCell" id="zAs-Pw-joI">
-                                <rect key="frame" x="0.0" y="140" width="44" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <size key="customSize" width="44" height="50"/>
-                            </collectionViewCell>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Mask" id="Afn-by-Lpa">
-                                <rect key="frame" x="54" y="148" width="147" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
+                            </view>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="UJk-sG-AaV">
+                                <rect key="frame" x="0.0" y="44" width="600" height="556"/>
                                 <color key="backgroundColor" red="0.99633866550000005" green="0.96513330939999997" blue="0.96981418129999997" alpha="1" colorSpace="calibratedRGB"/>
-                                <size key="customSize" width="147" height="35"/>
-                            </collectionViewCell>
-                        </cells>
-                        <connections>
-                            <outlet property="dataSource" destination="lqy-bL-fWz" id="7rR-bs-Fup"/>
-                            <outlet property="delegate" destination="lqy-bL-fWz" id="yX3-KU-NdB"/>
-                        </connections>
-                    </collectionView>
+                                <collectionViewLayout key="collectionViewLayout" id="Cee-Ou-Ntg" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexNameCell" id="8Vv-Gn-Htf" customClass="IndexNameCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IndexName" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Pf-ir-Hyz">
+                                                    <rect key="frame" x="8" y="8" width="94" height="33"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="4Pf-ir-Hyz" firstAttribute="centerY" secondItem="8Vv-Gn-Htf" secondAttribute="centerY" id="CD9-zP-Ycl"/>
+                                            <constraint firstItem="4Pf-ir-Hyz" firstAttribute="leading" secondItem="8Vv-Gn-Htf" secondAttribute="leadingMargin" id="HnQ-nJ-RZc"/>
+                                            <constraint firstItem="4Pf-ir-Hyz" firstAttribute="top" secondItem="8Vv-Gn-Htf" secondAttribute="topMargin" id="Wih-6h-AZK"/>
+                                            <constraint firstItem="4Pf-ir-Hyz" firstAttribute="centerX" secondItem="8Vv-Gn-Htf" secondAttribute="centerX" id="aBt-0z-J0P"/>
+                                        </constraints>
+                                        <size key="customSize" width="111" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="4Pf-ir-Hyz" id="XYx-EX-RaV"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FieldNameCell" id="q6p-nD-esk" customClass="FieldNameCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="155" y="0.0" width="111" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wzh-2L-xQR">
+                                                    <rect key="frame" x="8" y="8" width="94" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="Wzh-2L-xQR" firstAttribute="leading" secondItem="q6p-nD-esk" secondAttribute="leadingMargin" id="Ghr-Wc-2bC"/>
+                                            <constraint firstItem="Wzh-2L-xQR" firstAttribute="centerY" secondItem="q6p-nD-esk" secondAttribute="centerY" id="X3j-jn-9RO"/>
+                                            <constraint firstItem="Wzh-2L-xQR" firstAttribute="top" secondItem="q6p-nD-esk" secondAttribute="topMargin" id="XQa-5b-jrw"/>
+                                            <constraint firstItem="Wzh-2L-xQR" firstAttribute="centerX" secondItem="q6p-nD-esk" secondAttribute="centerX" id="hiy-hW-EIk"/>
+                                        </constraints>
+                                        <size key="customSize" width="111" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="Wzh-2L-xQR" id="VBz-t7-NlB"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompFieldNameCell" id="jcS-a8-icN" customClass="CompFieldNameCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="309" y="0.0" width="136" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="136" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vdm-7x-8Bk">
+                                                    <rect key="frame" x="8" y="8" width="120" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.84611487389999995" green="0.7281900644" blue="0.73991554979999996" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="vdm-7x-8Bk" firstAttribute="centerY" secondItem="jcS-a8-icN" secondAttribute="centerY" id="4QQ-rA-dBe"/>
+                                            <constraint firstItem="vdm-7x-8Bk" firstAttribute="centerX" secondItem="jcS-a8-icN" secondAttribute="centerX" id="R8H-Sq-SIV"/>
+                                            <constraint firstItem="vdm-7x-8Bk" firstAttribute="leading" secondItem="jcS-a8-icN" secondAttribute="leadingMargin" id="Vg0-tS-r5w"/>
+                                            <constraint firstItem="vdm-7x-8Bk" firstAttribute="top" secondItem="jcS-a8-icN" secondAttribute="topMargin" id="pWD-CU-zYL"/>
+                                        </constraints>
+                                        <size key="customSize" width="136" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="vdm-7x-8Bk" id="v9j-hY-0Qg"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexCell" id="Pke-xj-zQ0" customClass="IndexCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="489" y="0.0" width="111" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Index" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="epQ-e1-wBR">
+                                                    <rect key="frame" x="8" y="8" width="94" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.90312445159999999" green="0.54486668110000003" blue="0.57182466980000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="epQ-e1-wBR" firstAttribute="leading" secondItem="Pke-xj-zQ0" secondAttribute="leadingMargin" id="1Zp-Ji-vbQ"/>
+                                            <constraint firstItem="epQ-e1-wBR" firstAttribute="centerY" secondItem="Pke-xj-zQ0" secondAttribute="centerY" id="Vf7-J2-T0t"/>
+                                            <constraint firstItem="epQ-e1-wBR" firstAttribute="centerX" secondItem="Pke-xj-zQ0" secondAttribute="centerX" id="oOJ-xk-yZA"/>
+                                            <constraint firstItem="epQ-e1-wBR" firstAttribute="top" secondItem="Pke-xj-zQ0" secondAttribute="topMargin" id="rua-k6-uy5"/>
+                                        </constraints>
+                                        <size key="customSize" width="111" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="epQ-e1-wBR" id="fAD-QQ-7Va"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="M8q-CZ-1Xp" customClass="Cell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="70" width="111" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="111" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A91-TL-KB2">
+                                                    <rect key="frame" x="8" y="8" width="94" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.87478065490000001" green="0.66943103079999999" blue="0.68983340260000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="A91-TL-KB2" firstAttribute="centerY" secondItem="M8q-CZ-1Xp" secondAttribute="centerY" id="6N0-rG-u1q"/>
+                                            <constraint firstItem="A91-TL-KB2" firstAttribute="top" secondItem="M8q-CZ-1Xp" secondAttribute="topMargin" id="JYe-KO-bdt"/>
+                                            <constraint firstItem="A91-TL-KB2" firstAttribute="leading" secondItem="M8q-CZ-1Xp" secondAttribute="leadingMargin" id="mx3-Rs-ZuG"/>
+                                            <constraint firstItem="A91-TL-KB2" firstAttribute="centerX" secondItem="M8q-CZ-1Xp" secondAttribute="centerX" id="o20-Yj-8dZ"/>
+                                        </constraints>
+                                        <size key="customSize" width="111" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="A91-TL-KB2" id="fAv-4i-QFA"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompColumnCell" id="pk8-JD-SGy" customClass="CompColumnCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="132" y="70" width="139" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="139" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9x7-j1-NKg">
+                                                    <rect key="frame" x="8" y="8" width="123" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.67352668540000005" green="0.79694942059999996" blue="0.77149348360000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="9x7-j1-NKg" firstAttribute="leading" secondItem="pk8-JD-SGy" secondAttribute="leadingMargin" id="9Ik-tY-AqX"/>
+                                            <constraint firstItem="9x7-j1-NKg" firstAttribute="centerX" secondItem="pk8-JD-SGy" secondAttribute="centerX" id="Mmj-oD-8ip"/>
+                                            <constraint firstItem="9x7-j1-NKg" firstAttribute="centerY" secondItem="pk8-JD-SGy" secondAttribute="centerY" id="ZrF-dN-UJy"/>
+                                            <constraint firstItem="9x7-j1-NKg" firstAttribute="top" secondItem="pk8-JD-SGy" secondAttribute="topMargin" id="lzf-PE-y7I"/>
+                                        </constraints>
+                                        <size key="customSize" width="139" height="50"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="label" destination="9x7-j1-NKg" id="GUc-Xf-9Dv"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CompCell" id="iUU-eF-mEn" customClass="CompCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="293" y="60" width="139" height="70"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="139" height="70"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DSq-Mb-o8a" userLabel="Label">
+                                                    <rect key="frame" x="19" y="8" width="112" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Computed cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6zq-XZ-Gll">
+                                                    <rect key="frame" x="8" y="31" width="123" height="33"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="∑" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="le5-QK-IvD" userLabel="Label">
+                                                    <rect key="frame" x="8" y="8" width="11" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.67352668540000005" green="0.79694942059999996" blue="0.77149348360000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="6zq-XZ-Gll" firstAttribute="top" secondItem="iUU-eF-mEn" secondAttribute="topMargin" constant="23" id="1uB-x2-9ws"/>
+                                            <constraint firstItem="6zq-XZ-Gll" firstAttribute="leading" secondItem="iUU-eF-mEn" secondAttribute="leadingMargin" id="2bL-oL-rKT"/>
+                                            <constraint firstItem="6zq-XZ-Gll" firstAttribute="centerX" secondItem="iUU-eF-mEn" secondAttribute="centerX" id="70y-XD-CLN"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="DSq-Mb-o8a" secondAttribute="trailing" id="7Rb-S9-TzH"/>
+                                            <constraint firstItem="DSq-Mb-o8a" firstAttribute="top" secondItem="iUU-eF-mEn" secondAttribute="topMargin" id="I8W-a0-DXq"/>
+                                            <constraint firstAttribute="leadingMargin" secondItem="le5-QK-IvD" secondAttribute="leading" id="JEf-sV-6kC"/>
+                                            <constraint firstItem="6zq-XZ-Gll" firstAttribute="centerY" secondItem="iUU-eF-mEn" secondAttribute="centerY" constant="12.5" id="Ot5-dy-0h5"/>
+                                            <constraint firstItem="le5-QK-IvD" firstAttribute="top" secondItem="iUU-eF-mEn" secondAttribute="topMargin" id="PcM-wM-cqO"/>
+                                            <constraint firstItem="DSq-Mb-o8a" firstAttribute="leading" secondItem="le5-QK-IvD" secondAttribute="trailing" id="txh-bz-hyr"/>
+                                        </constraints>
+                                        <size key="customSize" width="139" height="70"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="2"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <outlet property="iconLabel" destination="le5-QK-IvD" id="hED-Uq-YGu"/>
+                                            <outlet property="label" destination="6zq-XZ-Gll" id="0Bk-ve-IEa"/>
+                                            <outlet property="titleLabel" destination="DSq-Mb-o8a" id="s74-8c-ORU"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MetaLabel" id="CbG-9M-AOC" customClass="MetaLabelCell" customModule="VeloApp" customModuleProvider="target">
+                                        <rect key="frame" x="453" y="78" width="147" height="35"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MetaLabel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2wI-P7-n70">
+                                                    <rect key="frame" x="8" y="1" width="131" height="33"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.84244978429999995" green="0.73808324339999998" blue="0.75108122830000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="2wI-P7-n70" firstAttribute="top" secondItem="CbG-9M-AOC" secondAttribute="top" constant="1" id="NdZ-M1-nuS"/>
+                                            <constraint firstAttribute="trailing" secondItem="2wI-P7-n70" secondAttribute="trailing" constant="8" id="Nta-ID-l3P"/>
+                                            <constraint firstItem="2wI-P7-n70" firstAttribute="leading" secondItem="CbG-9M-AOC" secondAttribute="leading" constant="8" id="csb-JR-Zb3"/>
+                                            <constraint firstAttribute="bottom" secondItem="2wI-P7-n70" secondAttribute="bottom" constant="1" id="z3S-41-Eee"/>
+                                        </constraints>
+                                        <size key="customSize" width="147" height="35"/>
+                                        <connections>
+                                            <outlet property="label" destination="2wI-P7-n70" id="reb-Nf-kre"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="SpacerCell" id="jaK-fW-1up">
+                                        <rect key="frame" x="0.0" y="140" width="44" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="44" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <size key="customSize" width="44" height="50"/>
+                                    </collectionViewCell>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Mask" id="euV-Pi-hF1">
+                                        <rect key="frame" x="54" y="148" width="147" height="35"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="147" height="35"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <color key="backgroundColor" red="0.99633866550000005" green="0.96513330939999997" blue="0.96981418129999997" alpha="1" colorSpace="calibratedRGB"/>
+                                        <size key="customSize" width="147" height="35"/>
+                                    </collectionViewCell>
+                                </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="hjM-Xm-KBs" id="9RF-io-nib"/>
+                                    <outlet property="delegate" destination="hjM-Xm-KBs" id="eTe-GC-MVR"/>
+                                </connections>
+                            </collectionView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="1TL-fG-UTI" firstAttribute="leading" secondItem="XoV-1o-VhG" secondAttribute="leading" id="Dh8-gF-SFR"/>
+                            <constraint firstAttribute="bottom" secondItem="UJk-sG-AaV" secondAttribute="bottom" id="I3o-hY-Cwc"/>
+                            <constraint firstItem="UJk-sG-AaV" firstAttribute="leading" secondItem="XoV-1o-VhG" secondAttribute="leading" id="Ye6-O8-aud"/>
+                            <constraint firstItem="UJk-sG-AaV" firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="bottom" id="r3m-de-42F"/>
+                            <constraint firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="top" id="upO-jg-q3g"/>
+                            <constraint firstAttribute="trailing" secondItem="1TL-fG-UTI" secondAttribute="trailing" id="wy2-jc-6J0"/>
+                            <constraint firstAttribute="trailing" secondItem="UJk-sG-AaV" secondAttribute="trailing" id="xsW-VR-wLd"/>
+                        </constraints>
+                    </view>
                     <nil key="simulatedStatusBarMetrics"/>
-                </collectionViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="J4Q-i2-zLs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                    <connections>
+                        <outlet property="bar" destination="1TL-fG-UTI" id="Mmj-UU-1dE"/>
+                        <outlet property="collectionView" destination="UJk-sG-AaV" id="Tcm-eg-Mch"/>
+                        <outlet property="nameLabel" destination="QHW-kg-QL6" id="Gx6-7O-knD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Z2C-x0-tzL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-348" y="3075"/>
+            <point key="canvasLocation" x="-348" y="3066"/>
         </scene>
     </scenes>
 </document>
