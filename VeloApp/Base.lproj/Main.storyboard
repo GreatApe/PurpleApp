@@ -204,27 +204,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1TL-fG-UTI">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Table name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QHW-kg-QL6">
-                                        <rect key="frame" x="16" y="11" width="89" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" red="0.67505192756652832" green="0.48204320669174194" blue="0.80978715419769287" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="leading" secondItem="1TL-fG-UTI" secondAttribute="leading" constant="16" id="7UD-Cj-Ygw"/>
-                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="top" constant="11" id="UEi-6Y-Uoj"/>
-                                    <constraint firstAttribute="bottom" secondItem="QHW-kg-QL6" secondAttribute="bottom" constant="12" id="bvw-QB-PpB"/>
-                                    <constraint firstAttribute="height" constant="44" id="zEt-Um-IfH"/>
-                                </constraints>
-                            </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="UJk-sG-AaV">
-                                <rect key="frame" x="0.0" y="44" width="600" height="556"/>
-                                <color key="backgroundColor" red="0.99633866550000005" green="0.96513330939999997" blue="0.96981418129999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <rect key="frame" x="0.0" y="40" width="600" height="560"/>
+                                <color key="backgroundColor" red="0.99479806423187256" green="0.97173225879669189" blue="0.97580695152282715" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewLayout key="collectionViewLayout" id="Cee-Ou-Ntg" customClass="TableLayout" customModule="VeloApp" customModuleProvider="target"/>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="IndexNameCell" id="8Vv-Gn-Htf" customClass="IndexNameCell" customModule="VeloApp" customModuleProvider="target">
@@ -491,7 +473,6 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <color key="backgroundColor" red="0.84244978429999995" green="0.73808324339999998" blue="0.75108122830000001" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstItem="2wI-P7-n70" firstAttribute="top" secondItem="CbG-9M-AOC" secondAttribute="top" constant="1" id="NdZ-M1-nuS"/>
                                             <constraint firstAttribute="trailing" secondItem="2wI-P7-n70" secondAttribute="trailing" constant="8" id="Nta-ID-l3P"/>
@@ -530,13 +511,33 @@
                                     <outlet property="delegate" destination="hjM-Xm-KBs" id="eTe-GC-MVR"/>
                                 </connections>
                             </collectionView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1TL-fG-UTI" customClass="MenuBar" customModule="VeloApp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="40"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Table name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QHW-kg-QL6">
+                                        <rect key="frame" x="16" y="11" width="89" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.97482359409999997" green="0.055288564409999998" blue="0.17432501910000001" alpha="0.0" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="leading" secondItem="1TL-fG-UTI" secondAttribute="leading" constant="16" id="7UD-Cj-Ygw"/>
+                                    <constraint firstItem="QHW-kg-QL6" firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="top" constant="11" id="UEi-6Y-Uoj"/>
+                                    <constraint firstAttribute="height" constant="40" id="zEt-Um-IfH"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="barHeight" destination="zEt-Um-IfH" id="m90-1A-QXx"/>
+                                </connections>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.67505192759999999" green="0.4820432067" blue="0.80978715420000003" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="1TL-fG-UTI" firstAttribute="leading" secondItem="XoV-1o-VhG" secondAttribute="leading" id="Dh8-gF-SFR"/>
                             <constraint firstAttribute="bottom" secondItem="UJk-sG-AaV" secondAttribute="bottom" id="I3o-hY-Cwc"/>
+                            <constraint firstItem="UJk-sG-AaV" firstAttribute="top" secondItem="XoV-1o-VhG" secondAttribute="top" constant="40" id="P4X-CZ-8Ca"/>
                             <constraint firstItem="UJk-sG-AaV" firstAttribute="leading" secondItem="XoV-1o-VhG" secondAttribute="leading" id="Ye6-O8-aud"/>
-                            <constraint firstItem="UJk-sG-AaV" firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="bottom" id="r3m-de-42F"/>
                             <constraint firstAttribute="top" secondItem="1TL-fG-UTI" secondAttribute="top" id="upO-jg-q3g"/>
                             <constraint firstAttribute="trailing" secondItem="1TL-fG-UTI" secondAttribute="trailing" id="wy2-jc-6J0"/>
                             <constraint firstAttribute="trailing" secondItem="UJk-sG-AaV" secondAttribute="trailing" id="xsW-VR-wLd"/>
@@ -544,8 +545,8 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
-                        <outlet property="bar" destination="1TL-fG-UTI" id="Mmj-UU-1dE"/>
                         <outlet property="collectionView" destination="UJk-sG-AaV" id="Tcm-eg-Mch"/>
+                        <outlet property="menuBar" destination="1TL-fG-UTI" id="TcS-dT-gqY"/>
                         <outlet property="nameLabel" destination="QHW-kg-QL6" id="Gx6-7O-knD"/>
                     </connections>
                 </viewController>

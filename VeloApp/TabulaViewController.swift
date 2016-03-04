@@ -9,11 +9,138 @@
 import UIKit
 import Realm
 
-class TabulaViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class DropDown: UIView {
+    typealias Item = (text: String, image: UIImage?, selectable: Bool)
     
+    // MARK: Public variables
+
+    var selection: Int?
+    var expanded = false
+    
+    weak var bar: MenuBar?
+    
+    // MARK: Private variables
+
+    private var size: CGSize
+    private var action: (DropDown, Int?) -> Void
+    private var buttons = [(btn: UIButton, hide: Bool, selectable: Bool)]()
+
+    // MARK: Public methods
+
+    func hide(index: Int) {
+        buttons[index].hide = true
+    }
+    
+    func show(index: Int) {
+        buttons[index].hide = false
+    }
+
+    init(frame: CGRect, items: [Item], action: (DropDown, Int?) -> Void) {
+        self.size = frame.size
+        self.action = action
+        super.init(frame: frame)
+        items.forEach(addItem)
+        backgroundColor = UIColor.random()
+        collapse()
+    }
+    
+    // MARK: Private methods
+
+    func boldString(text: String) -> NSAttributedString {
+        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(15)]
+        return NSMutableAttributedString(string:text, attributes:attrs)
+    }
+    
+    private func addItem(item: Item) {
+        let button = UIButton()
+        button.frame.size = self.frame.size
+        button.addTarget(self, action: "tappedButton:", forControlEvents: .TouchUpInside)
+        button.setTitle(item.text, forState: .Normal)
+        button.setAttributedTitle(boldString("*" + item.text), forState: .Selected)
+        button.imageView?.image = item.image
+        button.tag = buttons.count
+        button.backgroundColor = UIColor.random()
+        buttons.append((button, false, item.selectable))
+        self.addSubview(button)
+    }
+    
+    func tappedButton(sender: UIButton!) {
+        if expanded {
+            let selectedButton = buttons[sender.tag]
+            selection = selectedButton.selectable ? sender.tag : selection
+            action(self, sender.tag)
+            collapse()
+        }
+        else {
+            expand()
+        }
+
+        print("Selected----")
+
+        buttons.forEach { button in
+            button.btn.selected = button.btn.tag == selection
+            print("\(button.btn.tag): \(button.btn.selected)")
+        }
+    }
+    
+    private func expand() {
+        let visibleButtons = buttons.filter({ !$0.hide })
+        for (index, button) in visibleButtons.enumerate() {
+            button.btn.frame.origin.y = CGFloat(index)*frame.size.height
+//            button.btn.alpha = index == selection ? 1 : 0.5
+        }
+        expanded = true
+        bar?.expanded(self)
+        frame.size.height = CGFloat(visibleButtons.count)*size.height
+    }
+    
+    private func collapse() {
+        for (index, button) in buttons.enumerate() {
+            button.btn.layer.zPosition = 100 + (index == selection ? 10 : 0) + (index == 0 ? 5 : 0)
+            button.btn.frame.origin.y = 0
+//            button.btn.alpha = index == selection ? 1 : 0.5
+        }
+        expanded = false
+        bar?.collapsed(self)
+        frame.size.height = size.height
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class MenuBar: UIView {
+    private var dropDowns = [DropDown]()
+    
+    @IBOutlet weak var barHeight: NSLayoutConstraint!
+    
+    func addDropDown(dropDown: DropDown) {
+        dropDown.bar = self
+        addSubview(dropDown)
+        dropDown.tag = dropDowns.count
+        dropDowns.append(dropDown)
+    }
+    
+    func expanded(dropDown: DropDown) {
+        dropDowns.filter { $0.expanded && $0.tag != dropDown.tag }.forEach { $0.collapse() }
+        updateHeight()
+    }
+    
+    func collapsed(dropDown: DropDown) {
+        updateHeight()
+    }
+    
+    private func updateHeight() {
+        barHeight.constant = dropDowns.contains { $0.expanded } ? superview!.frame.height : 40
+        layoutIfNeeded()
+    }
+}
+
+class TabulaViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     @IBOutlet weak var nameLabel: UILabel!
     
-    @IBOutlet weak var bar: UIView!
+    @IBOutlet weak var menuBar: MenuBar!
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -30,6 +157,10 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func viewDidLayoutSubviews() {
     }
     
+    override func viewDidLoad() {
+        view.addSubview(menuBar)
+    }
+    
 //    func updateContainer() {
 //        guard let container = view.superview, contentSize = layout.contentSize else { return }
 //        
@@ -37,17 +168,41 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 //        view.frame.size = contentSize
 //    }
     
+    private func setupCategory(index: Int, cat: Cat) {
+        let size = CGSize(width: 100, height: 40)
+        let pos = CGPoint(x: CGFloat(index)*size.width, y: 0)
+        
+        let catItem: DropDown.Item = (cat.name, nil, false)
+        let expandItem: DropDown.Item = ("Show all", nil, false)
+        let valueItems: [DropDown.Item] = cat.values.map { ($0, nil, true) }
+        let items = [catItem, expandItem] + valueItems
+        
+        let action: (DropDown, Int?) -> Void = { d, i in
+            if i == 1 {
+                d.hide(1)
+                d.selection = nil
+            }
+            else {
+                d.show(1)
+            }
+        }
+        menuBar.addDropDown(DropDown(frame: CGRect(origin: pos, size: size), items: items, action: action))
+    }
+    
     private func didSetCollectionId() {
         let rowCounts: [Int]
         (name, header, categories, rowCounts) = Engine.shared.getMetaData(collectionId)
+        
+        nameLabel.text = name
+        categories.enumerate().forEach(setupCategory)
         
         let size = categories.map { $0.values.count }
         let config = TableConfig(columns: header.count - 1)
     
         layout.update(size, tableConfig: config, rowCounts: rowCounts)
 
-        collectionView?.reloadData()
-        layout.updateScrollOffset(collectionView!.contentOffset)
+        collectionView.reloadData()
+        layout.updateScrollOffset(collectionView.contentOffset)
     }
     
     // MARK: Collection View Data Source
@@ -70,7 +225,6 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let tableCount = layout.metaRows*layout.metaColumns
         let cellType: CellType
-        
         
         switch indexPath.section {
         case 0..<tableCount:
@@ -136,7 +290,7 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         print("Tensor: \(layout.tensor)")
         
-        collectionView?.reloadData()
+        collectionView.reloadData()
     }
 }
 
