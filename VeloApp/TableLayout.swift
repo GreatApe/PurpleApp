@@ -324,7 +324,7 @@ class TableLayout: UICollectionViewLayout {
         }
         else {
             attr.zIndex = 0
-            attr.frame.origin = CGPoint(x: -100, y: -100)
+            attr.frame.origin = CGPoint(x: -200, y: -200)
         }
         
         attr.frame.size = CGSize(width: metaIndexWidth, height: metaHeaderHeight)

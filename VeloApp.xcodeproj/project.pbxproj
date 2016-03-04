@@ -12,7 +12,6 @@
 		220C732E1C84380700FCA89F /* LayoutConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220C732D1C84380700FCA89F /* LayoutConfigs.swift */; };
 		22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B3D1C76A67800F58A86 /* RLMSupport.swift */; };
 		22236B481C77AF4E00F58A86 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22236B471C77AF4E00F58A86 /* Engine.swift */; };
-		22335C021C78E10300E5CE68 /* DataSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C011C78E10300E5CE68 /* DataSources.swift */; };
 		22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */; };
 		22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */; };
 		22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22335C1E1C7B65D400E5CE68 /* Extensions.swift */; };
@@ -102,7 +101,6 @@
 		220C732D1C84380700FCA89F /* LayoutConfigs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutConfigs.swift; sourceTree = "<group>"; };
 		22236B3D1C76A67800F58A86 /* RLMSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMSupport.swift; sourceTree = "<group>"; };
 		22236B471C77AF4E00F58A86 /* Engine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
-		22335C011C78E10300E5CE68 /* DataSources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSources.swift; sourceTree = "<group>"; };
 		22335C1A1C7B13A100E5CE68 /* TabulaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabulaViewController.swift; sourceTree = "<group>"; };
 		22335C1C1C7B3ED600E5CE68 /* TableLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableLayout.swift; sourceTree = "<group>"; };
 		22335C1E1C7B65D400E5CE68 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -197,7 +195,6 @@
 				22236B471C77AF4E00F58A86 /* Engine.swift */,
 				22A224001C6D304A00F74F81 /* Models.swift */,
 				22A223CE1C6CB54500F74F81 /* Main.storyboard */,
-				22335C011C78E10300E5CE68 /* DataSources.swift */,
 				22A223D11C6CB54500F74F81 /* Assets.xcassets */,
 				22A223D31C6CB54500F74F81 /* LaunchScreen.storyboard */,
 				22A223D61C6CB54500F74F81 /* Info.plist */,
@@ -502,7 +499,6 @@
 				22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */,
 				22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */,
 				22335C1B1C7B13A100E5CE68 /* TabulaViewController.swift in Sources */,
-				22335C021C78E10300E5CE68 /* DataSources.swift in Sources */,
 				22236B481C77AF4E00F58A86 /* Engine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

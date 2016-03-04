@@ -40,14 +40,20 @@ class DropDown: UIView {
         self.action = action
         super.init(frame: frame)
         items.forEach(addItem)
-        backgroundColor = UIColor.random()
+        backgroundColor = UIColor.menu()
+        layer.cornerRadius = 3
         collapse()
     }
     
     // MARK: Private methods
 
     func boldString(text: String) -> NSAttributedString {
-        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(15)]
+        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(17)]
+        return NSMutableAttributedString(string:text, attributes:attrs)
+    }
+    
+    func normalString(text: String) -> NSAttributedString {
+        let attrs = [NSFontAttributeName : UIFont.systemFontOfSize(17)]
         return NSMutableAttributedString(string:text, attributes:attrs)
     }
     
@@ -55,11 +61,13 @@ class DropDown: UIView {
         let button = UIButton()
         button.frame.size = self.frame.size
         button.addTarget(self, action: "tappedButton:", forControlEvents: .TouchUpInside)
-        button.setTitle(item.text, forState: .Normal)
-        button.setAttributedTitle(boldString("*" + item.text), forState: .Selected)
+        button.setAttributedTitle(normalString(item.text), forState: .Normal)
+        button.setAttributedTitle(boldString(item.text), forState: .Selected)
         button.imageView?.image = item.image
         button.tag = buttons.count
-        button.backgroundColor = UIColor.random()
+        button.backgroundColor = UIColor.menu()
+        button.setTitleColor(UIColor.cellText(), forState: .Normal)
+        button.layer.cornerRadius = 3
         buttons.append((button, false, item.selectable))
         self.addSubview(button)
     }
@@ -85,24 +93,29 @@ class DropDown: UIView {
     
     private func expand() {
         let visibleButtons = buttons.filter({ !$0.hide })
-        for (index, button) in visibleButtons.enumerate() {
-            button.btn.frame.origin.y = CGFloat(index)*frame.size.height
-//            button.btn.alpha = index == selection ? 1 : 0.5
+        
+        UIView.animateWithDuration(0.1) {
+            for (index, button) in visibleButtons.enumerate() {
+                button.btn.frame.origin.y = CGFloat(index)*self.size.height
+            }
+            self.frame.size.height = CGFloat(visibleButtons.count)*self.size.height
         }
         expanded = true
         bar?.expanded(self)
-        frame.size.height = CGFloat(visibleButtons.count)*size.height
     }
     
     private func collapse() {
-        for (index, button) in buttons.enumerate() {
-            button.btn.layer.zPosition = 100 + (index == selection ? 10 : 0) + (index == 0 ? 5 : 0)
-            button.btn.frame.origin.y = 0
-//            button.btn.alpha = index == selection ? 1 : 0.5
+        UIView.animateWithDuration(0.1) {
+            for (index, button) in self.buttons.enumerate() {
+                button.btn.layer.zPosition = 100 + (index == self.selection ? 10 : 0) + (index == 0 ? 5 : 0)
+                button.btn.frame.origin.y = 0
+                //            button.btn.alpha = index == selection ? 1 : 0.5
+            }
+
+            self.frame.size.height = self.size.height
         }
         expanded = false
         bar?.collapsed(self)
-        frame.size.height = size.height
     }
     
     required init?(coder aDecoder: NSCoder) {

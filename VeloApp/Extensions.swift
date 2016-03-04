@@ -157,13 +157,48 @@ func clamp(value: CGFloat, above lowValue: CGFloat = 0, below highValue: CGFloat
     return (value, 0)
 }
 
-
 func upscale(value: Float, between lowValue: Float, and highValue: Float) -> Float {
     return lowValue + value*(highValue - lowValue)
 }
 
 func upscale(value: CGFloat, between lowValue: CGFloat, and highValue: CGFloat) -> CGFloat {
     return lowValue + value*(highValue - lowValue)
+}
+
+extension UIColor {
+    class func random() -> UIColor {
+        func randomFloat() -> CGFloat { return CGFloat(arc4random() % 256)/256 }
+        return UIColor(red: randomFloat(), green: randomFloat(), blue: randomFloat(), alpha: 1.0)
+    }
+    
+    class func normalCell() -> UIColor {
+        return UIColor.whiteColor()
+        //        return UIColor(red: 233/255, green: 236/255, blue: 239/255, alpha: 1)
+    }
+    
+    class func indexCell() -> UIColor {
+        return UIColor(red: 225/255, green: 229/255, blue: 234/255, alpha: 1)
+    }
+    
+    class func headerCell() -> UIColor {
+        return UIColor(red: 179/255, green: 193/255, blue: 198/255, alpha: 1)
+    }
+    
+    class func computedCell() -> UIColor {
+        return UIColor(red: 46/255, green: 77/255, blue: 92/255, alpha: 1)
+    }
+    
+    class func newComputedCell() -> UIColor {
+        return UIColor(red: 205/255, green: 212/255, blue: 218/255, alpha: 1)
+    }
+    
+    class func cellText() -> UIColor {
+        return computedCell()
+    }
+    
+    class func menu() -> UIColor {
+        return UIColor(red: 225/255, green: 229/255, blue: 234/255, alpha: 1)
+    }
 }
 
 
