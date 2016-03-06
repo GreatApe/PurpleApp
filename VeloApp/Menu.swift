@@ -14,9 +14,12 @@ class MenuBar: UIView {
     @IBOutlet weak var barHeight: NSLayoutConstraint!
     
     override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
-        return dropDowns.contains { dropDown in
-            dropDown.frame.contains(point)
+        guard dropDowns.contains({ $0.frame.contains(point) }) else {
+            dropDowns.forEach { $0.collapse() }
+            return false
         }
+        
+        return true
     }
     
     func addDropDown(dropDown: DropDown) {

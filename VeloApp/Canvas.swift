@@ -106,7 +106,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //    }
     
     @IBAction func tappedButton() {
-        Engine.shared.createRandomCollection()
+//        Engine.shared.createRandomCollection()
+        let g = Engine.shared
     }
     
     @IBAction func tappedOtherButton() {

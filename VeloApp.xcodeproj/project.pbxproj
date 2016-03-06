@@ -28,7 +28,7 @@
 		22A224011C6D304B00F74F81 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A224001C6D304A00F74F81 /* Models.swift */; };
 		22CB658C1C8A3A4C00234BA1 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CB658B1C8A3A4C00234BA1 /* Menu.swift */; };
 		9FF17E591C7CB38300563266 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FF17E581C7CB38300563266 /* GoogleService-Info.plist */; };
-		9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */; };
+		9FF17E5B1C7CF98100563266 /* DataSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF17E5A1C7CF98100563266 /* DataSync.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,7 +126,7 @@
 		5D88CECD828078C913561124 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF17E571C7CB2AC00563266 /* VeloApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VeloApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		9FF17E581C7CB38300563266 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseViewController.swift; sourceTree = "<group>"; };
+		9FF17E5A1C7CF98100563266 /* DataSync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSync.swift; sourceTree = "<group>"; };
 		9FF17E5C1C7CFC4300563266 /* Gloss.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Gloss.xcodeproj; path = "../../../../Downloads/Gloss-master/Gloss.xcodeproj"; sourceTree = "<group>"; };
 		A3BE2B44474156687C748102 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		BDF7C8E8419A1EF225D4FB76 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -203,7 +203,7 @@
 				22A223D61C6CB54500F74F81 /* Info.plist */,
 				9FF17E581C7CB38300563266 /* GoogleService-Info.plist */,
 				9FF17E571C7CB2AC00563266 /* VeloApp-Bridging-Header.h */,
-				9FF17E5A1C7CF98100563266 /* FirebaseViewController.swift */,
+				9FF17E5A1C7CF98100563266 /* DataSync.swift */,
 			);
 			path = VeloApp;
 			sourceTree = "<group>";
@@ -498,7 +498,7 @@
 				2267A7891C7EF3710081AE7F /* CollectionListViewController.swift in Sources */,
 				22A223CB1C6CB54500F74F81 /* AppDelegate.swift in Sources */,
 				22236B3E1C76A67800F58A86 /* RLMSupport.swift in Sources */,
-				9FF17E5B1C7CF98100563266 /* FirebaseViewController.swift in Sources */,
+				9FF17E5B1C7CF98100563266 /* DataSync.swift in Sources */,
 				2267A78D1C81E6580081AE7F /* Tensor.swift in Sources */,
 				22335C1F1C7B65D400E5CE68 /* Extensions.swift in Sources */,
 				22335C1D1C7B3ED600E5CE68 /* TableLayout.swift in Sources */,

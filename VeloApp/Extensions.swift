@@ -21,6 +21,10 @@ func >>><A, B, C>(f: A -> B, g: B-> C) -> A -> C {
 
 infix operator |> { associativity left precedence 80 }
 
+func |> <T, U>(value: T?, function: (T -> U)) -> U? {
+    return value.map(function)
+}
+
 func |> <T, U>(value: T, function: (T -> U)) -> U {
     return function(value)
 }

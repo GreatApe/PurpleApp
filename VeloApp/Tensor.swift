@@ -54,6 +54,10 @@ struct Slice {
 struct Tensor: CustomStringConvertible {
     // MARK: Public
 
+    var all: [[Int]] {
+        return (0..<count).map(vectorise)
+    }
+    
     let size: [Int]
     private var slice: Slice
     

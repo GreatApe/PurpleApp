@@ -32,7 +32,7 @@ class Engine {
         let schema: RLMSchema? = realmExists("store") ? nil : RLMRealm.defaultRealm().schema
         realm = try! RLMRealm.dynamicRealm("store", schema: schema)
         
-//        sync.tableAdded = onTableAdded
+        sync.collectionAdded = onCollectionAdded
 //        sync.tableChanged = onTableChanged
 //        sync.tableRemoved = onTableRemoved
     }
@@ -52,9 +52,9 @@ class Engine {
     
     // MARK: Collection Helpers
     
-    func getSchema(rowClass: String) -> [RLMPropertyType] {
-        return realm.schema[rowClass].properties.map { $0.type }
-    }
+//    func getSchema(rowClass: String) -> [RLMPropertyType] {
+//        return realm.schema[rowClass].properties.map { $0.type }
+//    }
     
     func getMetaData(collectionId: String) -> (name: String, header: [String], categories: [Cat], rowCounts: [Int]) {
         let collection = (collectionId |> getCollection)!
@@ -80,7 +80,13 @@ class Engine {
     func getData(collectionId: String, index: [Int], row: Int, column: Int) -> AnyObject {
         guard let c = getCollection(collectionId) else { return 0 }
         
-        return c |> getTable(index) >>> getRows >>> getCell(row, column: column)
+        return c |> getTable(index) >>> getRows >>> getCell(row, column)
+    }
+    
+    func getSchema(collectionId: String) -> [RLMPropertyType]? {
+        guard let rowClass = collectionId |> getCollection |> getTableClass |> getRowClass else { return nil }
+        
+        return realm.schema[rowClass].properties.map { $0.type }
     }
     
     private func getCollectionInfo(collectionId: String) -> CollectionInfo? {
@@ -90,34 +96,69 @@ class Engine {
 
     // MARK: Creation Methods
     
-    func newCollection() -> RLMObject {
-        let collectionId = sync.getSyncId()
-        let tableClass = newCollectionClass(collectionId)
-        let collectionClass = tableClass |> getCollectionClass
+//    func newCollection() -> RLMObject {
+//        let collectionId = sync.getSyncId()
+//        let tableClass = newCollectionClass(collectionId)
+//        let collectionClass = tableClass |> getCollectionClass
+//        
+//        realm.beginWriteTransaction()
+//        let table = realm.createObject(tableClass, withValue: [])
+//        let value = ["displayName" : "My data", "tables" : [table], "id" : collectionId]
+//        let collection = realm.createObject(collectionClass, withValue: value)
+//        try! realm.commitWriteTransaction()
+//        
+//        return collection
+//    }
+
+    
+    func makeCollection(collection: Collection) -> RLMObject {
+        let m = collection.metaData
+        let tableClass = newCollectionClass(m.id)
+        let rowClass = tableClass |> getRowClass
+        
+        for (type, name) in zip(collection.metaData.schema, m.header) {
+            addProperty(type, rowClass: rowClass, displayName: name)
+        }
         
         realm.beginWriteTransaction()
-        let table = realm.createObject(tableClass, withValue: [])
-        let value = ["displayName" : "My data", "tables" : [table], "id" : collectionId]
-        let collection = realm.createObject(collectionClass, withValue: value)
+        
+        let cats: [RLMObject] = m.categories.map { cat in
+            if let category = realm.objectWithClassName(Category.className(), forPrimaryKey: cat.id) {
+                return category
+            }
+            else {
+                let values = cat.values.map { value in
+                    realm.createObject(RealmString.className(), withValue: ["value" : value])
+                }
+                let val = ["values" : values, "id" : cat.id, "displayName" : cat.name]
+                return realm.createObject(Category.className(), withValue: val)
+            }
+        }
+        
+        let tables = RLMArray(objectClassName: tableClass)
+        
+        let t = Tensor(size: m.categories.map { $0.values.count })
+
+        for (i, table) in zip(t.all, collection.tables) {
+            let id = "table-" + i.map(String.init).joinWithSeparator("_")
+            let rows = table.map { row in realm.createObject(rowClass, withValue: row) }
+            
+            tables.addObject(realm.createObject(tableClass, withValue: ["id" : id, "rows" : rows]))
+        }
+        
+        let collectionClass = tableClass |> getCollectionClass
+        let val: [String: AnyObject] = ["displayName" : m.displayName ?? "", "tables" : tables, "id" : m.id, "categories" : cats]
+        let collection = realm.createObject(collectionClass, withValue: val)
         try! realm.commitWriteTransaction()
+        
+        printt()
+        print(collection)
         
         return collection
     }
     
-    func updateDisplayName(collection: RLMObject, name: String) -> Bool {
-        if collection["displayName"] as! String == name {
-            return false
-        }
-    
-        realm.beginWriteTransaction()
-        collection["displayName"] = name
-        try! realm.commitWriteTransaction()
-        
-        return true
-    }
-    
     func newCollectionClass(collectionId: String) -> String {
-        let tableClass = "Class" + String(Int(arc4random() % 10000))
+        let tableClass = "Class" + sync.getSyncId()
         
         let rowClass = tableClass |> getRowClass
         let rowSchema = RLMObjectSchema(className: rowClass, objectClass: RowBase.self, properties: realm.schema["RowBase"].properties)
@@ -132,7 +173,7 @@ class Engine {
         let tablesProp = RLMProperty(name: "tables", type: .Array, objectClassName: tableClass, indexed: false, optional: false)
         let collectionProps = collectionBaseProps.filter { prop in prop.name != "tables" } + [tablesProp]
         let collectionSchema = RLMObjectSchema(className: collectionClass, objectClass: CollectionBase.self, properties: collectionProps)
-
+        
         realm.beginWriteTransaction()
         realm.addObject(RowType.makeWithRowClass(rowClass))
         realm.addObject(CollectionInfo.make(collectionId, collectionClass: collectionClass))
@@ -204,6 +245,18 @@ class Engine {
         realm = try! RLMRealm.dynamicRealm("store")
     }
     
+    func updateDisplayName(collection: RLMObject, name: String) -> Bool {
+        if collection["displayName"] as! String == name {
+            return false
+        }
+        
+        realm.beginWriteTransaction()
+        collection["displayName"] = name
+        try! realm.commitWriteTransaction()
+        
+        return true
+    }
+
 //    private func createTable(tableClass: String, tableId: String) -> RLMObject {
 //        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
 //        
@@ -218,16 +271,18 @@ class Engine {
     
     // MARK: Sync methods
 
-    func onTableAdded(table: Table) {
-        if realm.objectWithClassName("TableInfo", forPrimaryKey: table.tableId) == nil {
-            addTable(table)
+    private func onCollectionAdded(collection: Collection) {
+        print("ENGINE: Got collection: \(collection)")
+        
+        if realm.objectWithClassName("CollectionInfo", forPrimaryKey: collection.metaData.id) == nil {
+            makeCollection(collection)
         }
         else {
-            updateTable(table)
+//            updateCollection(collection)
         }
     }
     
-    private func addTable(table: Table) {
+//    private func addTable(table: Table) {
 //        let tableClass = "Class" + String(Int(arc4random() % 10000))
 //        newTableClass(tableClass)
 //        
@@ -241,7 +296,7 @@ class Engine {
 //        printt()
 //        print("Table Added")
 //        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
-    }
+//    }
     
     private func replaceTableRows(data: [[AnyObject]], tableId: String, tableClass: String) {
         let realmTable = realm.objectWithClassName(tableClass, forPrimaryKey: tableId)
@@ -259,11 +314,11 @@ class Engine {
         try! realm.commitWriteTransaction()
     }
     
-    func onTableChanged(table: Table) {
-        updateTable(table)
-    }
+//    func onTableChanged(table: Table) {
+//        updateTable(table)
+//    }
 
-    private func updateTable(table: Table) {
+//    private func updateTable(table: Table) {
 //        let displayNameChange = updateDisplayName(table.tableId, displayName: table.name)
 //        let propertyNameChanges = updatePropertyNames(table.tableId, propertyNames: table.headers)
 //        
@@ -273,11 +328,11 @@ class Engine {
 //        printt()
 //        print("Table Changed (name: \(displayNameChange), prop names: \(propertyNameChanges))")
 //        print(realm.objectWithClassName(tableClass, forPrimaryKey: table.tableId))
-    }
+//    }
     
-    func onTableRemoved(table: Table) {
-        
-    }
+//    func onTableRemoved(table: Table) {
+    
+//    }
     
     // MARK: Creation methods
     
@@ -570,7 +625,7 @@ func getTable(index: [Int]) -> RLMObject -> RLMObject {
     }
 }
 
-func getCell<T>(row: Int, column: Int) -> [[T]] -> T {
+func getCell<T>(row: Int, _ column: Int) -> [[T]] -> T {
     return { $0[row][column] }
 }
 
