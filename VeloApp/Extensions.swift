@@ -19,11 +19,7 @@ func >>><A, B, C>(f: A -> B, g: B-> C) -> A -> C {
 
 // Forward Pipe
 
-infix operator |> { associativity left precedence 80 }
-
-func |> <T, U>(value: T?, function: (T -> U)) -> U? {
-    return value.map(function)
-}
+infix operator |> { associativity left precedence 81 }
 
 func |> <T, U>(value: T, function: (T -> U)) -> U {
     return function(value)

@@ -20,14 +20,12 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     private var layout: TableLayout { return collectionView.collectionViewLayout as! TableLayout }
     
-    private var name: String = "Table"
-    private var header: [String] = ["Field0", "Field1"]
-    private var categories: [Cat] = []
+    private var metaData = MetaData(id: "", displayName: "Table", header: ["Field0", "Field1"], schema: [.String, .Double], categories: [])
+    private var rowCounts = [1]
     
     private var fullScreen = true
     
-    override func viewDidLayoutSubviews() {
-    }
+    private var subscriptionId: String?
     
     override func viewDidLoad() {
         view.addSubview(menuBar)
@@ -40,25 +38,49 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 //        view.frame.size = contentSize
 //    }
     
+    private func collectionChanged(change: CollectionChange) {
+        guard change.collectionId == collectionId else { return }
+        collectionView.reloadData()
+        change.metaChanges.forEach(metaDataChanged)
+        change.tableChanges.forEach(tableChanged)
+    }
+    
+    private func metaDataChanged(change: MetaChange) {
+        switch change {
+//        case .DisplayName: 
+        }
+    }
+
+    private func tableChanged(change: TableChange) {
+        
+    }
+    
     private func didSetCollectionId() {
         let rowCounts: [Int]
-        (name, header, categories, rowCounts) = Engine.shared.getMetaData(collectionId)
+        metaData = Engine.shared.getMetaData(collectionId)
+        rowCounts = Engine.shared.getRowCounts(collectionId)
         
-        nameLabel.text = name
-        categories.enumerate().forEach(setupCategory)
+        nameLabel.text = metaData.displayName
+        setupCategories(metaData.categories)
         
-        let size = categories.map { $0.values.count }
-        let config = TableConfig(columns: header.count - 1)
+        let size = metaData.categories.map { $0.values.count }
+        let config = TableConfig(columns: metaData.header.count - 1)
     
         layout.update(size, tableConfig: config, rowCounts: rowCounts)
 
         collectionView.reloadData()
         layout.updateScrollOffset(collectionView.contentOffset)
+        
+        subscriptionId = Engine.shared.listenToChanges(collectionChanged)
+    }
+    
+    private func setupCategories(cats: [Cat]) {
+        metaData.categories.enumerate().forEach(setupCategory)
     }
     
     private func setupCategory(index: Int, cat: Cat) {
-        let size = CGSize(width: 100, height: 40)
-        let pos = CGPoint(x: CGFloat(index)*size.width, y: 0)
+        let size = CGSize(width: 120, height: 40)
+        let pos = CGPoint(x: view.frame.width - CGFloat(index + 1)*size.width, y: 0)
         
         let catItem: DropDown.Item = (cat.name, nil, false)
         let expandItem: DropDown.Item = ("Show all", nil, false)
@@ -150,9 +172,9 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         let text: String?
         
         switch cellType {
-        case let .CategoryValue(category: c, value: v): text = categories[c].values[v]
-        case let .IndexName(column: c): text = header[c]
-        case let .FieldName(column: c): text = header[c]
+        case let .CategoryValue(category: c, value: v): text = metaData.categories[c].values[v]
+        case let .IndexName(column: c): text = metaData.header[c]
+        case let .FieldName(column: c): text = metaData.header[c]
         case let .CompFieldName(column: c): text = "c: \(c)"
         case let .Index(index: i, row: r):
             guard let id = collectionId else { text = nil; break }
@@ -186,14 +208,6 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         collectionView.reloadData()
     }
 }
-
-    //    func cellData(table: Int, row: Int, column: Int) -> String {
-    ////        if let collection = collection {
-    //////            collection |> getTable(table) |> getRows
-    ////        }
-    //    }
-    //        print("\(indexPath.section).\(indexPath.item):\(row).\(column) = cellType:\(cellType)")
-    
 
 //    private func pathsForRow(row: Int) -> [NSIndexPath] {
 //        let totalColumns = layout.config.totalColumns

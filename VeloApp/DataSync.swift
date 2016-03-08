@@ -6,19 +6,22 @@
 //  Copyright © 2016 purple. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Realm
+
+protocol SyncDelegate: class {
+    func collectionAdded(metaData: MetaData)
+    func collectionChanged(metaData: MetaData)
+    func tableAdded(collectionId: String, tableIndex: [Int], data: TableData)
+    func rowChanged(collectionId: String, tableIndex: [Int], row: Int, data: RowData)
+}
 
 class DataSync {
     private let ref = Firebase(url: "https://purplemist.firebaseio.com/")
     lazy var refMetaData: Firebase = { self.ref.childByAppendingPath("collections") }()
     lazy var refTables: Firebase = { self.ref.childByAppendingPath("collectionTables") }()
     
-    var collectionAdded: (Collection -> Void)! { didSet { observeCollection(collectionAdded) } }
-//    var collectionChanged: (Collection -> Void)! { didSet { observe(.ChildChanged, callback: collectionChanged) } }
-//    var collectionRemoved: (Collection -> Void)! { didSet { observe(.ChildRemoved, callback: collectionRemoved) } }
-    
-//    var rowChanged: ((Table) -> Void)! { didSet { observe(.ChildRemoved, callback: tableRemoved) } }
+    weak var delegate: SyncDelegate! { didSet { observe() } }
     
     func getSyncId() -> String {
         return ref.childByAutoId().key
@@ -28,48 +31,48 @@ class DataSync {
 ////        refCollections.childByAppendingPath(table.tableId).setValue(table.rawData)
 //    }
     
-    func upload(row: [AnyObject], atIndex rowIndex: Int, inTable tableId: String) {
-        refTables
-            .childByAppendingPath(tableId)
-            .childByAppendingPath(String(rowIndex + 2))
-            .setValue(row)
-    }
+//    func upload(row: [AnyObject], atIndex rowIndex: Int, inTable tableId: String) {
+//        refTables
+//            .childByAppendingPath(tableId)
+//            .childByAppendingPath(String(rowIndex + 2))
+//            .setValue(row)
+//    }
     
-    private func observeCollection(callback: Collection -> Void) {
+    private func observe() {
+        refMetaData.observeEventType(.ChildChanged, withBlock: { snap in
+            guard let metaData = self.getMetaData(snap) else { return }
+            
+            self.delegate.collectionChanged(metaData)
+        })
+        
         refMetaData.observeEventType(.ChildAdded, withBlock: { snap in
             guard let metaData = self.getMetaData(snap) else { return }
 
-            self.refTables.childByAppendingPath(metaData.id).observeSingleEventOfType(.Value, withBlock: { snap in
-                guard let collection = self.getCollection(snap, metaData: metaData) else { return }
+            self.delegate.collectionAdded(metaData)
+            
+            let rowParser = parseRow(metaData.schema)
 
-                callback(collection)
+            let refCollection = self.refTables.childByAppendingPath(metaData.id)
+            refCollection.observeEventType(.ChildAdded, withBlock: { snap in
+                guard let tableData = snap.value as? TableData else { return }
+                
+                let tableIndex = getTensorIndex(snap.key)
+                
+                self.delegate.tableAdded(metaData.id, tableIndex: tableIndex, data: tableData |> map(rowParser))
+                
+                refCollection.childByAppendingPath(snap.key).observeEventType(.ChildChanged, withBlock: { snap in
+                    guard let row = Int(snap.key), rowData = snap.value as? RowData else { return }
+                    
+                    self.delegate.rowChanged(metaData.id, tableIndex: tableIndex, row: row, data: rowData |> rowParser)
+                })
             })
+
+//            refCollection.observeEventType(.ChildRemoved, withBlock: { snap in
+//            })
         })
     }
     
-    private func getCollection(snap: FDataSnapshot, metaData: CollectionMetaData) -> Collection? {
-        guard let data = snap.value as? [String : [[AnyObject]]] else { return nil }
-        
-        let size = metaData.categories.map { $2.count }
-        let tableParser = parseTable(Engine.shared.getSchema(metaData.id))
-        
-        let tables: [TableData]
-        if size.count == 0, let tableData = data["theOneAndOnly"] {
-            tables = [tableParser(tableData)]
-        }
-        else {
-            let getFireIndex = { (size: [Int]) in size.reverse().map(String.init).joinWithSeparator("-") }
-            tables = Tensor(size: size).all.map(getFireIndex).map { tableParser(data[$0] ?? []) }
-        }
-        
-        guard let schema = tables.flatten().first?.map(Engine.typeForCell) else { // FIXME: Schema should be part of collection
-            return nil
-        }
-        
-        return Collection(metaData: metaData.withSchema(schema), tables: tables)
-    }
-    
-    private func getMetaData(snap: FDataSnapshot) -> CollectionMetaData? {
+    private func getMetaData(snap: FDataSnapshot) -> MetaData? {
         guard var metaData = snap.value as? [String : AnyObject] else { return nil }
         
         if let catNames = metaData["categoryHeaders"] as? [String] where metaData["categoryIds"] == nil {
@@ -81,6 +84,10 @@ class DataSync {
         let displayName = metaData["title"] as? String
         
         guard let header = metaData["headers"] as? [String] where header.count > 0 else { return nil }
+
+        guard let rawSchema = metaData["schema"] as? [NSString] where rawSchema.count == header.count else { return nil }
+        
+        let schema = rawSchema.map(RLMPropertyType.make)
         
         let categories: [Cat]
         if let catIds = metaData["categoryIds"] as? [String],
@@ -93,96 +100,21 @@ class DataSync {
             categories = []
         }
         
-        return CollectionMetaData(id: id, displayName: displayName, header: header, schema: [], categories: categories)
+        return MetaData(id: id, displayName: displayName, header: header, schema: schema, categories: categories)
     }
 }
 
-typealias TableData = [[AnyObject]]
+typealias TableData = [RowData]
+typealias RowData = [AnyObject]
 
 func zip<A, B, C>(a: [A], _ b: [B], _ c: [C]) -> [(A, B, C)] {
     return zip(a, zip(b, c)).map { ($0, $1.0, $1.1) }
 }
 
-struct Collection: CustomStringConvertible {
-    let metaData: CollectionMetaData
-    let tables: [TableData]
-    
-    var description: String {
-        return metaData.description + ", tables: \(tables.count)"
-    }
+func getFireIndex(index: [Int]) -> String {
+    return index.map(String.init).joinWithSeparator("-")
 }
 
-struct CollectionMetaData: CustomStringConvertible {
-    let id: String
-    let displayName: String?
-    let header: [String]
-    let schema: [RLMPropertyType]
-    let categories: [Cat]
-    
-    func withSchema(schema: [RLMPropertyType]) -> CollectionMetaData {
-        return CollectionMetaData(id: id, displayName: displayName, header: header, schema: schema, categories: categories)
-    }
-    
-    var description: String {
-        return "\(displayName), header: \(header), categories: \(categories.map { $2 })"
-    }
-}
-
-// Parsing
-
-func describe(propType: RLMPropertyType) -> String {
-    switch propType {
-    case .String: return "String"
-    case .Int: return "Int"
-    case .Double: return "Double"
-    case .Date: return "Date"
-    case .Data: return "Data"
-    case .Object: return "Object"
-    case .Array: return "Array"
-    case .Any: return "Any"
-    case .Bool: return "Bool"
-    default: return "Error"
-    }
-}
-
-func toString(value: AnyObject) -> String {
-    switch value {
-    case let value as String: return value
-    case let value as NSNumber: return value.stringValue
-    default: return "Field"
-    }
-}
-
-func parseTable(schema: [RLMPropertyType]?) -> TableData -> TableData {
-    var rowParser: ([AnyObject] -> [AnyObject])?
-    
-    return { tableData in
-        guard let firstRow = tableData.first else { return [] }
-        
-        if rowParser == nil {
-            if let schema = schema {
-                rowParser = parseRow(schema)
-            }
-            else {
-                rowParser = parseRow(firstRow.map(Engine.typeForCell))
-            }
-        }
-        return tableData.map(rowParser!)
-    }
-}
-
-func parseRow(schema: [RLMPropertyType]) -> [AnyObject] -> [AnyObject] {
-    return { row in
-        return zip(row, schema).map { value, type in
-            switch (value, type) {
-            case (let value as String, .String): return value
-            case (_, .String): return "empty string"
-            case (let value as NSNumber, .Double): return value.doubleValue
-            case (_, .Double): return 9.9
-            case (let value as NSNumber, .Int): return value.integerValue ?? 99
-            case (_, .Int): return 99
-            default: fatalError("Wrong type")
-            }
-        }
-    }
+func getTensorIndex(fireIndex: String) -> [Int] {
+    return fireIndex.componentsSeparatedByString("-").flatMap { Int.init($0) }
 }
