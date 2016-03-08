@@ -10,7 +10,8 @@ import UIKit
 import Realm
 
 class TabulaViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
-    @IBOutlet weak var nameLabel: UILabel!
+    
+    @IBOutlet weak var nameView: UITextField!
     
     @IBOutlet weak var menuBar: MenuBar!
     
@@ -27,6 +28,8 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     private var subscriptionId: String?
     
+    // MARK: Life Cycle Methods
+
     override func viewDidLoad() {
         view.addSubview(menuBar)
     }
@@ -38,29 +41,14 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 //        view.frame.size = contentSize
 //    }
     
-    private func collectionChanged(change: CollectionChange) {
-        guard change.collectionId == collectionId else { return }
-        collectionView.reloadData()
-        change.metaChanges.forEach(metaDataChanged)
-        change.tableChanges.forEach(tableChanged)
-    }
-    
-    private func metaDataChanged(change: MetaChange) {
-        switch change {
-//        case .DisplayName: 
-        }
-    }
-
-    private func tableChanged(change: TableChange) {
-        
-    }
+    // MARK: Setup Methods
     
     private func didSetCollectionId() {
         let rowCounts: [Int]
         metaData = Engine.shared.getMetaData(collectionId)
         rowCounts = Engine.shared.getRowCounts(collectionId)
         
-        nameLabel.text = metaData.displayName
+        nameView.text = metaData.displayName
         setupCategories(metaData.categories)
         
         let size = metaData.categories.map { $0.values.count }
@@ -105,6 +93,8 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         dropDown.selection = 2
         menuBar.addDropDown(dropDown)
     }
+    
+    // MARK: Slicing Methods
 
     private func free(dimension: Int) {
         if layout.tensor.ordering.count == 2 {
@@ -120,6 +110,60 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func fix(dimension: Int, atValue value: Int) {
         layout.tensor.fix(dimension, at: value)
         collectionView.reloadData()
+    }
+
+    // MARK: Change Callbacks
+    
+    private func collectionChanged(change: CollectionChange) {
+        guard change.metaData.id == collectionId else { return }
+
+        metaData = change.metaData
+        nameView.text = change.metaData.displayName
+
+//        collectionView.reloadData()
+        change.metaChanges.forEach(metaDataChanged)
+        change.tableChanges.forEach(tableChanged)
+    }
+    
+    private func metaDataChanged(change: MetaChange) {
+        switch change {
+        case .DisplayName: nameView.flash(UIColor.cellText())
+        case .Header(let col): layout.tensor.sliced.all.map { self.pathForCell($0, row: 0, column: col) }.forEach(flashPath)
+        case .Categories: print("Categories changed")
+        case .Schema: print("Schema changed")
+        }
+        
+        print("metaDataChanged \(change)")
+    }
+    
+    private func tableChanged(change: TableChange) {
+        print("tableChanged \(change)")
+
+        if layout.tensor.sliced.all.contains({ $0 == change.tableIndex }) {
+            change.rowChanges.forEach { rowChange in
+                rowChange.columnChanges.forEach { column in
+                    flashPath(pathForCell(change.tableIndex, row: rowChange.row, column: column))
+                }
+            }
+        }
+    }
+
+    // MARK: Change Helpers
+    
+    func flashPath(path: NSIndexPath) {
+        collectionView.reloadItemsAtIndexPaths([path])
+        collectionView.cellForItemAtIndexPath(path)?.flash(UIColor.cellText())
+    }
+
+    // MARK: Cell Helpers
+    
+    private func pathForCell(tableIndex: [Int], row: Int, column: Int) -> NSIndexPath {
+        let section = layout.tensor.sliced.linearise(tableIndex)
+        return NSIndexPath(forItem: itemForCell(row, column: column), inSection: section)
+    }
+    
+    private func itemForCell(row: Int, column: Int) -> Int {
+        return column + row*layout.tableConfig.totalColumns
     }
 
     // MARK: Collection View Data Source
@@ -191,35 +235,20 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         return cell
     }
-    
-    func toggle(dimension: Int) {
-        if layout.tensor.isFree(dimension) {
-            layout.tensor.fix(dimension, at: 0)
-        }
-        else {
-            if layout.tensor.ordering.count == 2 {
-                layout.tensor.fix(layout.tensor.ordering[0], at: 0)
-            }
-            layout.tensor.free(dimension)
-        }
-        
-        print("Tensor: \(layout.tensor)")
-        
-        collectionView.reloadData()
-    }
 }
+
 
 //    private func pathsForRow(row: Int) -> [NSIndexPath] {
 //        let totalColumns = layout.config.totalColumns
 //        return (row*totalColumns..<(row + 1)*totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
 //    }
-//    
+//
 //    private func pathsForColumn(column: Int) -> [NSIndexPath] {
 //        let totalColumns = layout.config.totalColumns
 //        let totalCells = layout.config.totalCells
 //        return column.stride(through: totalCells, by: totalColumns).map { NSIndexPath(forItem: $0, inSection: 0) }
 //    }
-    
+
     //    func addColumn(column: Int) {
     //        size.columns += 1
     //        layout.mainWidths = [CGFloat](count: size.columns, repeatedValue: 80)

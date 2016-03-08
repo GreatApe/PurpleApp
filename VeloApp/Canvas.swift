@@ -107,24 +107,21 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func tappedButton() {
 //        Engine.shared.createRandomCollection()
-        let g = Engine.shared
+        let _ = Engine.shared
     }
     
     @IBAction func tappedOtherButton() {
         veloTables.forEach { tabula in
-            tabula.toggle(0)
         }
     }
     
     @IBAction func tappedThirdButton() {
         veloTables.forEach { tabula in
-            tabula.toggle(1)
         }
     }
 
     @IBAction func tappedFourthButton() {
         veloTables.forEach { tabula in
-            tabula.toggle(2)
         }
     }
 

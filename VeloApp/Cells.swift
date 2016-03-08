@@ -6,8 +6,39 @@
 //  Copyright © 2016 purple. All rights reserved.
 //
 
+extension UIView {
+    func flash(color: UIColor) {
+        let oldColor = backgroundColor
+        backgroundColor = color
+        UIView.animateWithDuration(1.5) {
+            self.backgroundColor = oldColor
+        }
+    }
+}
+
+extension UITextField {
+    func flashText(color: UIColor) {
+        let oldColor = textColor
+        textColor = color
+        UIView.animateWithDuration(1) {
+            self.textColor = oldColor
+        }
+    }
+}
+
+
 protocol LabeledCell {
     var label: UILabel! { get }
+}
+
+extension LabeledCell {
+    func flashText(color: UIColor) {
+        let oldColor = label.textColor
+        label.textColor = color
+        UIView.animateWithDuration(1) {
+            self.label.textColor = oldColor
+        }
+    }
 }
 
 class MetaLabelCell: UICollectionViewCell, LabeledCell {
