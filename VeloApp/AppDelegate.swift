@@ -20,21 +20,24 @@ class AppDelegate: FirebaseAppDelegate {
     override func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         super.application(application, didFinishLaunchingWithOptions: launchOptions)
         
-        SetupFirebaseLogin()
-        if ((loginViewController.currentUser() == nil)) {
+        setupFirebaseLogin()
+        
+        if loginViewController.currentUser() == nil {
             window.makeKeyAndVisible()
             window.rootViewController!.presentViewController(loginViewController, animated: true, completion: nil)
         }
         else {
-            print("already loged in")
+            print("already logged in")
             print(loginViewController.currentUser().description)
         }
         
         return true
     }
     
-    func SetupFirebaseLogin() {
+    func setupFirebaseLogin() {
         let firebaseRef = Firebase(url: "https://purplemist.firebaseio.com/")
+        
+//        firebaseRef.unauth()
         
         loginViewController = FirebaseLoginViewController(ref: firebaseRef)
         //        loginViewController.enableProvider(FAuthProvider.Facebook)
@@ -44,11 +47,11 @@ class AppDelegate: FirebaseAppDelegate {
         // Scenario 1: Set up captive portal login flow
         loginViewController.didDismissWithBlock {
             (user: FAuthData!, error: NSError!) -> Void in
-            if ((user) != nil) {
+            if (user) != nil {
                 // Handle user case
                 print("login callbackd")
                 print(user.description)
-            } else if ((error) != nil) {
+            } else if (error) != nil {
                 // Handle error case
             } else {
                 // Handle cancel case

@@ -193,6 +193,8 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         let tableCount = layout.metaRows*layout.metaColumns
         let cellType: CellType
         
+//        print("Cell for path: \(indexPath.section).\(indexPath.item)")
+        
         switch indexPath.section {
         case 0..<tableCount:
             let index = indexPath.section |> layout.tensor.sliced.vectorise |> layout.tensor.unslice

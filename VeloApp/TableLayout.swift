@@ -26,10 +26,10 @@ class TableLayout: UICollectionViewLayout {
 
     // Column widths
 
-    var indexWidth: CGFloat = 100
-    var mainWidths: [CGFloat] { return Array(count: tableConfig.columns, repeatedValue: 80) }
+    var indexWidth: CGFloat = 200
+    var mainWidths: [CGFloat] { return [170] + Array(count: max(0, tableConfig.columns - 1), repeatedValue: 110) }
     var emptyWidths: [CGFloat] { return Array(count: tableConfig.emptyColumns, repeatedValue: 60) }
-    var compWidths: [CGFloat] { return Array(count: tableConfig.compColumns, repeatedValue: 80) }
+    var compWidths: [CGFloat] { return Array(count: tableConfig.compColumns, repeatedValue: 120) }
     var emptyCompWidths: [CGFloat] { return Array(count: tableConfig.emptyCompColumns, repeatedValue: 60) }
     
     // MARK: Internal parameters
@@ -74,8 +74,10 @@ class TableLayout: UICollectionViewLayout {
     
     // MARK: Computed parameters
 
-    var metaColumns: Int { return tensor.slicedSize.count > 0 ? tensor.slicedSize[0] : 1 }
-    var metaRows: Int { return tensor.slicedSize.count > 1 ? tensor.slicedSize[1] : 1 }
+//    var metaColumns: Int { return tensor.slicedSize.count > 0 ? tensor.slicedSize[0] : 1 }
+//    var metaRows: Int { return tensor.slicedSize.count > 1 ? tensor.slicedSize[1] : 1 }
+    var metaColumns = 0
+    var metaRows = 0
 
     // MARK: Parameters calculated in prepare layout
     
@@ -109,16 +111,32 @@ class TableLayout: UICollectionViewLayout {
     
     // Meta labels
 
-    private var showMetaHeader: Bool { return tensor.slicedSize.count > 0 }
-    private var showMetaIndex: Bool { return tensor.slicedSize.count > 1 }
+//    private var showMetaHeader: Bool { return tensor.slicedSize.count > 0 }
+//    private var showMetaIndex: Bool { return tensor.slicedSize.count > 1 }
+//    
+//    private var guide: CGPoint { return CGPoint(x: showMetaIndex ? metaHeaderHeight : 0, y: showMetaHeader ? metaHeaderHeight : 0) }
+
+    private var showMetaHeader = false
+    private var showMetaIndex = false
     
-    private var guide: CGPoint { return CGPoint(x: showMetaIndex ? metaHeaderHeight : 0, y: showMetaHeader ? metaHeaderHeight : 0) }
+    private var guide = CGPoint()
+
     
     // MARK: Callbacks
     
     override func prepareLayout() {
         if !merelyScrolled {
             print("preparing layout")
+            
+            let slicedSize = tensor.slicedSize
+            metaColumns = slicedSize.count > 0 ? slicedSize[0] : 1
+            metaRows = slicedSize.count > 1 ? slicedSize[1] : 1
+
+            showMetaHeader = slicedSize.count > 0
+            showMetaIndex = slicedSize.count > 1
+            
+            guide = CGPoint(x: showMetaIndex ? metaHeaderHeight : 0, y: showMetaHeader ? metaHeaderHeight : 0)
+            
             prepareColumns()
             prepareRows()
             prepareTableSizes()
@@ -147,7 +165,8 @@ class TableLayout: UICollectionViewLayout {
 
         for metaRow in 0..<metaRows {
             for metaColumn in 0..<metaColumns {
-                let index = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.unslice |> tensor.linearise
+//                let index = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.unslice |> tensor.linearise
+                let index = tensor.linearise(tensor.unslice(tensor.sliced.normalise([metaColumn, metaRow])))
                 let rowConfig = rowConfigs[index]
                 let mainHeights = Array(count: rowConfig.rows, repeatedValue: cellHeight)
                 let emptyHeights = Array(count: rowConfig.emptyRows, repeatedValue: cellHeight)
@@ -205,21 +224,20 @@ class TableLayout: UICollectionViewLayout {
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let leftMetaColumn = max(0, Int(floor(rect.minX/tableWidth)))
-        let rightMetaColumn = min(metaColumns - 1, Int(ceil(rect.maxX/tableWidth)))
+        let (firstMetaColumn, lastMetaColumn, firstMetaRow, lastMetaRow) = metaRowsColumnsInRect(rect)
         
-        print("\(rect.minX)-\(rect.maxX) -> \(leftMetaColumn)-\(rightMetaColumn)")
-
-        let firstMetaRow = max(0, (tableOffsets.indexOf { $0 > rect.minY } ?? 1) - 1)
-        let lastMetaRow = min(metaRows - 1, (tableOffsets.indexOf { $0 > rect.maxY } ?? metaRows) - 1)
-        
-        print("\(rect.minY)-\(rect.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
+//        print("\(rect.minX)-\(rect.maxX) -> \(firstMetaColumn)-\(lastMetaColumn)")
+//        print("\(rect.minY)-\(rect.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
 
         var paths = [NSIndexPath]()
         
         for metaRow in firstMetaRow...lastMetaRow {
-            for metaColumn in leftMetaColumn...rightMetaColumn {
-                let s = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
+            for metaColumn in firstMetaColumn...lastMetaColumn {
+//                let s = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
+                let s = tensor.sliced.linearise(tensor.sliced.normalise([metaColumn, metaRow]))
+
+//                print("Section: \(s) \(rowHeights.count)")
+                
                 for item in 0..<rowHeights[s].count*columnWidths.count {
                     paths.append(NSIndexPath(forItem: item, inSection: s))
                 }
@@ -238,7 +256,7 @@ class TableLayout: UICollectionViewLayout {
         paths.append(NSIndexPath(forItem: 0, inSection: masksSection))
         paths.append(NSIndexPath(forItem: 1, inSection: masksSection))
 
-        print("layoutAttributesForElementsInRect \(paths.count)")
+//        print("layoutAttributesForElementsInRect \(paths.count)")
         
         return paths.flatMap(layoutAttributesForItemAtIndexPath)
     }
@@ -286,7 +304,8 @@ class TableLayout: UICollectionViewLayout {
         
         attr.frame = CGRect(origin: pos, size: size)
         
-        let isEmptyRow = rowConfigs[section |> tensor.unslice].isEmptyRow(row)
+//        let isEmptyRow = rowConfigs[section |> tensor.unslice].isEmptyRow(row)
+        let isEmptyRow = rowConfigs[tensor.unslice(section)].isEmptyRow(row)
         let isEmptyColumn = tableConfig.isEmptyColumn(column)
         
         attr.alpha = (isEmptyRow ? 0 : 0.5) + (isEmptyColumn ? 0 : 0.5)
@@ -370,7 +389,81 @@ class TableLayout: UICollectionViewLayout {
         scrollingOffset = newBounds.origin
         merelyScrolled = true
 
-        return true
+        invalidateLayoutWithContext(invalidationContextForBoundsChange(newBounds))
+        
+        return false
+    }
+    
+    private func metaRowsColumnsInRect(rect: CGRect) -> (left: Int, right: Int, up: Int, down: Int) {
+        let left = max(0, Int(floor(rect.minX/tableWidth)))
+        let right = min(metaColumns - 1, Int(ceil(rect.maxX/tableWidth)))
+        
+        let up = max(0, (tableOffsets.indexOf { $0 > rect.minY } ?? 1) - 1)
+        let down = min(metaRows - 1, (tableOffsets.indexOf { $0 > rect.maxY } ?? metaRows) - 1)
+
+        return (left, right, up, down)
+    }
+    
+    override func invalidationContextForBoundsChange(newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+        let (firstMetaColumn, lastMetaColumn, firstMetaRow, lastMetaRow) = metaRowsColumnsInRect(newBounds)
+        
+        var paths = [NSIndexPath]()
+        
+        func appendPath(section: Int, item: Int) {
+            paths.append(NSIndexPath(forItem: item, inSection: section))
+        }
+        
+        func appendPaths(section: Int, row: Int? = nil, column: Int? = nil) {
+            let rowsInSection = rowHeights[section].count
+            let columnsInSection = columnWidths.count
+            
+            let rows = (row ?? 0)...(row ?? rowsInSection - 1)
+            let columns = (column ?? 0)...(column ?? columnsInSection - 1)
+            
+            for row in rows {
+                for column in columns {
+//                    print("   appending (\(row):\(column)))")
+                    appendPath(section, item: column + row*columnsInSection)
+                }
+            }
+        }
+        
+        func appendPathsMeta(metaRow metaRow: Int, metaColumn: Int, row: Int? = nil, column: Int? = nil) {
+            //            print(" --- (\(metaRow):\(metaColumn)) ---")
+//            let section = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
+            let section = tensor.sliced.linearise(tensor.sliced.normalise([metaColumn, metaRow]))
+            appendPaths(section, row: row, column: column)
+        }
+        
+        for metaRow in firstMetaRow...lastMetaRow {
+            appendPathsMeta(metaRow: metaRow, metaColumn: firstMetaColumn, column: 0)
+            guard firstMetaColumn + 1 < metaColumns else { continue }
+            appendPathsMeta(metaRow: metaRow, metaColumn: firstMetaColumn + 1, column: 0)
+        }
+        
+        for metaColumn in firstMetaColumn...lastMetaColumn {
+            appendPathsMeta(metaRow: firstMetaRow, metaColumn: metaColumn, row: 0)
+            guard firstMetaRow + 1 < metaRows else { continue }
+            appendPathsMeta(metaRow: firstMetaRow + 1, metaColumn: metaColumn, row: 0)
+        }
+        
+        let tableCount = metaRows*metaColumns
+        
+        for category in tensor.ordering {
+            for value in 0..<tensor.size[category] {
+                appendPath(tableCount + category, item: value)
+            }
+        }
+        
+        appendPath(tableCount + tensor.dimension, item: 0)
+        appendPath(tableCount + tensor.dimension, item: 1)
+        
+//        print("-Invalidated: \(paths.count) paths")
+
+        let context = super.invalidationContextForBoundsChange(newBounds)
+        context.invalidateItemsAtIndexPaths(paths)
+        
+        return context
     }
     
 //    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {

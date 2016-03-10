@@ -351,7 +351,7 @@ class Engine: SyncDelegate {
     
     func collectionChanged(metaData: MetaData) {
         print("ENGINE: collectionChanged: \(metaData.displayName), \(metaData.header), \(metaData.categories.count) cats. \(metaData.schema.map(describe))")
-        updateCollection(metaData)
+//        updateCollection(metaData)
     }
     
     func tableAdded(collectionId: String, tableIndex: [Int], data: TableData) {

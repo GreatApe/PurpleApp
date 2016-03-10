@@ -241,7 +241,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IndexName" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Pf-ir-Hyz">
-                                                    <rect key="frame" x="8" y="0.0" width="111" height="50"/>
+                                                    <rect key="frame" x="8" y="15" width="93" height="21"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                     <color key="textColor" red="0.12549019607843137" green="0.18823529411764706" blue="0.20784313725490194" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -254,6 +254,7 @@
                                             <constraint firstItem="4Pf-ir-Hyz" firstAttribute="leading" secondItem="8Vv-Gn-Htf" secondAttribute="leadingMargin" id="HnQ-nJ-RZc"/>
                                             <constraint firstItem="4Pf-ir-Hyz" firstAttribute="top" secondItem="8Vv-Gn-Htf" secondAttribute="top" id="Wih-6h-AZK"/>
                                             <constraint firstAttribute="bottom" secondItem="4Pf-ir-Hyz" secondAttribute="bottom" id="bYb-zA-rnV"/>
+                                            <constraint firstItem="4Pf-ir-Hyz" firstAttribute="centerY" secondItem="8Vv-Gn-Htf" secondAttribute="centerY" id="ucc-Ff-rZ0"/>
                                             <constraint firstAttribute="trailing" secondItem="4Pf-ir-Hyz" secondAttribute="trailingMargin" id="xCU-N3-4SF"/>
                                         </constraints>
                                         <size key="customSize" width="111" height="50"/>
@@ -262,6 +263,13 @@
                                                 <integer key="value" value="2"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="Wih-6h-AZK"/>
+                                                <exclude reference="bYb-zA-rnV"/>
+                                                <exclude reference="xCU-N3-4SF"/>
+                                            </mask>
+                                        </variation>
                                         <connections>
                                             <outlet property="label" destination="4Pf-ir-Hyz" id="XYx-EX-RaV"/>
                                         </connections>
@@ -274,7 +282,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wzh-2L-xQR">
-                                                    <rect key="frame" x="8" y="0.0" width="95" height="50"/>
+                                                    <rect key="frame" x="8" y="15" width="40" height="21"/>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                     <color key="textColor" red="0.12549019607843137" green="0.18823529411764706" blue="0.20784313725490194" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -284,6 +292,7 @@
                                         </view>
                                         <color key="backgroundColor" red="0.77254901960784317" green="0.79607843137254897" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
+                                            <constraint firstItem="Wzh-2L-xQR" firstAttribute="centerY" secondItem="q6p-nD-esk" secondAttribute="centerY" id="2VU-0Q-ROZ"/>
                                             <constraint firstItem="Wzh-2L-xQR" firstAttribute="leading" secondItem="q6p-nD-esk" secondAttribute="leadingMargin" id="Ghr-Wc-2bC"/>
                                             <constraint firstItem="Wzh-2L-xQR" firstAttribute="top" secondItem="q6p-nD-esk" secondAttribute="top" id="XQa-5b-jrw"/>
                                             <constraint firstAttribute="bottom" secondItem="Wzh-2L-xQR" secondAttribute="bottom" id="eBZ-rO-064"/>
@@ -295,6 +304,13 @@
                                                 <integer key="value" value="2"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="XQa-5b-jrw"/>
+                                                <exclude reference="eBZ-rO-064"/>
+                                                <exclude reference="zKY-ev-qhu"/>
+                                            </mask>
+                                        </variation>
                                         <connections>
                                             <outlet property="label" destination="Wzh-2L-xQR" id="VBz-t7-NlB"/>
                                         </connections>
@@ -340,7 +356,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Index" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="epQ-e1-wBR">
-                                                    <rect key="frame" x="8" y="0.0" width="95" height="50"/>
+                                                    <rect key="frame" x="8" y="15" width="42" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.12549019607843137" green="0.18823529411764706" blue="0.20784313725490194" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -352,6 +368,7 @@
                                         <constraints>
                                             <constraint firstAttribute="trailingMargin" secondItem="epQ-e1-wBR" secondAttribute="trailing" id="1WB-D9-HSc"/>
                                             <constraint firstItem="epQ-e1-wBR" firstAttribute="leading" secondItem="Pke-xj-zQ0" secondAttribute="leadingMargin" id="1Zp-Ji-vbQ"/>
+                                            <constraint firstItem="epQ-e1-wBR" firstAttribute="centerY" secondItem="Pke-xj-zQ0" secondAttribute="centerY" id="7JV-nT-i1T"/>
                                             <constraint firstAttribute="bottom" secondItem="epQ-e1-wBR" secondAttribute="bottom" id="SqB-Rf-MJb"/>
                                             <constraint firstItem="epQ-e1-wBR" firstAttribute="top" secondItem="Pke-xj-zQ0" secondAttribute="top" id="rua-k6-uy5"/>
                                         </constraints>
@@ -361,6 +378,13 @@
                                                 <integer key="value" value="2"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="1WB-D9-HSc"/>
+                                                <exclude reference="SqB-Rf-MJb"/>
+                                                <exclude reference="rua-k6-uy5"/>
+                                            </mask>
+                                        </variation>
                                         <connections>
                                             <outlet property="label" destination="epQ-e1-wBR" id="fAD-QQ-7Va"/>
                                         </connections>
@@ -373,7 +397,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cell" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A91-TL-KB2">
-                                                    <rect key="frame" x="8" y="0.0" width="94" height="50"/>
+                                                    <rect key="frame" x="8" y="15" width="29" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.18039215689999999" green="0.30196078430000001" blue="0.36078431370000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -383,6 +407,7 @@
                                         </view>
                                         <color key="backgroundColor" red="0.93725490196078431" green="0.94117647058823528" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
+                                            <constraint firstItem="A91-TL-KB2" firstAttribute="centerY" secondItem="M8q-CZ-1Xp" secondAttribute="centerY" id="72r-8Y-lCs"/>
                                             <constraint firstItem="A91-TL-KB2" firstAttribute="top" secondItem="M8q-CZ-1Xp" secondAttribute="top" id="JYe-KO-bdt"/>
                                             <constraint firstAttribute="bottom" secondItem="A91-TL-KB2" secondAttribute="bottom" id="loX-qj-pKO"/>
                                             <constraint firstItem="A91-TL-KB2" firstAttribute="leading" secondItem="M8q-CZ-1Xp" secondAttribute="leadingMargin" id="mx3-Rs-ZuG"/>
@@ -394,6 +419,13 @@
                                                 <integer key="value" value="2"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="JYe-KO-bdt"/>
+                                                <exclude reference="loX-qj-pKO"/>
+                                                <exclude reference="wm0-Ny-0og"/>
+                                            </mask>
+                                        </variation>
                                         <connections>
                                             <outlet property="label" destination="A91-TL-KB2" id="fAv-4i-QFA"/>
                                         </connections>
@@ -499,6 +531,7 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstItem="2wI-P7-n70" firstAttribute="top" secondItem="CbG-9M-AOC" secondAttribute="top" id="NdZ-M1-nuS"/>
                                             <constraint firstAttribute="trailing" secondItem="2wI-P7-n70" secondAttribute="trailing" id="Nta-ID-l3P"/>

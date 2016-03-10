@@ -106,7 +106,6 @@ struct Tensor: CustomStringConvertible {
 
     var count: Int {
         return size.reduce(1, combine: *)
-//        return size.count == 0 ? 1 : size.reduce(1, combine: *)
     }
     
     var dimension: Int {
@@ -169,7 +168,5 @@ struct Tensor: CustomStringConvertible {
         return "T(size: \(size), slicing: [\(slice.slicing.map { $0 == nil ? ":" : String($0!) }.joinWithSeparator(", "))], order: \(slice.ordering))"
     }
 }
-
-
 
 

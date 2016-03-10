@@ -83,12 +83,12 @@ class DropDown: UIView {
     // MARK: Private methods
     
     func boldString(text: String) -> NSAttributedString {
-        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(17)]
+        let attrs = [NSFontAttributeName : UIFont.boldSystemFontOfSize(17), NSForegroundColorAttributeName : UIColor.whiteColor()]
         return NSMutableAttributedString(string:text, attributes:attrs)
     }
     
     func normalString(text: String) -> NSAttributedString {
-        let attrs = [NSFontAttributeName : UIFont.systemFontOfSize(17)]
+        let attrs = [NSFontAttributeName : UIFont.systemFontOfSize(17), NSForegroundColorAttributeName : UIColor.whiteColor()]
         return NSMutableAttributedString(string:text, attributes:attrs)
     }
     
@@ -101,7 +101,8 @@ class DropDown: UIView {
         button.imageView?.image = item.image
         button.tag = buttons.count
         button.backgroundColor = UIColor.menu()
-        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+//        button.setTitleColor(UIColor.whiteColor(), forState: .Selected)
         button.layer.cornerRadius = 3
         buttons.append((button, false))
         self.addSubview(button)
