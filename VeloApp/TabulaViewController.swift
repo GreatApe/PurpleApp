@@ -111,24 +111,26 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         layout.tensor.fix(dimension, at: value)
         collectionView.reloadData()
     }
-
+    
     // MARK: Change Callbacks
     
     private func collectionChanged(change: CollectionChange) {
-        guard change.metaData.id == collectionId else { return }
-
-        metaData = change.metaData
-        nameView.text = change.metaData.displayName
-
-//        collectionView.reloadData()
-        change.metaChanges.forEach(metaDataChanged)
-        change.tableChanges.forEach(tableChanged)
+        guard change.collectionId == collectionId else { return }
+        
+        switch change {
+        case .Meta(data: let data, changes: let changes):
+            metaData = data
+            nameView.text = data.displayName
+            changes.forEach(metaDataChanged)
+        case .Table(collectionId: _, changes: let changes):
+            changes.forEach(tableChanged)
+        }
     }
     
     private func metaDataChanged(change: MetaChange) {
         switch change {
-        case .DisplayName: nameView.flash(UIColor.cellText())
-        case .Header(let col): layout.tensor.sliced.all.map { self.pathForCell($0, row: 0, column: col) }.forEach(flashPath)
+        case .DisplayName: nameView.flash(UIColor.whiteColor())
+        case .Header(let col): layout.tensor.sliced.all.map { self.pathForCell($0, row: -1, column: col) }.forEach(flashPath)
         case .Categories: print("Categories changed")
         case .Schema: print("Schema changed")
         }
@@ -137,12 +139,16 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func tableChanged(change: TableChange) {
-        print("tableChanged \(change)")
+        print("tableChanged \(change.tableIndex) : \(change.rowChanges)")
 
-        if layout.tensor.sliced.all.contains({ $0 == change.tableIndex }) {
+        let slicedIndex = layout.tensor.slice(change.tableIndex)
+        
+        if layout.tensor.sliced.all.contains({ $0 == slicedIndex }) {
             change.rowChanges.forEach { rowChange in
                 rowChange.columnChanges.forEach { column in
-                    flashPath(pathForCell(change.tableIndex, row: rowChange.row, column: column))
+                    let path = pathForCell(change.tableIndex, row: rowChange.row, column: column)
+                    collectionView.reloadItemsAtIndexPaths([path])
+                    flashPath(path)
                 }
             }
         }
@@ -152,7 +158,7 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func flashPath(path: NSIndexPath) {
         collectionView.reloadItemsAtIndexPaths([path])
-        collectionView.cellForItemAtIndexPath(path)?.flash(UIColor.cellText())
+        collectionView.cellForItemAtIndexPath(path)?.flash(UIColor.whiteColor())
     }
 
     // MARK: Cell Helpers
@@ -163,7 +169,7 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func itemForCell(row: Int, column: Int) -> Int {
-        return column + row*layout.tableConfig.totalColumns
+        return column + (row + 1)*layout.tableConfig.totalColumns
     }
 
     // MARK: Collection View Data Source
@@ -236,7 +242,6 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
         return cell
     }
 }
-
 
 //    private func pathsForRow(row: Int) -> [NSIndexPath] {
 //        let totalColumns = layout.config.totalColumns

@@ -147,17 +147,6 @@ class Engine: SyncDelegate {
         return collection
     }
     
-    func updateCollection(metaData: MetaData) {
-        let c = getCollection(metaData.id)!
-
-        let headerChanges = updateHeader(c, header: metaData.header).map(MetaChange.Header)
-        let nameChange = updateDisplayName(c, name: metaData.displayName) ? [MetaChange.DisplayName] : []
-        
-        let change = CollectionChange(metaData: metaData, metaChanges: headerChanges + nameChange)
-
-        changeCallbacks.values.forEach { callback in callback(change) }
-    }
-
 //    func newCollection() -> RLMObject {
 //        let collectionId = sync.getSyncId()
 //        let tableClass = newCollectionClass(collectionId)
@@ -260,7 +249,19 @@ class Engine: SyncDelegate {
         realm = try! RLMRealm.dynamicRealm("store")
     }
     
-    func updateDisplayName(collection: RLMObject, name: String?) -> Bool {
+    // MARK: Update Methods
+    
+    private func updateCollection(metaData: MetaData) {
+        let c = getCollection(metaData.id)!
+        
+        let headerChanges = updateHeader(c, header: metaData.header).map(MetaChange.Header)
+        let nameChange = updateDisplayName(c, name: metaData.displayName) ? [MetaChange.DisplayName] : []
+        
+        let change = CollectionChange.Meta(data: metaData, changes: headerChanges + nameChange)
+        changeCallbacks.values.forEach { callback in callback(change) }
+    }
+
+    private func updateDisplayName(collection: RLMObject, name: String?) -> Bool {
         if getName(collection) == name {
             return false
         }
@@ -272,23 +273,57 @@ class Engine: SyncDelegate {
         return true
     }
     
-    func updateHeader(collection: RLMObject, header: [String]) -> [Int] {
+    private func updateHeader(collection: RLMObject, header: [String]) -> [Int] {
         let props = collection |> getTableClass >>> getRowClass >>> getRowType >>> getProperties
         
-        var changes = [Int]()
+        var changed = [Int]()
         
         realm.beginWriteTransaction()
 
         for (index, (prop, name)) in zip(props, header).enumerate() where getName(prop) != name {
-            changes.append(index)
+            changed.append(index)
             prop["displayName"] = name
         }
         
         try! realm.commitWriteTransaction()
         
-        return changes
+        return changed
     }
 
+    private func updateRow(collectionId: String, tableIndex: [Int], row: Int, data: RowData) {
+        let table = getCollection(collectionId)! |> getTable(tableIndex)
+        
+        let changedColumns = updateRow(table, schema: getSchema(collectionId)!, row: row, rowData: data)
+        let rowChange = RowChange(row: row, columnChanges: changedColumns)
+        let tableChange = TableChange(tableIndex: tableIndex, rowChanges: [rowChange])
+        
+        let change = CollectionChange.Table(collectionId: collectionId, changes: [tableChange])
+        changeCallbacks.values.forEach { callback in callback(change) }
+    }
+    
+    private func updateRow(table: RLMObject, schema: [RLMPropertyType], row: Int, rowData: [AnyObject]) -> [Int] {
+        let oldRow = table |> getRow(row)
+
+        var changed = [Int]()
+
+        for (index, (old, new)) in zip(oldRow, rowData).enumerate() {
+            switch (schema[index], old, new) {
+            case (.Double, let old as Double, let new as Double): if new != old { changed.append(index) }
+            case (.String, let old as String, let new as String): if new != old { changed.append(index) }
+            case (.Int, let old as Int, let new as Int): if new != old { changed.append(index) }
+            default: continue
+            }
+        }
+        
+        let rows = table["rows"] as! RLMArray
+
+        realm.beginWriteTransaction()
+        rows.replaceObjectAtIndex(UInt(row), withObject: realm.createObject(rows.objectClassName, withValue: rowData))
+        try! realm.commitWriteTransaction()
+        
+        return changed
+    }
+    
 //    private func createTable(tableClass: String, tableId: String) -> RLMObject {
 //        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
 //        
@@ -335,8 +370,9 @@ class Engine: SyncDelegate {
     
     func rowChanged(collectionId: String, tableIndex: [Int], row: Int, data: RowData) {
         print("ENGINE: Got row \(row) for table: \(tableIndex), \(data.count) columns")
+        
+        updateRow(collectionId, tableIndex: tableIndex, row: row, data: data)
     }
-    
     
 //    private func addTable(table: Table) {
 //        let tableClass = "Class" + String(Int(arc4random() % 10000))
@@ -413,68 +449,6 @@ class Engine: SyncDelegate {
 //    }
     
 
-    // MARK: Update Methods
-
-//    private func updateDisplayName(collectionId: String, displayName: String) -> Bool {
-//        let tableInfo = getTableInfo(collectionId)!
-//        
-//        if tableInfo.displayName == displayName {
-//            return false
-//        }
-//        
-//        realm.beginWriteTransaction()
-//        tableInfo.displayName = displayName
-//
-//        try! realm.commitWriteTransaction()
-//        
-//        return true
-//    }
-    
-//    private func updatePropertyNames(tableId: String, propertyNames: [String]) -> [Bool] {
-//        let tableInfo = getTableInfo(tableId)!
-//        let properties = getRowType(tableInfo.tableClass).properties
-//        let zipped = zip(properties, propertyNames)
-//        let changes = zipped.map { property, newName in newName != property["displayName"] as! String }
-//        
-//        if changes.contains(idendity) {
-//            realm.beginWriteTransaction()
-//            zipped.forEach { property, newName in property["displayName"] = newName }
-//            try! realm.commitWriteTransaction()
-//        }
-//        
-//        return changes
-//    }
-    
-    private func updateRows(tableId: String, data: [[AnyObject]]) -> [[Bool]] {
-        realm.beginWriteTransaction()
-        
-        try! realm.commitWriteTransaction()
-        
-        return [[true]]
-    }
-    
-    private func updateRow(index: Int, table: RLMObject, rowData: [AnyObject]) -> [Bool] {
-        realm.beginWriteTransaction()
-        
-        try! realm.commitWriteTransaction()
-        
-        return [true]
-    }
-    
-    //    private func getRowType(tableClass: String) -> RowType {
-    //        let rowType = realm.objectWithClassName("RowType", forPrimaryKey: getRowClassFor(tableClass))
-    //        return RowType.make(rowType)
-    //    }
-
-//    private func getTableInfo(tableId: String) -> TableInfo? {
-//        let tableInfo: RLMObject? = realm.objectWithClassName("TableInfo", forPrimaryKey: tableId)
-//        return tableInfo.map(TableInfo.make)
-//    }
-    
-//    private func rowTypeFor(tableClass: String) -> RLMObject {
-//        return realm.objectWithClassName("RowType", forPrimaryKey: rowClassFor(tableClass))
-//    }
-    
     // Property types
     
     class func typeForCell(value: AnyObject) -> RLMPropertyType {
@@ -668,6 +642,10 @@ func getCell<T>(row: Int, _ column: Int) -> [[T]] -> T {
     return { $0[row][column] }
 }
 
+func getRow(row: Int) -> RLMObject -> [AnyObject] {
+    return { table in (table["rows"] as! RLMArray)[row].array }
+}
+
 func getRows(table: RLMObject) -> [[AnyObject]] {
     return (table["rows"] as! RLMArray).map { row in row.array }
 }
@@ -694,20 +672,15 @@ func idendity<T>(value: T) -> T {
 
 // MARK: Change Management
 
-struct CollectionChange: CustomStringConvertible {
-    let metaData: MetaData
-    let metaChanges: [MetaChange]
-    let tableChanges: [TableChange]
+enum CollectionChange {
+    case Meta(data: MetaData, changes: [MetaChange])
+    case Table(collectionId: String, changes: [TableChange])
     
-    init(metaData: MetaData, metaChanges: [MetaChange] = [], tableChanges: [TableChange] = []) {
-        self.metaData = metaData
-        self.metaChanges = metaChanges
-        self.tableChanges = tableChanges
-    }
-    
-    var description: String {
-        return ""
-        //        return "\(displayName), header: \(header), categories: \(categories.map { $2 })"
+    var collectionId: String {
+        switch self {
+        case .Meta(data: let metaData, changes: _): return metaData.id
+        case .Table(collectionId: let id, changes: _): return id
+        }
     }
 }
 

@@ -101,7 +101,7 @@ class DropDown: UIView {
         button.imageView?.image = item.image
         button.tag = buttons.count
         button.backgroundColor = UIColor.menu()
-        button.setTitleColor(UIColor.cellText(), forState: .Normal)
+        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         button.layer.cornerRadius = 3
         buttons.append((button, false))
         self.addSubview(button)

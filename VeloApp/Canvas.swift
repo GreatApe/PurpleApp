@@ -16,19 +16,13 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     private var veloTables = [TabulaViewController]()
     
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        Engine.shared.createRandomCollection()
-        
-//        let id = Engine.shared.createRandomCollection()
-//        let cats = Engine.shared.getCategories(id)
-//        let size = cats.map { $0.count }
-//        let tensor = Tensor(size: size)
-//        
-//        func pp(s: Slice, t: Tensor) {
-        //            print("Coords of \(s.slicing): \(t.coords(s).map(t.linearise))")
-        //        }
+        _ = Engine.shared
     }
     
     func addNewTabula(point: CGPoint) -> TabulaViewController {
@@ -41,7 +35,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
         addChildViewController(tabula)
         tabula.didMoveToParentViewController(self)
 
-        container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
+//        container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
+        container.frame = view.bounds
         tabula.view.frame = container.bounds
         
 //            container.translatesAutoresizingMaskIntoConstraints = false

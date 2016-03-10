@@ -106,6 +106,7 @@ struct Tensor: CustomStringConvertible {
 
     var count: Int {
         return size.reduce(1, combine: *)
+//        return size.count == 0 ? 1 : size.reduce(1, combine: *)
     }
     
     var dimension: Int {

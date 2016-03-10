@@ -118,6 +118,7 @@ class TableLayout: UICollectionViewLayout {
     
     override func prepareLayout() {
         if !merelyScrolled {
+            print("preparing layout")
             prepareColumns()
             prepareRows()
             prepareTableSizes()
@@ -204,10 +205,20 @@ class TableLayout: UICollectionViewLayout {
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        let leftMetaColumn = max(0, Int(floor(rect.minX/tableWidth)))
+        let rightMetaColumn = min(metaColumns - 1, Int(ceil(rect.maxX/tableWidth)))
+        
+        print("\(rect.minX)-\(rect.maxX) -> \(leftMetaColumn)-\(rightMetaColumn)")
+
+        let firstMetaRow = max(0, (tableOffsets.indexOf { $0 > rect.minY } ?? 1) - 1)
+        let lastMetaRow = min(metaRows - 1, (tableOffsets.indexOf { $0 > rect.maxY } ?? metaRows) - 1)
+        
+        print("\(rect.minY)-\(rect.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
+
         var paths = [NSIndexPath]()
         
-        for metaRow in 0..<metaRows {
-            for metaColumn in 0..<metaColumns {
+        for metaRow in firstMetaRow...lastMetaRow {
+            for metaColumn in leftMetaColumn...rightMetaColumn {
                 let s = [metaColumn, metaRow] |> tensor.sliced.normalise |> tensor.sliced.linearise
                 for item in 0..<rowHeights[s].count*columnWidths.count {
                     paths.append(NSIndexPath(forItem: item, inSection: s))
@@ -223,9 +234,12 @@ class TableLayout: UICollectionViewLayout {
             }
         }
         
-        paths.append(NSIndexPath(forItem: 0, inSection: tableCount + tensor.dimension))
-        paths.append(NSIndexPath(forItem: 1, inSection: tableCount + tensor.dimension))
+        let masksSection = tableCount + tensor.dimension
+        paths.append(NSIndexPath(forItem: 0, inSection: masksSection))
+        paths.append(NSIndexPath(forItem: 1, inSection: masksSection))
 
+        print("layoutAttributesForElementsInRect \(paths.count)")
+        
         return paths.flatMap(layoutAttributesForItemAtIndexPath)
     }
 
@@ -308,8 +322,10 @@ class TableLayout: UICollectionViewLayout {
             }
             else {
                 x = max(scrollingOffset.x, 0)
-                let preY = tableOffsets[value] + tableHeights[value]/2 + guide.y - metaIndexWidth/2
-                let stopScrollY = tableHeights[value]/2 - metaIndexWidth/2 - borderMargin
+//                let preY = tableOffsets[value] + tableHeights[value]/2 + guide.y - metaIndexWidth/2
+//                let stopScrollY = tableHeights[value]/2 - metaIndexWidth/2 - borderMargin
+                let preY = tableOffsets[value] + guide.y
+                let stopScrollY = tableHeights[value] - metaIndexWidth - borderMargin
                 y = adjust(preY, stopScroll: stopScrollY, subtractAdd: subtractAdd.y)
                 z = 55
                 a = ease(guide.y - metaIndexWidth/2, to: guide.y)(x: y - scrollingOffset.y)

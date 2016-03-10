@@ -166,38 +166,55 @@ func upscale(value: CGFloat, between lowValue: CGFloat, and highValue: CGFloat) 
 }
 
 extension UIColor {
+    convenience init(hex: Int) {
+        let components = (
+            R: CGFloat((hex >> 16) & 0xff) / 255,
+            G: CGFloat((hex >> 08) & 0xff) / 255,
+            B: CGFloat((hex >> 00) & 0xff) / 255
+        )
+        
+        self.init(red: components.R, green: components.G, blue: components.B, alpha: 1)
+    }
+
     class func random() -> UIColor {
         func randomFloat() -> CGFloat { return CGFloat(arc4random() % 256)/256 }
         return UIColor(red: randomFloat(), green: randomFloat(), blue: randomFloat(), alpha: 1.0)
     }
     
+    class func menu() -> UIColor {
+        return UIColor(hex: 0x4F6067)
+    }
+
     class func normalCell() -> UIColor {
-        return UIColor.whiteColor()
-        //        return UIColor(red: 233/255, green: 236/255, blue: 239/255, alpha: 1)
+        return UIColor(hex: 0xEFF0F1)
     }
     
     class func indexCell() -> UIColor {
-        return UIColor(red: 225/255, green: 229/255, blue: 234/255, alpha: 1)
+        return UIColor(hex: 0xDDE0E1)
     }
     
     class func headerCell() -> UIColor {
-        return UIColor(red: 179/255, green: 193/255, blue: 198/255, alpha: 1)
-    }
-    
-    class func computedCell() -> UIColor {
-        return UIColor(red: 46/255, green: 77/255, blue: 92/255, alpha: 1)
-    }
-    
-    class func newComputedCell() -> UIColor {
-        return UIColor(red: 205/255, green: 212/255, blue: 218/255, alpha: 1)
+        return UIColor(hex: 0xC5CBCC)
     }
     
     class func cellText() -> UIColor {
-        return computedCell()
+        return UIColor(hex: 0x203035)
+    }
+
+    class func computedCell() -> UIColor {
+        return UIColor(hex: 0x849095)
     }
     
-    class func menu() -> UIColor {
-        return UIColor(red: 225/255, green: 229/255, blue: 234/255, alpha: 1)
+    class func newComputedCell() -> UIColor {
+        return UIColor(hex: 0xD3D6D7)
+    }
+    
+    class func background() -> UIColor {
+        return UIColor(hex: 0xffffff)
+    }
+    
+    class func canvas() -> UIColor {
+        return UIColor(hex: 0xdddddd)
     }
 }
 

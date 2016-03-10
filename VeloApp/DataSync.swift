@@ -39,13 +39,8 @@ class DataSync {
 //    }
     
     private func observe() {
-        refMetaData.observeEventType(.ChildChanged, withBlock: { snap in
-            guard let metaData = self.getMetaData(snap) else { return }
-            
-            self.delegate.collectionChanged(metaData)
-        })
-        
         refMetaData.observeEventType(.ChildAdded, withBlock: { snap in
+            print("Observe: added: \(snap.key)")
             guard let metaData = self.getMetaData(snap) else { return }
 
             self.delegate.collectionAdded(metaData)
@@ -69,6 +64,14 @@ class DataSync {
 
 //            refCollection.observeEventType(.ChildRemoved, withBlock: { snap in
 //            })
+        })
+        
+        refMetaData.observeEventType(.ChildChanged, withBlock: { snap in
+            print("Observe: changed: \(snap.key)")
+
+            guard let metaData = self.getMetaData(snap) else { return }
+            
+            self.delegate.collectionChanged(metaData)
         })
     }
     
