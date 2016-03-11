@@ -12,8 +12,9 @@ import Realm
 protocol SyncDelegate: class {
     func collectionAdded(metaData: MetaData)
     func collectionChanged(metaData: MetaData)
-    func tableAdded(collectionId: String, tableIndex: [Int], data: TableData)
+//    func tableAdded(collectionId: String, tableIndex: [Int], data: TableData)
     func rowChanged(collectionId: String, tableIndex: [Int], row: Int, data: RowData)
+//    func rowAdded(collectionId: String, tableIndex: [Int], data: RowData)
 }
 
 class DataSync {
@@ -42,6 +43,7 @@ class DataSync {
         refMetaData.observeEventType(.ChildAdded, withBlock: { snap in
             print("Observe: added: \(snap.key)")
             guard let metaData = self.getMetaData(snap) else { return }
+            print("   name: \(metaData.displayName ?? "")")
 
             self.delegate.collectionAdded(metaData)
             
@@ -49,21 +51,27 @@ class DataSync {
 
             let refCollection = self.refTables.childByAppendingPath(metaData.id)
             refCollection.observeEventType(.ChildAdded, withBlock: { snap in
-                guard let tableData = snap.value as? TableData else { return }
+//                guard let tableData = snap.value as? TableData else { return }
                 
                 let tableIndex = getTensorIndex(snap.key)
                 
-                self.delegate.tableAdded(metaData.id, tableIndex: tableIndex, data: tableData |> map(rowParser))
+//                self.delegate.tableAdded(metaData.id, tableIndex: tableIndex, data: tableData |> map(rowParser))
                 
                 refCollection.childByAppendingPath(snap.key).observeEventType(.ChildChanged, withBlock: { snap in
                     guard let row = Int(snap.key), rowData = snap.value as? RowData else { return }
                     
                     self.delegate.rowChanged(metaData.id, tableIndex: tableIndex, row: row, data: rowData |> rowParser)
                 })
+                
+                refCollection.childByAppendingPath(snap.key).observeEventType(.ChildAdded, withBlock: { snap in
+                    guard let row = Int(snap.key), rowData = snap.value as? RowData else { return }
+                    
+                    self.delegate.rowChanged(metaData.id, tableIndex: tableIndex, row: row, data: rowData |> rowParser)
+
+//                    self.delegate.rowAdded(metaData.id, tableIndex: tableIndex, row: row, data: rowData |> rowParser)
+                })
             })
 
-//            refCollection.observeEventType(.ChildRemoved, withBlock: { snap in
-//            })
         })
         
         refMetaData.observeEventType(.ChildChanged, withBlock: { snap in

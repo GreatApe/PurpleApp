@@ -130,7 +130,12 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func metaDataChanged(change: MetaChange) {
         switch change {
         case .DisplayName: nameView.flash(UIColor.whiteColor())
-        case .Header(let col): layout.tensor.sliced.all.map { self.pathForCell($0, row: -1, column: col) }.forEach(flashPath)
+        case .Header(let col):
+            layout.merelyChanged = true
+            layout.tensor.sliced.all.map { self.pathForCell($0, row: -1, column: col) }.forEach { path in
+                collectionView.reloadItemsAtIndexPaths([path])
+                flashPath(path)
+            }
         case .Categories: print("Categories changed")
         case .Schema: print("Schema changed")
         }
@@ -143,21 +148,30 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 
         let slicedIndex = layout.tensor.slice(change.tableIndex)
         
-        if layout.tensor.sliced.all.contains({ $0 == slicedIndex }) {
-            change.rowChanges.forEach { rowChange in
-                rowChange.columnChanges.forEach { column in
-                    let path = pathForCell(change.tableIndex, row: rowChange.row, column: column)
-                    collectionView.reloadItemsAtIndexPaths([path])
-                    flashPath(path)
-                }
+        guard layout.tensor.sliced.all.contains({ $0 == slicedIndex }) else { return }
+        
+        let reloading = change.rowChanges.contains { $0.added }
+        
+        if reloading {
+            layout.updateRowCounts(Engine.shared.getRowCounts(collectionId))
+            collectionView.reloadData()
+        }
+        else {
+            layout.merelyChanged = true
+        }
+        
+        change.rowChanges.forEach { rowChange in
+            rowChange.columnChanges.forEach { column in
+                let path = pathForCell(change.tableIndex, row: rowChange.row, column: column)
+                if !reloading { collectionView.reloadItemsAtIndexPaths([path]) }
+                flashPath(path)
             }
         }
     }
-
+    
     // MARK: Change Helpers
     
     func flashPath(path: NSIndexPath) {
-        collectionView.reloadItemsAtIndexPaths([path])
         collectionView.cellForItemAtIndexPath(path)?.flash(UIColor.whiteColor())
     }
 

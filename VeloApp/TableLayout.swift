@@ -66,6 +66,10 @@ class TableLayout: UICollectionViewLayout {
 
     // MARK: Updating input parameters
 
+    func updateRowCounts(rowCounts: [Int]) {
+        self.rowConfigs = rowCounts.map { tableConfig.rowConfig($0) }
+    }
+    
     func update(size: [Int], tableConfig: TableConfig, rowCounts: [Int]) {
         self.tensor = Tensor(size: size, sliceToOne: true)
         self.tableConfig = tableConfig
@@ -103,6 +107,7 @@ class TableLayout: UICollectionViewLayout {
     
     private var scrollingOffset = CGPoint()
     private var merelyScrolled = false
+    var merelyChanged = false
     
     func updateScrollOffset(offset: CGPoint) {
         scrollingOffset = offset
@@ -118,14 +123,12 @@ class TableLayout: UICollectionViewLayout {
 
     private var showMetaHeader = false
     private var showMetaIndex = false
-    
     private var guide = CGPoint()
 
-    
     // MARK: Callbacks
     
     override func prepareLayout() {
-        if !merelyScrolled {
+        if !merelyScrolled && !merelyChanged {
             print("preparing layout")
             
             let slicedSize = tensor.slicedSize
@@ -142,6 +145,7 @@ class TableLayout: UICollectionViewLayout {
             prepareTableSizes()
         }
         
+        merelyChanged = false
         merelyScrolled = false
     }
     
@@ -397,16 +401,17 @@ class TableLayout: UICollectionViewLayout {
     private func metaRowsColumnsInRect(rect: CGRect) -> (left: Int, right: Int, up: Int, down: Int) {
         let left = max(0, Int(floor(rect.minX/tableWidth)))
         let right = min(metaColumns - 1, Int(ceil(rect.maxX/tableWidth)))
-        
-        let up = max(0, (tableOffsets.indexOf { $0 > rect.minY } ?? 1) - 1)
-        let down = min(metaRows - 1, (tableOffsets.indexOf { $0 > rect.maxY } ?? metaRows) - 1)
+        let up = metaRows - 1 - (tableOffsets.reverse().indexOf { $0 < rect.minY } ?? metaRows - 1)
+        let down = metaRows - 1 - (tableOffsets.reverse().indexOf { $0 < rect.maxY } ?? metaRows - 1)
 
         return (left, right, up, down)
     }
     
     override func invalidationContextForBoundsChange(newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
         let (firstMetaColumn, lastMetaColumn, firstMetaRow, lastMetaRow) = metaRowsColumnsInRect(newBounds)
-        
+//                print("\(rect.minX)-\(rect.maxX) -> \(firstMetaColumn)-\(lastMetaColumn)")
+        print("\(newBounds.minY)-\(newBounds.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
+
         var paths = [NSIndexPath]()
         
         func appendPath(section: Int, item: Int) {

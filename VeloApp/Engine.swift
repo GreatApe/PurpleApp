@@ -290,18 +290,34 @@ class Engine: SyncDelegate {
         return changed
     }
 
-    private func updateRow(collectionId: String, tableIndex: [Int], row: Int, data: RowData) {
-        let table = getCollection(collectionId)! |> getTable(tableIndex)
+//    private func addOrUpdateRow(collectionId: String, tableIndex: [Int], row: Int, data: RowData, isNew: Bool) {
+//        let table = getCollection(collectionId)! |> getTable(tableIndex)
+//        
+//        let rowChange: RowChange
+//        if isNew && row < getRowCount(table) {
+//            rowChange = addRow(table, schema: getSchema(collectionId)!, rowData: data)
+//        }
+//        else {
+//            rowChange = updateRow(table, schema: getSchema(collectionId)!, row: row, rowData: data)
+//        }
+//
+//        let tableChange = TableChange(tableIndex: tableIndex, rowChanges: [rowChange])
+//        
+//        let change = CollectionChange.Table(collectionId: collectionId, changes: [tableChange])
+//        changeCallbacks.values.forEach { callback in callback(change) }
+//    }
+    
+    private func addRow(table: RLMObject, schema: [RLMPropertyType], rowData: [AnyObject]) -> RowChange {
+        let rows = table["rows"] as! RLMArray
         
-        let changedColumns = updateRow(table, schema: getSchema(collectionId)!, row: row, rowData: data)
-        let rowChange = RowChange(row: row, columnChanges: changedColumns)
-        let tableChange = TableChange(tableIndex: tableIndex, rowChanges: [rowChange])
+        realm.beginWriteTransaction()
+        rows.addObject(realm.createObject(rows.objectClassName, withValue: rowData))
+        try! realm.commitWriteTransaction()
         
-        let change = CollectionChange.Table(collectionId: collectionId, changes: [tableChange])
-        changeCallbacks.values.forEach { callback in callback(change) }
+        return RowChange(row: rows.count - 1, columnChanges: Array(rowData.indices), added: true)
     }
     
-    private func updateRow(table: RLMObject, schema: [RLMPropertyType], row: Int, rowData: [AnyObject]) -> [Int] {
+    private func updateRow(table: RLMObject, schema: [RLMPropertyType], row: Int, rowData: [AnyObject]) -> RowChange {
         let oldRow = table |> getRow(row)
 
         var changed = [Int]()
@@ -321,7 +337,7 @@ class Engine: SyncDelegate {
         rows.replaceObjectAtIndex(UInt(row), withObject: realm.createObject(rows.objectClassName, withValue: rowData))
         try! realm.commitWriteTransaction()
         
-        return changed
+        return RowChange(row: row, columnChanges: changed, added: false)
     }
     
 //    private func createTable(tableClass: String, tableId: String) -> RLMObject {
@@ -351,28 +367,46 @@ class Engine: SyncDelegate {
     
     func collectionChanged(metaData: MetaData) {
         print("ENGINE: collectionChanged: \(metaData.displayName), \(metaData.header), \(metaData.categories.count) cats. \(metaData.schema.map(describe))")
-//        updateCollection(metaData)
+        updateCollection(metaData)
     }
     
-    func tableAdded(collectionId: String, tableIndex: [Int], data: TableData) {
-        let table = getCollection(collectionId)! |> getTable(tableIndex)
-        
-        realm.beginWriteTransaction()
-        let rowClass = table.objectSchema.className |> getRowClass
-        let rows = RLMArray(objectClassName: rowClass)
-        
-        for row in data {
-            rows.addObject(realm.createObject(rowClass, withValue: row))
-        }
-        table["rows"] = rows
-        try! realm.commitWriteTransaction()
-    }
+//    func tableAdded(collectionId: String, tableIndex: [Int], data: TableData) {
+//        let table = getCollection(collectionId)! |> getTable(tableIndex)
+//        
+//        realm.beginWriteTransaction()
+//        let rowClass = table.objectSchema.className |> getRowClass
+//        let rows = RLMArray(objectClassName: rowClass)
+//        
+//        for row in data {
+//            rows.addObject(realm.createObject(rowClass, withValue: row))
+//        }
+//        table["rows"] = rows
+//        try! realm.commitWriteTransaction()
+//    }
     
     func rowChanged(collectionId: String, tableIndex: [Int], row: Int, data: RowData) {
-        print("ENGINE: Got row \(row) for table: \(tableIndex), \(data.count) columns")
+        print("ENGINE: Row \(row) changed for table: \(tableIndex), \(data.count) columns")
+
+        let table = getCollection(collectionId)! |> getTable(tableIndex)
         
-        updateRow(collectionId, tableIndex: tableIndex, row: row, data: data)
+        let rowChange: RowChange
+        if row < getRowCount(table) {
+            rowChange = updateRow(table, schema: getSchema(collectionId)!, row: row, rowData: data)
+        }
+        else {
+            rowChange = addRow(table, schema: getSchema(collectionId)!, rowData: data)
+        }
+        
+        let tableChange = TableChange(tableIndex: tableIndex, rowChanges: [rowChange])
+        
+        let change = CollectionChange.Table(collectionId: collectionId, changes: [tableChange])
+        changeCallbacks.values.forEach { callback in callback(change) }
     }
+    
+    //    func rowAdded(collectionId: String, tableIndex: [Int], row: Int, data: RowData) {
+//        print("ENGINE: Got new row for table: \(tableIndex), \(data.count) columns")
+//        addOrUpdateRow(collectionId, tableIndex: tableIndex, row: row, data: data, isNew: true)
+//    }
     
 //    private func addTable(table: Table) {
 //        let tableClass = "Class" + String(Int(arc4random() % 10000))
@@ -699,6 +733,7 @@ struct TableChange {
 struct RowChange {
     let row: Int
     let columnChanges: [Int]
+    let added: Bool
 }
 
 struct MetaData: CustomStringConvertible {

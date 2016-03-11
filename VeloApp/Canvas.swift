@@ -23,6 +23,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         _ = Engine.shared
+        
+        print("## \([1, 2, 3].reverse().indexOf(1))")
     }
     
     func addNewTabula(point: CGPoint) -> TabulaViewController {

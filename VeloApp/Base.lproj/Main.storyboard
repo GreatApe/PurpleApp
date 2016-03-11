@@ -137,8 +137,8 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qun-tT-eMJ">
-                                                <rect key="frame" x="32" y="188" width="46" height="30"/>
-                                                <state key="normal" title="Button"/>
+                                                <rect key="frame" x="23" y="179" width="112" height="24"/>
+                                                <state key="normal" title="Button" image="gplus.png"/>
                                                 <connections>
                                                     <action selector="tappedFourthButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="hNn-du-NyY"/>
                                                 </connections>
@@ -594,4 +594,7 @@
             <point key="canvasLocation" x="-348" y="3066"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="gplus.png" width="24" height="24"/>
+    </resources>
 </document>

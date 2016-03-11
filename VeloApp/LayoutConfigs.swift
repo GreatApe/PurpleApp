@@ -69,7 +69,7 @@ struct RowConfig: CustomStringConvertible {
     }
     
     let headerRows: Int
-    let rows: Int
+    var rows: Int
     let emptyRows: Int
     let compRows: Int
     
