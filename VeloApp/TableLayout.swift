@@ -43,6 +43,10 @@ class TableLayout: UICollectionViewLayout {
     private var metaIndexWidth: CGFloat = 100
     private var metaHeaderHeight: CGFloat = 30
     
+    // MARK: Cache
+    
+    private var cachedAttributes = [Int : UICollectionViewLayoutAttributes]()
+    
     // MARK: Initialisation
 
     required init?(coder aDecoder: NSCoder) {
@@ -315,6 +319,8 @@ class TableLayout: UICollectionViewLayout {
         attr.alpha = (isEmptyRow ? 0 : 0.5) + (isEmptyColumn ? 0 : 0.5)
         attr.zIndex = (isHeader ? 5 : 0) + (isIndex ? 10 : 0)
         
+//        print("layoutAttributesForCell: \(indexPath.section) \(indexPath.item)")
+        
         return attr
     }
     
@@ -393,7 +399,7 @@ class TableLayout: UICollectionViewLayout {
         scrollingOffset = newBounds.origin
         merelyScrolled = true
 
-        invalidateLayoutWithContext(invalidationContextForBoundsChange(newBounds))
+//        invalidateLayoutWithContext(invalidationContextForBoundsChange(newBounds))
         
         return false
     }
@@ -410,7 +416,7 @@ class TableLayout: UICollectionViewLayout {
     override func invalidationContextForBoundsChange(newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
         let (firstMetaColumn, lastMetaColumn, firstMetaRow, lastMetaRow) = metaRowsColumnsInRect(newBounds)
 //                print("\(rect.minX)-\(rect.maxX) -> \(firstMetaColumn)-\(lastMetaColumn)")
-        print("\(newBounds.minY)-\(newBounds.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
+//        print("\(newBounds.minY)-\(newBounds.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
 
         var paths = [NSIndexPath]()
         

@@ -9,10 +9,10 @@
 import UIKit
 
 class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var canvas: UIView!
-    @IBOutlet weak var canvasWidth: NSLayoutConstraint!
-    @IBOutlet weak var canvasHeight: NSLayoutConstraint!
+//    @IBOutlet weak var scrollView: UIScrollView!
+//    @IBOutlet weak var canvas: UIView!
+//    @IBOutlet weak var canvasWidth: NSLayoutConstraint!
+//    @IBOutlet weak var canvasHeight: NSLayoutConstraint!
     
     private var veloTables = [TabulaViewController]()
     
@@ -23,15 +23,14 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         _ = Engine.shared
-        
-        print("## \([1, 2, 3].reverse().indexOf(1))")
     }
     
     func addNewTabula(point: CGPoint) -> TabulaViewController {
         let tabula = storyboard!.instantiateViewControllerWithIdentifier("Tabula") as! TabulaViewController
         let container = UIView()
         
-        canvas.addSubview(container)
+//        scrollView.addSubview(container)
+        view.addSubview(container)
         tabula.willMoveToParentViewController(self)
         container.addSubview(tabula.view)
         addChildViewController(tabula)
@@ -40,6 +39,9 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
 //        container.frame = CGRect(origin: point, size: CGSize(width: 800, height: 500))
         container.frame = view.bounds
         tabula.view.frame = container.bounds
+        
+        print("container.frame: \(view.bounds)")
+        print("tabula.view.frame: \(tabula.view.frame)")
         
 //            container.translatesAutoresizingMaskIntoConstraints = false
 //            tvc.view.translatesAutoresizingMaskIntoConstraints = false
@@ -83,7 +85,8 @@ class VeloCanvasViewController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func longPressed(sender: UILongPressGestureRecognizer) {
         if sender.state == .Began {
-            addNewTabula(sender.locationInView(canvas))
+//            addNewTabula(sender.locationInView(canvas))
+            addNewTabula(sender.locationInView(view))
         }
     }
     

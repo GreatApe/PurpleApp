@@ -42,7 +42,7 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
 //    }
     
     // MARK: Setup Methods
-    
+        
     private func didSetCollectionId() {
         let rowCounts: [Int]
         metaData = Engine.shared.getMetaData(collectionId)

@@ -14,11 +14,14 @@ class MenuBar: UIView {
     @IBOutlet weak var barHeight: NSLayoutConstraint!
     
     override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+        print("pointInside: \(point) - \(frame)")
         guard dropDowns.contains({ $0.frame.contains(point) }) else {
             dropDowns.forEach { $0.collapse() }
+            print("Not inside menu")
             return false
         }
         
+        print("Inside menu")
         return true
     }
     
@@ -129,6 +132,8 @@ class DropDown: UIView {
     }
     
     private func expand() {
+        guard !expanded else { return }
+
         let visibleButtons = buttons.filter({ !$0.hide })
         
         UIView.animateWithDuration(0.1) {
@@ -142,6 +147,8 @@ class DropDown: UIView {
     }
     
     private func collapse() {
+        guard expanded else { return }
+        
         UIView.animateWithDuration(0.1) {
             for button in self.buttons {
                 button.btn.frame.origin.y = 0

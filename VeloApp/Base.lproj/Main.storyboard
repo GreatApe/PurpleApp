@@ -104,89 +104,17 @@
                     <view key="view" contentMode="scaleToFill" id="8OA-Oz-bLg">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="jhF-9j-ump">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IUe-fs-8qj">
-                                        <rect key="frame" x="0.0" y="0.0" width="1000" height="700"/>
-                                        <subviews>
-                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rqr-QU-4kL">
-                                                <rect key="frame" x="1000" y="60" width="240" height="128"/>
-                                                <color key="backgroundColor" red="0.98594677450000001" green="0.0" blue="0.039444983009999997" alpha="1" colorSpace="calibratedRGB"/>
-                                            </view>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-Ee-Q43">
-                                                <rect key="frame" x="8" y="8" width="94" height="55"/>
-                                                <state key="normal" title="Button"/>
-                                                <connections>
-                                                    <action selector="tappedButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="gIn-Hu-U0W"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eIX-Mq-Gz7">
-                                                <rect key="frame" x="12" y="71" width="87" height="55"/>
-                                                <state key="normal" title="Button"/>
-                                                <connections>
-                                                    <action selector="tappedOtherButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="kQA-qf-hPG"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="edO-Fc-FRd">
-                                                <rect key="frame" x="32" y="134" width="46" height="30"/>
-                                                <state key="normal" title="Button"/>
-                                                <connections>
-                                                    <action selector="tappedThirdButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="QY4-kb-AcH"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qun-tT-eMJ">
-                                                <rect key="frame" x="23" y="179" width="112" height="24"/>
-                                                <state key="normal" title="Button" image="gplus.png"/>
-                                                <connections>
-                                                    <action selector="tappedFourthButton" destination="x6m-zP-mzm" eventType="touchUpInside" id="hNn-du-NyY"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <gestureRecognizers/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="1000" id="AwR-4I-GXU"/>
-                                            <constraint firstAttribute="height" constant="700" id="spJ-Lf-W4q"/>
-                                        </constraints>
-                                        <connections>
-                                            <outletCollection property="gestureRecognizers" destination="FR9-xr-k3u" appends="YES" id="a5c-xV-erX"/>
-                                        </connections>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <gestureRecognizers/>
-                                <constraints>
-                                    <constraint firstItem="IUe-fs-8qj" firstAttribute="top" secondItem="jhF-9j-ump" secondAttribute="top" id="0if-BV-FyN"/>
-                                    <constraint firstAttribute="bottom" secondItem="IUe-fs-8qj" secondAttribute="bottom" id="8NR-Bi-yEf"/>
-                                    <constraint firstAttribute="trailing" secondItem="IUe-fs-8qj" secondAttribute="trailing" id="Fen-6v-dwW"/>
-                                    <constraint firstItem="IUe-fs-8qj" firstAttribute="leading" secondItem="jhF-9j-ump" secondAttribute="leading" id="f4r-If-MpR"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="delegate" destination="x6m-zP-mzm" id="EHP-yS-PZZ"/>
-                                </connections>
-                            </scrollView>
-                        </subviews>
                         <color key="backgroundColor" red="0.99771857261657715" green="0.90414530038833618" blue="0.91576111316680908" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="jhF-9j-ump" secondAttribute="bottom" id="7Mt-1r-B2O"/>
-                            <constraint firstItem="jhF-9j-ump" firstAttribute="leading" secondItem="8OA-Oz-bLg" secondAttribute="leading" id="Nvw-0U-bI8"/>
-                            <constraint firstAttribute="trailing" secondItem="jhF-9j-ump" secondAttribute="trailing" id="PYx-Dr-Ibm"/>
-                            <constraint firstItem="jhF-9j-ump" firstAttribute="top" secondItem="8OA-Oz-bLg" secondAttribute="top" id="nhu-UH-z01"/>
-                        </constraints>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="uT0-QY-Fnx" appends="YES" id="nWt-ab-GzB"/>
+                        </connections>
                     </view>
-                    <connections>
-                        <outlet property="canvas" destination="IUe-fs-8qj" id="xRR-J2-R3m"/>
-                        <outlet property="canvasHeight" destination="spJ-Lf-W4q" id="dJ2-1w-ZIa"/>
-                        <outlet property="canvasWidth" destination="AwR-4I-GXU" id="Jfv-1q-aez"/>
-                        <outlet property="scrollView" destination="jhF-9j-ump" id="5ao-JN-ojR"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="q5c-RZ-Piy" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="FR9-xr-k3u">
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="uT0-QY-Fnx">
                     <connections>
-                        <action selector="longPressed:" destination="x6m-zP-mzm" id="Kgt-Pl-GLH"/>
+                        <action selector="longPressed:" destination="x6m-zP-mzm" id="wVh-D3-1pl"/>
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
@@ -590,11 +518,9 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z2C-x0-tzL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="zZ7-zi-baG"/>
             </objects>
             <point key="canvasLocation" x="-348" y="3066"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="gplus.png" width="24" height="24"/>
-    </resources>
 </document>
