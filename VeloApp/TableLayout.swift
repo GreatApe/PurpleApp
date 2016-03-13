@@ -8,6 +8,19 @@
 
 import UIKit
 
+//struct IndexPath: Hashable {
+//    let section: Int
+//    let item: Int
+//    
+//    var hashValue: Int {
+//        return section*1000 + item
+//    }
+//}
+//
+//func == (lhs: IndexPath, rhs: IndexPath) -> Bool {
+//    return lhs.item == rhs.item && lhs.section == rhs.section
+//}
+
 class TableLayout: UICollectionViewLayout {
 
     // MARK: Input parameters
@@ -45,7 +58,7 @@ class TableLayout: UICollectionViewLayout {
     
     // MARK: Cache
     
-    private var cachedAttributes = [Int : UICollectionViewLayoutAttributes]()
+    private var cachedAttributes = [NSIndexPath : UICollectionViewLayoutAttributes]()
     
     // MARK: Initialisation
 
@@ -130,7 +143,7 @@ class TableLayout: UICollectionViewLayout {
     private var guide = CGPoint()
 
     // MARK: Callbacks
-    
+     
     override func prepareLayout() {
         if !merelyScrolled && !merelyChanged {
             print("preparing layout")
@@ -147,6 +160,8 @@ class TableLayout: UICollectionViewLayout {
             prepareColumns()
             prepareRows()
             prepareTableSizes()
+            
+            cachedAttributes.removeAll(keepCapacity: true)
         }
         
         merelyChanged = false
@@ -270,14 +285,25 @@ class TableLayout: UICollectionViewLayout {
     }
 
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        if let attribute = cachedAttributes[indexPath] {
+            return attribute
+        }
+
         let tableCount = metaRows*metaColumns
         
+        let attribute: UICollectionViewLayoutAttributes
+        
         switch indexPath.section {
-        case 0..<tableCount: return layoutAttributesForCell(indexPath)
-        case tableCount..<tableCount + tensor.dimension: return layoutAttributesForCategory(indexPath)
-        case tableCount + tensor.dimension..<tableCount + tensor.dimension + 2: return layoutAttributesForMasks(indexPath)
+        case 0..<tableCount: attribute = layoutAttributesForCell(indexPath)
+        case tableCount..<tableCount + tensor.dimension: attribute = layoutAttributesForCategory(indexPath)
+        case tableCount + tensor.dimension..<tableCount + tensor.dimension + 2: attribute = layoutAttributesForMasks(indexPath)
         default: fatalError("Impossible section")
         }
+        cachedAttributes[indexPath] = attribute
+
+//        print("created attribute \(indexPath)")
+        
+        return attribute
     }
     
     func adjust(p: CGPoint, stopScroll: CGPoint, dimension: (x: Bool, y: Bool)) -> CGPoint {
@@ -399,7 +425,7 @@ class TableLayout: UICollectionViewLayout {
         scrollingOffset = newBounds.origin
         merelyScrolled = true
 
-//        invalidateLayoutWithContext(invalidationContextForBoundsChange(newBounds))
+        invalidateLayoutWithContext(invalidationContextForBoundsChange(newBounds))
         
         return false
     }
@@ -471,6 +497,10 @@ class TableLayout: UICollectionViewLayout {
         
 //        print("-Invalidated: \(paths.count) paths")
 
+        paths.forEach { path in
+            cachedAttributes[path] = nil
+        }
+        
         let context = super.invalidationContextForBoundsChange(newBounds)
         context.invalidateItemsAtIndexPaths(paths)
         

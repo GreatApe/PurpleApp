@@ -26,7 +26,6 @@ extension UITextField {
     }
 }
 
-
 protocol LabeledCell {
     var label: UILabel! { get }
 }
@@ -42,30 +41,67 @@ extension LabeledCell {
 }
 
 class MetaLabelCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+    
+    override func prepareForReuse() {
+        print("Reusing MetaLabelCell")
+    }
+    
     @IBOutlet weak var label: UILabel!
 }
 
 class IndexNameCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+
     @IBOutlet weak var label: UILabel!
 }
 
 class FieldNameCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+
     @IBOutlet weak var label: UILabel!
 }
 
 class CompFieldNameCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+
     @IBOutlet weak var label: UILabel!
 }
 
 class IndexCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+
     @IBOutlet weak var label: UILabel!
 }
 
 class Cell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+    
+    override func prepareForReuse() {
+        print("Reusing Cell")
+    }
+
+
     @IBOutlet weak var label: UILabel!
 }
 
 class CompColumnCell: UICollectionViewCell, LabeledCell {
+    override func preferredLayoutAttributesFittingAttributes(layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        return layoutAttributes
+    }
+
     @IBOutlet weak var label: UILabel!
 }
 
