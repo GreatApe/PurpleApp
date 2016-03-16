@@ -756,7 +756,7 @@ extension RLMPropertyType {
         case "String": return .String
         case "Int": return .Int
         case "Double": return .Double
-        case "Date": return .Date
+        case "Date": return .Double // FIXME: chnage back
         case "Data": return .Data
         case "Object": return .Object
         case "Array": return .Array
@@ -800,6 +800,9 @@ func parseRow(schema: [RLMPropertyType]) -> RowData -> RowData {
             case (_, .Double): return 0.0
             case (let value as NSNumber, .Int): return value.integerValue ?? 0
             case (_, .Int): return 0
+            case (let value as NSDate, .Date): return -value.timeIntervalSinceNow
+            case (_, .Date): return 0
+
             default: fatalError("Wrong type")
             }
         }

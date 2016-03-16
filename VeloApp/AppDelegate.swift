@@ -12,13 +12,17 @@ import UIKit
 class AppDelegate: FirebaseAppDelegate {
     
     var loginViewController: FirebaseLoginViewController!
-    
+
     override init() {
         Firebase.defaultConfig().persistenceEnabled = true
     }
     
     override func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+//        let s = UIUserNotificationSettings(forTypes: .Badge, categories: nil)
+//        application.registerUserNotificationSettings(s)
+//        application.applicationIconBadgeNumber = 1;
         
         setupFirebaseLogin()
         
@@ -33,7 +37,7 @@ class AppDelegate: FirebaseAppDelegate {
         
         return true
     }
-    
+
     func setupFirebaseLogin() {
         let firebaseRef = Firebase(url: "https://purplemist.firebaseio.com/")
         
@@ -81,13 +85,18 @@ class AppDelegate: FirebaseAppDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    override func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
-        super.application(application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
-        //        super.application(application, url, sourceApplication, annotation);
-        // Override point for customization.
-        
-        return true
-    }
     
-    
+//    override func application(application: UIApplication, handleOpenURL url: NSURL) -> Bool {
+//        print("handleOpenURL")
+//        return url.scheme == "purple"
+//    }
+//    
+//    override func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+//        print("openURL")
+//        guard url.scheme == "purple" else {
+//            return super.application(app, openURL: url, options: options)
+//        }
+//        
+//        return true
+//    }
 }

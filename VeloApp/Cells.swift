@@ -45,9 +45,9 @@ class MetaLabelCell: UICollectionViewCell, LabeledCell {
         return layoutAttributes
     }
     
-    override func prepareForReuse() {
-        print("Reusing MetaLabelCell")
-    }
+//    override func prepareForReuse() {
+//        print("Reusing MetaLabelCell")
+//    }
     
     @IBOutlet weak var label: UILabel!
 }
@@ -89,10 +89,9 @@ class Cell: UICollectionViewCell, LabeledCell {
         return layoutAttributes
     }
     
-    override func prepareForReuse() {
-        print("Reusing Cell")
-    }
-
+//    override func prepareForReuse() {
+//        print("Reusing Cell")
+//    }
 
     @IBOutlet weak var label: UILabel!
 }

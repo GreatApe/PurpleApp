@@ -144,11 +144,10 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func tableChanged(change: TableChange) {
-        print("tableChanged \(change.tableIndex) : \(change.rowChanges)")
+//        print("tableChanged \(change.tableIndex)")
+//        print("layout.tensor.sliced.all \(layout.tensor.sliced.all.map(layout.tensor.unslice))")
 
-        let slicedIndex = layout.tensor.slice(change.tableIndex)
-        
-        guard layout.tensor.sliced.all.contains({ $0 == slicedIndex }) else { return }
+        guard layout.tensor.sliced.all.map(layout.tensor.unslice).contains({ $0 == change.tableIndex }) else { return }
         
         let reloading = change.rowChanges.contains { $0.added }
         
@@ -178,7 +177,13 @@ class TabulaViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Cell Helpers
     
     private func pathForCell(tableIndex: [Int], row: Int, column: Int) -> NSIndexPath {
-        let section = layout.tensor.sliced.linearise(tableIndex)
+//        let section2 = layout.tensor.sliced.linearise(tableIndex)
+        let section = tableIndex |> layout.tensor.slice |> layout.tensor.sliced.linearise
+//        
+//        print("layout.tensor.slicing \(layout.tensor.slicing) - layout.tensor.sliced \(layout.tensor.sliced)")
+//        print("1. pathForCell: \(tableIndex) > \(section2)")
+//        print("2. pathForCell: \(tableIndex) > \(tableIndex |> layout.tensor.slice) > \(section)")
+//
         return NSIndexPath(forItem: itemForCell(row, column: column), inSection: section)
     }
     

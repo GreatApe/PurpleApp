@@ -22,12 +22,12 @@ struct TableConfig: CustomStringConvertible {
     init(columns: Int) {
         self.indexColumns = 1
         self.columns = columns
-        self.emptyColumns = 1
+        self.emptyColumns = 0
         self.compColumns = 0
         self.emptyCompColumns = 0
         
         self.headerRows = 1
-        self.emptyRows = 1
+        self.emptyRows = 0
         self.compRows = 0
     }
     

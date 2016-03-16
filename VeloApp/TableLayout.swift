@@ -441,7 +441,7 @@ class TableLayout: UICollectionViewLayout {
     
     override func invalidationContextForBoundsChange(newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
         let (firstMetaColumn, lastMetaColumn, firstMetaRow, lastMetaRow) = metaRowsColumnsInRect(newBounds)
-//                print("\(rect.minX)-\(rect.maxX) -> \(firstMetaColumn)-\(lastMetaColumn)")
+//        print("\(newBounds.minX)-\(newBounds.maxX) -> \(firstMetaColumn)-\(lastMetaColumn)")
 //        print("\(newBounds.minY)-\(newBounds.maxY) -> \(firstMetaRow)-\(lastMetaRow)")
 
         var paths = [NSIndexPath]()
@@ -473,16 +473,34 @@ class TableLayout: UICollectionViewLayout {
         }
         
         for metaRow in firstMetaRow...lastMetaRow {
-            appendPathsMeta(metaRow: metaRow, metaColumn: firstMetaColumn, column: 0)
-            guard firstMetaColumn + 1 < metaColumns else { continue }
-            appendPathsMeta(metaRow: metaRow, metaColumn: firstMetaColumn + 1, column: 0)
+            for metaColumn in firstMetaColumn...lastMetaColumn {
+                appendPathsMeta(metaRow: metaRow, metaColumn: metaColumn, row: 0)
+                appendPathsMeta(metaRow: metaRow, metaColumn: metaColumn, column: 0)
+            }
         }
         
-        for metaColumn in firstMetaColumn...lastMetaColumn {
-            appendPathsMeta(metaRow: firstMetaRow, metaColumn: metaColumn, row: 0)
-            guard firstMetaRow + 1 < metaRows else { continue }
-            appendPathsMeta(metaRow: firstMetaRow + 1, metaColumn: metaColumn, row: 0)
-        }
+//        for metaRow in max(0, firstMetaRow - 1)...min(metaRows - 1, lastMetaRow + 1) {
+//            //            appendPathsMeta(metaRow: metaRow, metaColumn: firstMetaColumn, column: 0)
+//            for metaColumn in max(0, firstMetaColumn - 1)...min(metaColumns - 1, lastMetaColumn + 1) {
+//                appendPathsMeta(metaRow: metaRow, metaColumn: metaColumn, row: 0)
+//                appendPathsMeta(metaRow: metaRow, metaColumn: metaColumn, column: 0)
+//            }
+//        }
+
+
+//        for metaColumn in max(0, firstMetaColumn - 1)...min(metaColumns - 1, lastMetaColumn + 1) {
+//            appendPathsMeta(metaRow: firstMetaRow, metaColumn: metaColumn, row: 0)
+//        }
+
+//        for metaColumn in firstMetaColumn...lastMetaColumn {
+//            if firstMetaRow - 1 >= 0 {
+//                appendPathsMeta(metaRow: firstMetaRow - 1, metaColumn: metaColumn, row: 0)
+//            }
+//            appendPathsMeta(metaRow: firstMetaRow, metaColumn: metaColumn, row: 0)
+//            if firstMetaRow + 1 < metaRows {
+//                appendPathsMeta(metaRow: firstMetaRow + 1, metaColumn: metaColumn, row: 0)
+//            }
+//        }
         
         let tableCount = metaRows*metaColumns
         
@@ -495,8 +513,6 @@ class TableLayout: UICollectionViewLayout {
         appendPath(tableCount + tensor.dimension, item: 0)
         appendPath(tableCount + tensor.dimension, item: 1)
         
-//        print("-Invalidated: \(paths.count) paths")
-
         paths.forEach { path in
             cachedAttributes[path] = nil
         }

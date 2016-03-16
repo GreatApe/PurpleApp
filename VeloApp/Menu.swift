@@ -101,6 +101,7 @@ class DropDown: UIView {
         button.imageView?.image = item.image
         button.tag = buttons.count
         button.backgroundColor = UIColor.menu()
+        button.opaque = true
 //        button.setTitleColor(UIColor.whiteColor(), forState: .Normal)
 //        button.setTitleColor(UIColor.whiteColor(), forState: .Selected)
         button.layer.cornerRadius = 3
