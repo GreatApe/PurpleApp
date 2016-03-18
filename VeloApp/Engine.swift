@@ -31,10 +31,34 @@ class Engine: SyncDelegate {
     private var cache = [String : RLMObject]()
     
     private var changeCallbacks = [String : ChangeCallback]()
+    
+    func createFunction(name: String, inTypes: [RLMPropertyType], outType: RLMPropertyType) {
+        realm.beginWriteTransaction()
+        
+        let function = Function()
+        function.id = sync.getSyncId()
+        function.displayName = name
+        
+        let inputTypes = RLMArray(objectClassName: DataType.className())
+        for inType in inTypes {
+            inputTypes.addObject(DataType.make(inType))
+        }
+        function.inputTypes = inputTypes
 
+        function.outputType = DataType.make(outType)
+        
+        try! realm.commitWriteTransaction()
+    }
+    
     private init() {
-        let schema: RLMSchema? = realmExists("store") ? nil : RLMRealm.defaultRealm().schema
+        let alreadyExists = realmExists("store")
+        let schema: RLMSchema? = alreadyExists ? nil : RLMRealm.defaultRealm().schema
         realm = try! RLMRealm.dynamicRealm("store", schema: schema)
+        
+        if !alreadyExists {
+            createFunction("difference", inTypes: [.Double, .Double], outType: .Double)
+            createFunction("sum", inTypes: [.Double, .Double], outType: .Double)
+        }
         
         sync.delegate = self
     }

@@ -16,7 +16,7 @@ class CollectionBase: RLMObject {
     dynamic var id = ""
     dynamic var displayName: String = ""
 
-    //    dynamic var computedColumns = RLMArray(objectClassName: "ComputedColumn")
+    dynamic var computedColumns = RLMArray(objectClassName: "ComputedColumn")
     //    dynamic var computedRows = RLMArray(objectClassName: "ComputedRow")
 
     dynamic var categories = RLMArray(objectClassName: "Category")
@@ -139,12 +139,20 @@ class RealmString: RLMObject {
 //    let computedColumns = List<ComputedColumn>()
 //    let computedRows = List<ComputedRow>()
 //}
-//
-//class ComputedColumn: Object {
-//    dynamic var id = ""
-//    dynamic var function: Function?
-//}
-//
+
+class ComputedColumn: RLMObject {
+    dynamic var id = ""
+    dynamic var displayName = ""
+    dynamic var function: Function?
+    dynamic var application = RLMArray(objectClassName: FunctionArgument.className())
+
+}
+
+class FunctionArgument: RLMObject {
+    dynamic var column = 0
+    dynamic var position = 0
+}
+
 //class ComputedRow: Object {
 //    dynamic var id = ""
 //    let computedRows = List<ComputedCell>()
@@ -154,12 +162,28 @@ class RealmString: RLMObject {
 //    dynamic var id = ""
 //    dynamic var function: Function?
 //}
-//
-//class Function: Object {
-//    dynamic var id = ""
-//    dynamic var elementTypeId = ""
-//}
-//
+
+class Function: RLMObject {
+    dynamic var id = ""
+    dynamic var displayName = ""
+    dynamic var outputType: DataType?
+    dynamic var inputTypes = RLMArray(objectClassName: "DataType")
+}
+
+class DataType: RLMObject {
+    dynamic var value = ""
+    
+    class func make(type: RLMPropertyType) -> DataType {
+        let dataType = DataType()
+        dataType.value = describe(type)
+        return dataType
+    }
+    
+    var asType: RLMPropertyType {
+        return RLMPropertyType.make(value)
+    }
+}
+
 //class Canvas: Object {
 //    dynamic var id = ""
 //    let collections = List<Collection>()
