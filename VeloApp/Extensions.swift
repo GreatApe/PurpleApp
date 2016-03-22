@@ -53,6 +53,10 @@ func *(lhs: [Int], rhs: [Int]) -> Int {
 
 // CGPoint operations
 
+func norm(p: CGPoint) -> CGFloat {
+    return p.norm
+}
+
 extension CGPoint: CustomStringConvertible {
     public var description: String {
         return "(\(x), \(y))"
@@ -166,14 +170,12 @@ func upscale(value: CGFloat, between lowValue: CGFloat, and highValue: CGFloat) 
 }
 
 extension UIColor {
+    convenience init(red: Int, green: Int, blue: Int) {
+        self.init(red: CGFloat(red)/255, green: CGFloat(green)/255, blue: CGFloat(blue)/255, alpha: 1)
+    }
+    
     convenience init(hex: Int) {
-        let components = (
-            R: CGFloat((hex >> 16) & 0xff) / 255,
-            G: CGFloat((hex >> 08) & 0xff) / 255,
-            B: CGFloat((hex >> 00) & 0xff) / 255
-        )
-        
-        self.init(red: components.R, green: components.G, blue: components.B, alpha: 1)
+        self.init(red:(hex >> 16) & 0xff, green:(hex >> 8) & 0xff, blue:hex & 0xff)
     }
 
     class func random() -> UIColor {
@@ -216,6 +218,148 @@ extension UIColor {
     class func canvas() -> UIColor {
         return UIColor(hex: 0xdddddd)
     }
+}
+
+// MARK: From Signalist
+
+extension CGPoint {
+    var polar: Polar {
+        return Polar(r: norm, phi: atan2(y, x))
+    }
+    
+    init(polar: Polar) {
+        x = polar.cartesian.x
+        y = polar.cartesian.y
+    }
+    
+    init(r: CGFloat, phi: CGFloat) {
+        self.init(polar: Polar(r: r, phi: phi))
+    }
+    
+    func approach(goal: CGPoint, by factor: CGFloat) -> CGPoint {
+        return (1 - factor)*self + factor*goal
+    }
+}
+
+prefix func -(value: CGPoint) -> CGPoint {
+    return CGPoint() - value
+}
+
+struct Polar {
+    var r: CGFloat
+    var phi: CGFloat
+    
+    var cartesian: CGPoint {
+        return CGPoint(x: r*cos(phi), y: r*sin(phi))
+    }
+    
+    func cartesian(center: CGPoint) -> CGPoint {
+        return CGPoint(x: center.x + r*cos(phi), y: center.y + r*sin(phi))
+    }
+    
+    func rotated(phi: CGFloat) -> Polar {
+        return self*Polar(r: 1, phi: phi)
+    }
+}
+
+func * (lhs: Polar, rhs: Polar) -> Polar {
+    return Polar(r: lhs.r*rhs.r, phi: lhs.phi + rhs.phi)
+}
+
+func rotate(phi: CGFloat)(p: Polar) -> Polar {
+    return p*Polar(r: 1, phi: phi)
+}
+
+extension CGSize {
+    func heighten(dh: CGFloat) -> CGSize { return CGSize(width: width, height: height + dh) }
+    func widen(dw: CGFloat) -> CGSize { return CGSize(width: width + dw, height: height) }
+}
+
+extension CGRect {
+    func down(dy: CGFloat) -> CGRect { return CGRect(origin: origin.down(dy), size: size) }
+    func right(dx: CGFloat) -> CGRect { return CGRect(origin: origin.right(dx), size: size) }
+    
+    func padUp(dy: CGFloat) -> CGRect { return CGRect(origin: origin.down(-dy), size: size.heighten(dy)) }
+    func padDown(dy: CGFloat) -> CGRect { return CGRect(origin: origin, size: size.heighten(dy)) }
+    func padLeft(dx: CGFloat) -> CGRect { return CGRect(origin: origin.right(-dx), size: size.widen(dx)) }
+    func padRight(dx: CGFloat) -> CGRect { return CGRect(origin: origin, size: size.widen(dx)) }
+    
+    var mid: CGPoint { return CGPoint(x: midX, y: midY) }
+    
+    init(center: CGPoint, size: CGSize) {
+        self.init(origin: CGPoint(x: center.x - size.width/2, y: center.y - size.height/2), size: size)
+    }
+    
+    func grow(delta: CGFloat) -> CGRect {
+        let dw = delta*width
+        let dh = delta*height
+        
+        return CGRect(x: origin.x - dw, y: origin.y - dh, width: width + 2*dw, height: height + 2*dh)
+    }
+    
+    var center: CGPoint { return CGPoint(x: midX, y: midY) }
+    
+    var lowerRight: CGPoint { return CGPoint(x: maxX, y: maxY) }
+    
+    var lowerMid: CGPoint { return CGPoint(x: midX, y: maxY) }
+    
+    var lowerLeft: CGPoint { return CGPoint(x: minX, y: maxY) }
+    
+    var midLeft: CGPoint { return CGPoint(x: minX, y: midY) }
+    
+    var upperRight: CGPoint { return CGPoint(x: maxX, y: minY) }
+    
+    var upperMid: CGPoint { return CGPoint(x: midX, y: minY) }
+    
+    var upperLeft: CGPoint { return CGPoint(x: minX, y: minY) }
+    
+    var midRight: CGPoint { return CGPoint(x: maxX, y: midY) }
+    
+    func insetX(dx: CGFloat) -> CGRect {
+        return CGRect(x: origin.x + dx, y: origin.y, width: width - 2*dx, height: height)
+    }
+    
+    func insetY(dy: CGFloat) -> CGRect {
+        return CGRect(x: origin.x, y: origin.y + dy, width: width, height: height - 2*dy)
+    }
+    
+    func move(dr: CGPoint) -> CGRect {
+        return CGRect(origin: origin + dr, size: size)
+    }
+    
+    func moveX(value: CGFloat) -> CGRect {
+        return CGRect(origin: origin + CGPoint(x: value, y: 0), size: size)
+    }
+    
+    func moveY(value: CGFloat) -> CGRect {
+        return CGRect(origin: origin + CGPoint(x: 0, y: value), size: size)
+    }
+    
+    func newWidth(value: CGFloat) -> CGRect {
+        return CGRect(origin: origin, size: CGSize(width: value, height: height))
+    }
+    
+    func newHeight(value: CGFloat) -> CGRect {
+        return CGRect(origin: origin, size: CGSize(width: width, height: value))
+    }
+}
+
+// MARK: - CGSize Operators
+
+func *(lhs: CGFloat, rhs: CGSize) -> CGSize {
+    return CGSize(width: lhs*rhs.width, height: lhs*rhs.height)
+}
+
+func *(lhs: CGSize, rhs: CGSize) -> CGSize {
+    return CGSize(width: lhs.width*rhs.width, height: lhs.height*rhs.height)
+}
+
+func +(lhs: CGSize, rhs: CGSize) -> CGSize {
+    return CGSize(width: lhs.width+rhs.width, height: lhs.height+rhs.height)
+}
+
+func +(lhs: CGSize, rhs: CGPoint) -> CGSize {
+    return CGSize(width: lhs.width + rhs.x, height: lhs.height + rhs.y)
 }
 
 

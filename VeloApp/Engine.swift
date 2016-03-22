@@ -22,6 +22,8 @@ struct Platform {
 typealias ChangeCallback = CollectionChange -> ()
 
 class Engine: SyncDelegate {
+    // Testing computations
+    
     private let sync = DataSync()
     
     static var shared = Engine()
@@ -39,13 +41,13 @@ class Engine: SyncDelegate {
         function.id = sync.getSyncId()
         function.displayName = name
         
-        let inputTypes = RLMArray(objectClassName: DataType.className())
+        let inputTypes = RLMArray(objectClassName: ValueType.className())
         for inType in inTypes {
-            inputTypes.addObject(DataType.make(inType))
+            inputTypes.addObject(ValueType.make(inType))
         }
         function.inputTypes = inputTypes
 
-        function.outputType = DataType.make(outType)
+        function.outputType = ValueType.make(outType)
         
         try! realm.commitWriteTransaction()
     }

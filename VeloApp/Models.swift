@@ -166,17 +166,17 @@ class FunctionArgument: RLMObject {
 class Function: RLMObject {
     dynamic var id = ""
     dynamic var displayName = ""
-    dynamic var outputType: DataType?
-    dynamic var inputTypes = RLMArray(objectClassName: "DataType")
+    dynamic var outputType: ValueType?
+    dynamic var inputTypes = RLMArray(objectClassName: "ValueType")
 }
 
-class DataType: RLMObject {
+class ValueType: RLMObject {
     dynamic var value = ""
     
-    class func make(type: RLMPropertyType) -> DataType {
-        let dataType = DataType()
-        dataType.value = describe(type)
-        return dataType
+    class func make(type: RLMPropertyType) -> ValueType {
+        let valueType = ValueType()
+        valueType.value = describe(type)
+        return valueType
     }
     
     var asType: RLMPropertyType {

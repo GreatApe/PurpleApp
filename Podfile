@@ -5,15 +5,4 @@ platform :ios, '8.0'
 
 pod 'FirebaseUI/Google', '~> 0.3.2'
 
-target 'VeloApp' do
-
-end
-
-target 'VeloAppTests' do
-
-end
-
-target 'VeloAppUITests' do
-
-end
 
