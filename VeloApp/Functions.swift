@@ -325,6 +325,10 @@ func printableValue(s: AnySignal) -> String {
 }
 
 func form<O>(tree: AbstractTree) -> Form<O>? {
+    let type = O.self
+    
+    print(type)
+    
     switch tree {
     case .Empty:
         return nil

@@ -23,6 +23,7 @@ typealias ChangeCallback = CollectionChange -> ()
 
 class Engine: SyncDelegate {
     // Testing computations
+    let input = InputController()
     
     private let sync = DataSync()
     
@@ -60,6 +61,14 @@ class Engine: SyncDelegate {
         if !alreadyExists {
             createFunction("difference", inTypes: [.Double, .Double], outType: .Double)
             createFunction("sum", inTypes: [.Double, .Double], outType: .Double)
+        }
+        
+        if let (a, sinA) = input.test1() {
+            for i in 0..<36 {
+                let phi = 5*CGFloat(i)/π
+                a.send(phi)
+                print("phi: \(phi) => \(sinA.value)")
+            }
         }
         
         sync.delegate = self

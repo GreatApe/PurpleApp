@@ -80,24 +80,36 @@ class InputController {
         addUnary(UnaryFam("√", type: .Prefix(precedence: 9), ops: sqrtf, sqrtF))
     }
     
-    func test1() -> (Signal<Double>, Form<Double>)? {
+    func test1() -> (Signal<CGFloat>, Form<CGFloat>)? {
         guard let sinus = unaries["sin"] else {
             return nil
         }
         
-        let a = Signal(value: 0.0)
+        let a = Signal(value: CGFloat(0))
         
-        return (a, form(sinus•a)!)
+        var tree = sinus•a
+        
+        tree.rerestrict()
+        
+        print("tree: \(tree)")
+        
+        guard let f: Form<CGFloat> = form(tree) else {
+            return nil
+        }
+        
+        print("form: \(f)")
+        
+        return (a, f)
     }
     
-    func test2() -> (Signal<Double>, Signal<Double>, Signal<Double>, Form<Double>)? {
+    func test2() -> (Signal<CGFloat>, Signal<CGFloat>, Signal<CGFloat>, Form<CGFloat>)? {
         guard let plus = binaries["+"], times = binaries["*"], sinus = unaries["sin"] else {
             return nil
         }
 
-        let a = Signal(value: 0.0)
-        let b = Signal(value: 0.0)
-        let c = Signal(value: 0.0)
+        let a = Signal(value: CGFloat(0))
+        let b = Signal(value: CGFloat(0))
+        let c = Signal(value: CGFloat(0))
         
         let tree = sinus•times•(plus•(a, b), •c)
         
